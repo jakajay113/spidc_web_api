@@ -193,7 +193,7 @@ Public Class Spidc_Web_API_Authorization_Config
                 Else
                     Return False
                 End If
-            Case Spidc_Web_API_Config._mAppGetParamUniversalCheckOut, Spidc_Web_API_Config._mAppGetParamUniversalCheckOutPaymentMethod, Spidc_Web_API_Config._mAppDeleteParamUniversalCheckOut 'JWT TOKEN Validation
+            Case Spidc_Web_API_Config._mAppGetParamUniversalCheckOut, Spidc_Web_API_Config._mAppGetParamUniversalCheckOutPaymentMethod, Spidc_Web_API_Config._mAppDeleteParamUniversalCheckOut, Spidc_Web_API_Config._mAppPostParamUniversalCheckOutProceed 'JWT TOKEN Validation
                 'Check the JWT TOKEN IF exist or  Expired or not
                 If Spidc_Web_API_JWTToken.ValidateJwt(apiToken) Then
                     Return True

@@ -290,7 +290,7 @@
                                         Billing Amount
                                     </div>
                                     <div class="col-6">
-                                        <span class="text-muted">₱</span> <span class="text-muted billing-amount">100.00</span>
+                                        <span class="text-muted">₱</span> <span class="text-muted billing-amount">0.00</span>
                                     </div>
                                 </div>
                             </div>
@@ -380,15 +380,15 @@
     <!--End Loader-->
 
 
-  
+
 
 
     <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
     <script>
-       
-        //Prevent the back button in browser
+
+
         function preventBack() {
             window.history.forward();
         }
@@ -396,9 +396,6 @@
         window.onunload = function () {
             null;
         };
-        //End Prevent the back button in browser
- 
-        /*---------------------- LOADER And Also Can Be Used As Document Ready-----------------------------*/
         var loader = new bootstrap.Modal(document.getElementById('apploader'));
         document.onreadystatechange = function () {
             if (document.readyState !== "complete") {
@@ -407,10 +404,9 @@
                 var token = getParameterByName(window.location.href, "d");
                 var decodedPayload = decodeJwt(token);
                 var key = decodedPayload.accountNo;
-               getUniversalCheckoutPaymentMethod(token, key);
+                getUniversalCheckoutPaymentMethod(token, key);
             }
         };
-        /*----------------------End  LOADER -----------------------------*/
         function getParameterByName(url, name) {
             name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
             var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
@@ -436,7 +432,7 @@
                     loader.show();
                 },
                 success: function (response) {
-                   // const jsonData = JSON.parse(JSON.stringify(response))
+                    // const jsonData = JSON.parse(JSON.stringify(response))
                     // console.log(response);
                     // Iterate through the array using a for loop
                     for (let i = 0; i < response.data.length; i++) {
@@ -456,16 +452,16 @@
                              + '</div>\n'
                              + '</div>\n'
                              + '</li>');
-                        console.log(response.data[i].GatewayName);
+                        //console.log(response.data[i].GatewayName);
                     }
-                    initializeSplide(); 
-                    hideSplideArrows(); 
+                    initializeSplide();
+                    hideSplideArrows();
                     addClickEventToPaymentMethods();
                     loader.hide();
                     getUniversalCheckout(token, key);
                 },
                 error: function (xhr, status, errorThrown) {
-                    //console.log(xhr.status); 
+                    //console.log(xhr.status);
                     console.log(xhr.responseText);
                     //console.log(errorThrown);
                 }
@@ -490,19 +486,94 @@
                         loader.hide();
                         const jsonData = JSON.parse(JSON.stringify(response))
                         const data = jsonData.data[0];
-                        const transactionType = data.TransactionType;
+                        const SysTranDesc = data.SysTranDesc;
                         const email = data.Email;
                         const accountNo = data.AccountNo;
                         const firstName = data.Fname;
                         const middleName = data.MiddleName;
                         const lastName = data.LastName;
+                        const suffix = data.Suffix;
                         const billingAmount = data.BillingAmount;
                         const totalAmount = data.TotalAmount;
                         const biilingDate = data.BiilingDate;
                         const otherFee = data.OtherFee;
                         const rawAmount = data.RawAmount;
                         const spidcFee = data.SpidcFee;
-                        document.getElementsByClassName("transaction-type")[0].textContent = transactionType;
+                        var ucpPayload = {};
+                        switch (data.AppName) {
+                            case "CEDULAAPP":
+                                ucpPayload.transrefNo = data.TransactionRef;
+                                ucpPayload.accountNo = accountNo;
+                                ucpPayload.appName = data.AppName;
+                                ucpPayload.email = email;
+                                ucpPayload.firstName = firstName;
+                                ucpPayload.lastName = lastName;
+                                ucpPayload.middleName = middleName;
+                                ucpPayload.suffix = suffix;
+                                ucpPayload.address = data.Address;
+                                ucpPayload.assessmentNo = data.AssessmentNo;
+                                ucpPayload.billingDate = data.BiilingDate;
+                                ucpPayload.checkoutDate = data.CheckOutDate;
+                                ucpPayload.sysTranCode = data.SysTranCode;
+                                ucpPayload.sysTranDesc = data.SysTranDesc;
+                                ucpPayload.systran_providerCode = data.SysTran_ProviderCode;
+                                ucpPayload.systran_MainCode = data.SysTran_MainCode;
+                                ucpPayload.systran_AncestorCode = data.SysTran_AncestorCode;
+                                ucpPayload.sysTran_SubAccCode = data.SysTran_SubAccCode;
+                                ucpPayload.urlOrigin = data.UrlOrigin;
+                                ucpPayload.notificationUrl = data.UrlSuccess;
+                                ucpPayload.transactionType = data.SysTranDesc;
+                                ucpPayload.totaLAmount = totalAmount;
+                                ucpPayload.transactionType = data.SysTranDesc;
+                                ucpPayload.paymentDescriptions = data.SysTranDesc + " " + "Payment";
+                                for (var key in ucpPayload) {
+                                    if (ucpPayload.hasOwnProperty(key) && ucpPayload[key] === '') {
+                                        ucpPayload[key] = null;
+                                    }
+                                }
+                                localStorage.setItem('checkoutPayload', JSON.stringify(ucpPayload));
+                                break;
+                            case "LCR":
+                                //console.log("LCR");
+                                break;
+                            case "PINNACLE":
+                                ucpPayload.transrefNo = data.TransactionRef;
+                                ucpPayload.accountNo = accountNo;
+                                ucpPayload.appName = data.AppName;
+                                ucpPayload.email = email;
+                                ucpPayload.firstName = firstName;
+                                ucpPayload.lastName = lastName;
+                                ucpPayload.middleName = middleName;
+                                ucpPayload.suffix = suffix;
+                                ucpPayload.address = data.Address;
+                                ucpPayload.assessmentNo = data.AssessmentNo;
+                                ucpPayload.billingDate = data.BiilingDate;
+                                ucpPayload.checkoutDate = data.CheckOutDate;
+                                ucpPayload.sysTranCode = data.SysTranCode;
+                                ucpPayload.sysTranDesc = data.SysTranDesc;
+                                ucpPayload.systran_providerCode = data.SysTran_ProviderCode;
+                                ucpPayload.systran_MainCode = data.SysTran_MainCode;
+                                ucpPayload.systran_AncestorCode = data.SysTran_AncestorCode;
+                                ucpPayload.sysTran_SubAccCode = data.SysTran_SubAccCode;
+                                ucpPayload.urlOrigin = data.UrlOrigin;
+                                ucpPayload.notificationUrl = data.UrlSuccess;
+                                ucpPayload.transactionType = data.SysTranDesc;
+                                ucpPayload.totaLAmount = totalAmount;
+                                ucpPayload.transactionType = data.SysTranDesc;
+                                ucpPayload.paymentDescriptions = data.SysTranDesc + " " + "Payment";
+                                for (var key in ucpPayload) {
+                                    if (ucpPayload.hasOwnProperty(key) && ucpPayload[key] === '') {
+                                        ucpPayload[key] = null;
+                                    }
+                                }
+                                localStorage.setItem('checkoutPayload', JSON.stringify(ucpPayload));
+                                break;
+
+                            case "QPAX":
+                                //console.log("LCR");
+                                break;
+                        }
+                        document.getElementsByClassName("transaction-type")[0].textContent = SysTranDesc;
                         document.getElementsByClassName("account-no")[0].textContent = accountNo;
                         document.getElementsByClassName("fees-amount")[0].textContent = spidcFee;
                         document.getElementsByClassName("gate-way-fees")[0].textContent = spidcFee;
@@ -511,15 +582,16 @@
                         // Start or continue the timer
                         checkoutTimer(token, key);
                     }
-                    
+
                 },
                 error: function (xhr, status, errorThrown) {
-                    //console.log(xhr.status); 
+                    //console.log(xhr.status);
                     console.log(xhr.responseText);
                     //console.log(errorThrown);
                 }
             });
         }
+        var gateway;
         function addClickEventToPaymentMethods() {
             var paymentMethodElements = document.querySelectorAll('.payment-method');
             paymentMethodElements.forEach(function (element) {
@@ -530,8 +602,7 @@
                     this.classList.add('border-dark');
                     var radio = this.querySelector('input[type="radio"]');
                     if (radio) {
-                        console.log(radio.value);
-                        localStorage.setItem("paymentMethod", radio.value);
+                        gateway = radio.value
                         radio.checked = true;
                     }
                 });
@@ -541,12 +612,12 @@
             var splide = new Splide('.splide', {
                 type: 'slide',
                 padding: {
-                    left: '1rem', 
-                    right: '1rem', 
+                    left: '1rem',
+                    right: '1rem',
                 },
                 perPage: 3,
-                arrow: false, 
-                pagination: false, 
+                arrow: false,
+                pagination: false,
                 gap: 1
             });
 
@@ -568,12 +639,12 @@
                     loader.show();
                 },
                 success: function (response) {
-                    //loader.hide(); 
+                    //loader.hide();
                     console.log(response.status);
                     window.location.reload();
                 },
                 error: function (xhr, status, errorThrown) {
-                    //console.log(xhr.status); 
+                    //console.log(xhr.status);
                     console.log(xhr.responseText);
                     //console.log(errorThrown);
                 }
@@ -602,7 +673,7 @@
                     //alert("Redirect");
                     deleteUniversalCheckout(token, key)
                     //Clear the stored time
-                    localStorage.removeItem('remainingTime'); 
+                    localStorage.removeItem('remainingTime');
                     return;
                 }
 
@@ -620,15 +691,25 @@
             }
             var timerInterval = setInterval(startTimer, 1000);
         }
-       
-
-        
-
 
         //Checkout Proceed
         document.getElementsByClassName("checkout-process")[0].addEventListener("click", function () {
-           
-            alert(localStorage.getItem("paymentMethod"));
+            if (typeof gateway === "undefined") {
+                alert("Please select payment method!");
+            } else {
+                var payload = localStorage.getItem('checkoutPayload');
+                try {
+                    var existingPayload = JSON.parse(payload);
+                    var newObject = {
+                        "paymentGateway": gateway,
+                    };
+                    var finalPayload = { ...existingPayload, ...newObject };
+                    console.log(finalPayload);
+                } catch (error) {
+                    console.error('Error processing JSON:', error);
+                } 
+            }
+
         });
         //Checkout Cancel
         document.getElementsByClassName("checkout-cancel")[0].addEventListener("click", function () {
@@ -636,14 +717,14 @@
             var decodedPayload = decodeJwt(token);
             var key = decodedPayload.accountNo;
             //loader.show();
-            alert(key);
+            //alert(key);
         });
 
 
 
 
 
-       
+
 
     </script>
 </body>

@@ -189,6 +189,7 @@ Public Class Spidc_Web_API_Param_Checker_Config
         ' YOU CAN ADD MORE METHOD HERE IN ARRAY BASE ON CONFIG
         _paramType = {
             Spidc_Web_API_Config._mAppPostParamUniversalCheckOut,
+            Spidc_Web_API_Config._mAppPostParamUniversalCheckOutProceed,
             Spidc_Web_API_Config._mAppGetParamUniversalCheckOut,
             Spidc_Web_API_Config._mAppGetParamUniversalCheckOutPaymentMethod,
              Spidc_Web_API_Config._mAppDeleteParamUniversalCheckOut

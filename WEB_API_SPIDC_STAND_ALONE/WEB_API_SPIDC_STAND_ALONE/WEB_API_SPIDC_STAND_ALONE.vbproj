@@ -40,6 +40,9 @@
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BouncyCastle.Crypto">
+      <HintPath>..\packages\BouncyCastle.1.8.9\lib\BouncyCastle.Crypto.dll</HintPath>
+    </Reference>
     <Reference Include="DotEnv">
       <HintPath>..\packages\DotEnv.0.0.1.1\lib\net40\DotEnv.dll</HintPath>
     </Reference>
@@ -62,6 +65,9 @@
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp">
+      <HintPath>..\packages\RestSharp.105.2.3\lib\net45\RestSharp.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -102,7 +108,9 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
-  <ItemGroup />
+  <ItemGroup>
+    <Folder Include="Models\PaymentGatewayModel\PaymayaModel\" />
+  </ItemGroup>
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
     <Import Include="System" />
@@ -161,6 +169,7 @@
     <Compile Include="Models\CedulaAPIModel\CedulaModel.vb" />
     <Compile Include="Models\EISWebAPIModel\EISModel.vb" />
     <Compile Include="Models\EmailAppModel\EmailAppModel.vb" />
+    <Compile Include="Models\PaymentGatewayModel\GCashModel\GCashModel.vb" />
     <Compile Include="Models\SpidcWebAPIModel\SpidcModel.vb" />
     <Compile Include="Models\UniversalCheckoutModel\UniversalCheckoutModel.vb" />
     <Compile Include="Models\Webhooks\WebhooksModel.vb" />

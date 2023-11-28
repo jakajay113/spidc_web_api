@@ -1,7 +1,0 @@
-{
-    "url":"https://online.spidc.com.ph/spidc_web_api/",
-    "webPortalURLLogin":"https://online.spidc.com.ph/caloocan/WebPortal/Register.aspx",
-    "webPortalURLTaxpayer":"https://online.spidc.com.ph/caloocan/WebPortal/Account.aspx",
-    "webPortalURLTreasury":"https://online.spidc.com.ph/caloocan/WebPortal/LGU_GeneralCollectionReport.aspx",
-	"apiKey":"SpidcApiKeyTest123456789"
-}

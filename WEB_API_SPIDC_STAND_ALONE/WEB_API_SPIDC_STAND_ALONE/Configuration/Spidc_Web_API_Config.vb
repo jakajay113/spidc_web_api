@@ -191,6 +191,7 @@ Public Class Spidc_Web_API_Config
 
 #Region "Varriable Universal Checkout Param Method POST Web API Config "
     Public Shared Property _mAppPostParamUniversalCheckOut As String
+    Public Shared Property _mAppPostParamUniversalCheckOutProceed As String
     Public Shared Property _mAppGetParamUniversalCheckOut As String
     Public Shared Property _mAppGetParamUniversalCheckOutPaymentMethod As String
     Public Shared Property _mAppDeleteParamUniversalCheckOut As String
@@ -409,6 +410,8 @@ Public Class Spidc_Web_API_Config
 
             'UNIVERSAL CHECKOUT
             _mAppPostParamUniversalCheckOut = Environment.GetEnvironmentVariable("APP_POST_PARAM1_UNIVERSALCHECKOUT")
+            _mAppPostParamUniversalCheckOutProceed = Environment.GetEnvironmentVariable("APP_POST_PARAM2_UNIVERSALCHECKOUT")
+
             _mAppGetParamUniversalCheckOut = Environment.GetEnvironmentVariable("APP_GET_PARAM1_UNIVERSALCHECKOUT")
 
             _mAppDeleteParamUniversalCheckOut = Environment.GetEnvironmentVariable("APP_DELETE_PARAM1_UNIVERSALCHECKOUT")
