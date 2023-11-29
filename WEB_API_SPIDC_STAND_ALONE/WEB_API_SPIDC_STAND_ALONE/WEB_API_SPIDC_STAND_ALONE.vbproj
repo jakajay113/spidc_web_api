@@ -108,9 +108,7 @@
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\PaymentGatewayModel\PaymayaModel\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Import Include="Microsoft.VisualBasic" />
     <Import Include="System" />
@@ -170,6 +168,7 @@
     <Compile Include="Models\EISWebAPIModel\EISModel.vb" />
     <Compile Include="Models\EmailAppModel\EmailAppModel.vb" />
     <Compile Include="Models\PaymentGatewayModel\GCashModel\GCashModel.vb" />
+    <Compile Include="Models\PaymentGatewayModel\PaymayaModel\PayMayaModel.vb" />
     <Compile Include="Models\SpidcWebAPIModel\SpidcModel.vb" />
     <Compile Include="Models\UniversalCheckoutModel\UniversalCheckoutModel.vb" />
     <Compile Include="Models\Webhooks\WebhooksModel.vb" />
