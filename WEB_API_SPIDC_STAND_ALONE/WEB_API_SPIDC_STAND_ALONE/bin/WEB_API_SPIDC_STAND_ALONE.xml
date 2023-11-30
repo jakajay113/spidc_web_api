@@ -6,7 +6,23 @@ WEB_API_SPIDC_STAND_ALONE
 </name>
 </assembly>
 <members>
-<member name="P:WEB_API_SPIDC_STAND_ALONE.My.MyWebExtension.Computer">
+<member name="F:WEB_API_SPIDC_STAND_ALONE.processing.form1">
+	<summary>
+form1 control.
+</summary>
+	<remarks>
+Auto-generated field.
+To modify move field declaration from designer file to code-behind file.
+</remarks>
+</member><member name="F:WEB_API_SPIDC_STAND_ALONE.processing._payloadToProcess">
+	<summary>
+_payloadToProcess control.
+</summary>
+	<remarks>
+Auto-generated field.
+To modify move field declaration from designer file to code-behind file.
+</remarks>
+</member><member name="P:WEB_API_SPIDC_STAND_ALONE.My.MyWebExtension.Computer">
 	<summary>
  Returns information about the host computer.
  </summary>

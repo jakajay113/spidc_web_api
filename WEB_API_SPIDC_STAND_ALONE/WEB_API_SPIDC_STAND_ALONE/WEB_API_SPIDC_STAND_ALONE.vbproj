@@ -136,6 +136,8 @@
     <Content Include="Global.asax" />
     <Content Include="index.html" />
     <Content Include="UniversalCheckout\index.html" />
+    <Content Include="UniversalCheckout\404.html" />
+    <Content Include="UniversalCheckout\processing.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
@@ -200,6 +202,13 @@
     <Compile Include="Other Services\cEncryption.vb" />
     <Compile Include="Other Services\cExecuteSQL.vb" />
     <Compile Include="Other Services\cReturnDataType.vb" />
+    <Compile Include="UniversalCheckout\processing.aspx.designer.vb">
+      <DependentUpon>processing.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="UniversalCheckout\processing.aspx.vb">
+      <DependentUpon>processing.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="My Project\Resources.resx">

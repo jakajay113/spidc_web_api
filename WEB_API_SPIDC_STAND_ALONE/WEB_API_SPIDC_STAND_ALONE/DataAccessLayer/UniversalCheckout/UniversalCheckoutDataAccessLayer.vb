@@ -17,7 +17,9 @@ Public Class UniversalCheckoutDataAccessLayer
     Public Shared _mSqlCmd As SqlCommand
     Public Shared _mDataTable As New DataTable
     Public Shared _mDataAdapter As New SqlDataAdapter
+    Public Shared _mDataAdapter1 As New SqlDataAdapter
     Public Shared _mDataset As New DataSet
+    Public Shared _mDataset1 As New DataSet
     Public Shared _mStrSql As String
     Public Shared _mStrSql1 As String
     Public Shared _mStrSql2 As String
@@ -56,8 +58,14 @@ Public Class UniversalCheckoutDataAccessLayer
     'Account Codes Data
     Public Shared _msystran_providerCode As String
     Public Shared _msystran_MainCode As String
+    Public Shared _msystran_codeDesc As String
+    Public Shared _msystran_codeamt As String
     Public Shared _msystran_AncestorCode As String
     Public Shared _msysTran_SubAccCode As String
+    Public Shared _maccountCodeDataArray As JArray
+
+
+    Public Shared _mselectedGateway As String
 
     Private Shared _mAppStatus As String
     Private Shared _mFilaData As Byte()
@@ -143,20 +151,36 @@ Public Class UniversalCheckoutDataAccessLayer
     End Function
 
 
-
-
     '-----------------------------------------------------------------------------------GET with Parameters Data Access Layer-----------------------------------------------------------------------------------------------------
     Public Shared Function _mGetUniversalCheckout() As Boolean
         Try
+            'Main UniversalCheckout Table
             _mDataset = New DataSet
             _mSqlCmd = New SqlCommand(_mStrSql, _mSqlCon)
             _mDataAdapter = New SqlDataAdapter(_mSqlCmd)
             _mDataAdapter.Fill(_mDataset)
             If _mDataset.Tables(0).Rows.Count > 0 Then
-                _mStatus = "success"
-                _mData = _mDataset.Tables(0)
-                _mMessage = "Data retrieved successfully"
-                _mCode = "200"
+                'Extention UniversalCheckout Table
+                _mDataset1 = New DataSet
+                _mStrSql1 = "SELECT * FROM UniversalCheckout_Extn"
+                _mSqlCmd = New SqlCommand(_mStrSql1, _mSqlCon)
+                _mDataAdapter1 = New SqlDataAdapter(_mSqlCmd)
+                _mDataAdapter1.Fill(_mDataset1)
+                ' Create a List to hold the tables as objects
+                Dim tableList As New List(Of Object)
+                If _mDataset1.Tables(0).Rows.Count > 0 Then
+                  ' Convert tables to JSON strings
+                    Dim mainTable = JsonConvert.SerializeObject(_mDataset.Tables(0))
+                    Dim extentionTable = JsonConvert.SerializeObject(_mDataset1.Tables(0))
+                    ' Build the final JSON response
+                    _mJson = "{""dataInformation"": " & mainTable & ",""dataCode"": " & extentionTable & "}"
+                    ' If you want to parse the JSON into an object, you can use a library like Newtonsoft.Json (Json.NET):
+                    Dim _mJsonResponse = JsonConvert.DeserializeObject(Of JObject)(_mJson)
+                    _mStatus = "success"
+                    _mData = _mJsonResponse
+                    _mMessage = "Data retrieved successfully"
+                    _mCode = "200"
+                End If
             Else
                 _mStatus = "success"
                 _mData = Nothing
@@ -177,15 +201,13 @@ Public Class UniversalCheckoutDataAccessLayer
 
 
     '-----------------------------------------------------------------------------------POST with Parameters Data Access Layer-----------------------------------------------------------------------------------------------------
-    Public Shared Function _mPostUniversalCheckout(ByVal value As Object, ByVal jwttoken As String, ByVal hash1 As String, ByVal hash2 As String, ByVal hash3 As String, ByVal transactionReferenceNo As String) As Boolean
+    Public Shared Function _mPostUniversalCheckout(ByVal appName As String, ByVal value As Object, ByVal jwttoken As String, ByVal hash1 As String, ByVal hash2 As String, ByVal hash3 As String, ByVal transactionReferenceNo As String) As Boolean
         Try
             'Call THE SPIDC WEB API CONFIG
             Spidc_Web_API_Config.WebApiConfig()
 
             'Parse the json object in variable
             _mJsonObject = JObject.Parse(value.ToString)
-
-
             'For Generating JWT TOKEN 
             _mEmail = _mJsonObject("universalCheckout")("payorInfo")("email").ToString()
             _mAppName = _mJsonObject("universalCheckout")("systemInformation")("appName").ToString()
@@ -207,22 +229,24 @@ Public Class UniversalCheckoutDataAccessLayer
             _msysTranDesc = _mJsonObject("universalCheckout")("billingData")("sysTranDesc").ToString()
             _msysTranAmt = _mJsonObject("universalCheckout")("billingData")("sysTranAmt").ToString()
             _msysTran_TotalAmt = _mJsonObject("universalCheckout")("billingData")("sysTran_TotalAmt").ToString()
-            'Account Codes Data
-            _msystran_providerCode = _mJsonObject("universalCheckout")("accountCodeData")("systran_providerCode").ToString()
-            _msystran_MainCode = _mJsonObject("universalCheckout")("accountCodeData")("systran_MainCode").ToString()
-            _msystran_AncestorCode = _mJsonObject("universalCheckout")("accountCodeData")("systran_AncestorCode").ToString()
-            _msysTran_SubAccCode = _mJsonObject("universalCheckout")("accountCodeData")("sysTran_SubAccCode").ToString()
-
+            'Execute Main UniversalCheckout Table
             _mSqlCmd = New SqlCommand(_mStrSql, _mSqlCon)
             With _mSqlCmd.Parameters
                 .AddWithValue("@Suffix", IIf(String.IsNullOrEmpty(_mSuffix), DBNull.Value, _mSuffix))
             End With
             _mSqlCmd.ExecuteNonQuery()
-
+            'Execute Extention UniversalCheckout Table
+            'Account Codes Data
+            _maccountCodeDataArray = _mJsonObject("universalCheckout")("accountCodeData")
+            For Each item As JObject In _maccountCodeDataArray
+                _mStrSql = "INSERT INTO UniversalCheckout_Extn (accountNo, SysTran_ProviderCode, systrans_codeDesc, systems_codeAmt, SysTran_MainCode, SysTran_AncestorCode, SysTran_SubAccCode)" & _
+                           "VALUES('" & _mAccountNo & "','" & item("systran_providerCode").ToString() & "' ,'" & item("systrans_codedesc").ToString() & "', '" & item("systems_codeamt").ToString() & "', '" & item("systran_MainCode").ToString() & "','" & item("systran_AncestorCode").ToString() & "','" & item("sysTran_SubAccCode").ToString() & "')"
+                _mSqlCmd = New SqlCommand(_mStrSql, _mSqlCon)
+                _mSqlCmd.ExecuteNonQuery()
+            Next
             'Build a url 
             _mUniversalCheckoutURL = Spidc_Web_API_Config._mUniversalCheckoutURL
             _mUniversalCheckouTFinalURL = _mUniversalCheckoutURL & "?a=" & hash1 & "&b=" & hash2 & "&c=" & hash3 & "&d=" & jwttoken
-
             _mJson = "{""transactonReferenceNo"": """ & transactionReferenceNo & """,""checkoutURL"": """ & _mUniversalCheckouTFinalURL & """}"
             ' If you want to parse the JSON into an object, you can use a library like Newtonsoft.Json (Json.NET):
             Dim _mJsonResponse = JsonConvert.DeserializeObject(Of JObject)(_mJson)
@@ -243,135 +267,26 @@ Public Class UniversalCheckoutDataAccessLayer
         _mSqlCon.Close()
     End Function
 
+
     '-----------------------------------------------------------------------------------POST Proceed To Payment Gateway-----------------------------------------------------------------------------------------------------
     Public Shared Function _mPostUniversalCheckoutProceedToPaymentGateway(ByVal value As Object) As Boolean
         Try
-            Dim serializer As System.Web.Script.Serialization.JavaScriptSerializer = New Script.Serialization.JavaScriptSerializer()
-            Dim _sqlDateNow As DateTime
-            Dim _sqlDateNow10 As DateTime
-
-            Dim objReq As New GCashModel.Gcash_OrderCreate
-            objReq.request = New GCashModel.Request()
-            objReq.request.head = New GCashModel.Head()
-            objReq.request.body = New GCashModel.Body()
-            objReq.request.body.order = New GCashModel.Order()
-            objReq.request.body.order.buyer = New GCashModel.Buyer()
-            objReq.request.body.order.seller = New GCashModel.Seller()
-            objReq.request.body.order.orderAmount = New GCashModel.OrderAmount()
-            objReq.request.body.envInfo = New GCashModel.EnvInfo()
-            'Head
-            objReq.request.head.version = "2.0"
-            objReq.request.head._function = "gcash.acquiring.order.create"
-            objReq.request.head.clientId = "ClientId"
-            objReq.request.head.clientSecret = "ClientSecret"
-            objReq.request.head.reqTime = _sqlDateNow.ToString("yyyy-MM-dd'T'HH:mm:ssK")
-            objReq.request.head.reqMsgId = "ReqMsgID"
-            'Body>Order>Buyer
-            objReq.request.body.order.buyer.userId = ""
-            objReq.request.body.order.buyer.externalUserId = "1001"
-            objReq.request.body.order.buyer.externalUserType = "1001"
-            'Body>Order>Seller
-            objReq.request.body.order.seller.userId = ""
-            objReq.request.body.order.seller.externalUserId = "TESTSELLER"
-            objReq.request.body.order.seller.externalUserType = "TESTSELLER"
-            'Body>Order>orderTitle
-            objReq.request.body.order.orderTitle = "PaymentDesc" & " - " & "ACCTNO"
-            'Body>Order>orderAmount
-            objReq.request.body.order.orderAmount.currency = "PHP" 'Amount
-            objReq.request.body.order.orderAmount.value = (CStr("100.00" * 100)).Replace(".00", "")
-            'Body>Order>
-            objReq.request.body.order.merchantTransId = "SPIDCRefNo"
-            objReq.request.body.order.createdTime = _sqlDateNow.ToString("yyyy-MM-dd'T'HH:mm:ssK")
-            objReq.request.body.order.expirytime = _sqlDateNow10.ToString("yyyy-MM-dd'T'HH:mm:ssK")
-            'Body>
-            objReq.request.body.merchantId = "MerchantID"
-            objReq.request.body.subMerchantId = ""
-            objReq.request.body.subMerchantName = "PaymentDesc"
-            objReq.request.body.productCode = "ProductCode"
-            'Body>envInfo           
-            objReq.request.body.envInfo.orderTerminalType = "WEB"
-            objReq.request.body.envInfo.terminalType = "WEB"
-            objReq.signature = "signature string"
-
-            Dim client = New RestClient("https://api.saas.mynt.xyz/")
-            client.Timeout = -1
-            Dim request = New RestRequest("gcash/acquiring/order/create.htm", Method.POST)
-            Dim body = serializer.Serialize(objReq)
-
-            'Dim strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery
-            'Dim strUrl As String
-
-            '' Dim callbackurl As String = strUrl & "PaymentConfirmation.aspx"
-            ''callbackurl = "http://ptsv2.com/t/zewy6-1646711060/post"
-
-            'Dim API_callback As String
-            'If HttpContext.Current.Request.Url.AbsoluteUri.ToUpper.Contains("TEST") Then
-            '    strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/TEST/")
-            'ElseIf HttpContext.Current.Request.Url.AbsoluteUri.ToUpper.Contains("ONLINE.SPIDC.COM.PH/CAINTA") Then
-            '    strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/Cainta/")
-            'ElseIf HttpContext.Current.Request.Url.AbsoluteUri.ToUpper.Contains("ONLINE.SPIDC.COM.PH/CALOOCAN") Then
-            '    strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/Caloocan/")
-            'Else
-            '    strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/")
-            'End If
-            'API_callback = strUrl & "API_Payment/api/GCASH_Notify"
-            ' ''  API_callback = "https://ptsv2.com/t/mxn1t-1650360758/post"
-            'Dim PostBack_callback As String = strUrl & "PaymentConfirmation.aspx?referenceCode=" & "SPIDCRefNo" & "&SelectedBank=GCASH"
-
-            Dim notifUrls As String = Nothing
-            notifUrls += "[{""type"":""PAY_RETURN"",""url"":""" & "https://online.spidc.com.ph/spidc_web_api/" & "&S=S""},"
-            notifUrls += "{""type"":""CANCEL_RETURN"",""url"":""" & "https://online.spidc.com.ph/spidc_web_api/" & "&S=F""},"
-            notifUrls += "{""type"":""NOTIFICATION"",""url"":""" & "https://online.spidc.com.ph/spidc_web_api/" & """}]}}"
-            body = body.Replace("null}}", notifUrls)
-            body = body.Replace("_function", "function")
-
-            Dim StringToSign As String = Nothing
-            StringToSign = body.Remove(0, 11) ' Remove "request":
-            StringToSign = StringToSign.Replace(",""signature"":""signature string""}", "")
-            Dim signedString = GCashModel.Do_Sign(StringToSign)
-            body = body.Replace("signature string", signedString)
-            request.AddParameter("application/json", body, ParameterType.RequestBody)
-
-            Dim response1 As IRestResponse = client.Execute(request)
-            If response1.StatusCode = HttpStatusCode.OK Then
-                ' Optionally, you can read the response content if needed
-                Dim jsonResponse As String = response1.Content
-                MsgBox(jsonResponse)
-            Else
-                Dim jsonResponse As String = response1.Content
-                MsgBox(jsonResponse)
-            End If
-
-
-
-            '--Insert REQUEST to table GCASH_TRANSACTIONS 
-            '_function = objReq.request.head._function
-            '_transactionId = ""
-            '_merchantTransId = objReq.request.body.order.merchantTransId
-            '_acquirementStatus = ""
-            '_signature = signedString
-
-
-            '_nClass._pSqlConnection = cGlobalConnections._pSqlCxn_OAIMS
-            '_nClass.GCASH_InsertLog(_function, _transactionId, _merchantTransId, body, "Request from SPIDC", _acquirementStatus, _signature)
-
-            'WriteLogs(_function, "REQUEST", body)
-            'WriteLogs(_function, "RESPONSE", response1.Content)
-
-
-            'Dim Response_OriginalString
-            'Dim index As Integer = response1.Content.LastIndexOf(","c)
-            'Response_OriginalString = response1.Content.Remove(index)
-            'Response_OriginalString = Response_OriginalString.Remove(0, 12) ' Remove "response":
-            ''   Response.Write(Response_OriginalString)
-            'Dim res As Object = New JavaScriptSerializer().Deserialize(Of Object)(response1.Content)
-            ''  Response.Write(res("signature"))
-            'body = response1.Content
-
-
-            MsgBox(response1.Content)
-
-
+            'Parse the json object in variable
+            _mJsonObject = JObject.Parse(value.ToString)
+            _mselectedGateway = _mJsonObject("paymentGateway").ToString()
+            ' Create a new JObject to include the data property
+            Dim jsonData As New JObject()
+            jsonData.Add("payload", _mJsonObject)
+            jsonData.Add("urlProcess", "processing.aspx")
+            ' If you need to convert it to a JSON string
+            Dim jsonString As String = jsonData.ToString()
+            ' If you need to convert it to a JObject (optional, as jsonData is already a JObject)
+            Dim _mJsonResponse As JObject = JsonConvert.DeserializeObject(Of JObject)(jsonString)
+            _mStatus = "success"
+            _mData = _mJsonResponse
+            _mMessage = "Checkout successfully posted."
+            _mCode = "200"
+            Return True
         Catch ex As Exception
             _mStatus = "error"
             _mData = Nothing
@@ -380,7 +295,6 @@ Public Class UniversalCheckoutDataAccessLayer
             Return False
         End Try
     End Function
-
 
 
 

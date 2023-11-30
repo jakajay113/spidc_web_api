@@ -55,9 +55,12 @@ Public Class UniversalCheckoutModel
     Public Shared _msysTran_TotalAmt As String
     'Account Codes Data
     Public Shared _msystran_providerCode As String
+    Public Shared _msystran_codeDesc As String
+    Public Shared _msystran_codeamt As String
     Public Shared _msystran_MainCode As String
     Public Shared _msystran_AncestorCode As String
     Public Shared _msysTran_SubAccCode As String
+    Public Shared _maccountCodeDataArray As JArray
 
     Public Shared _mUCPTransacionNo As String
     Public Shared _mParts As String()
@@ -166,7 +169,7 @@ Public Class UniversalCheckoutModel
                     UniversalCheckoutDataAccessLayer._pSqlCon = Spidc_Web_API_Global_Connection._pSqlCxn_OAIMS
             End Select
             'Query Build
-            UniversalCheckoutDataAccessLayer._mStrSql = "SELECT * FROM VW_UNIVERSAL_CHECKOUT WHERE AccountNo='" & id & "'"
+            UniversalCheckoutDataAccessLayer._mStrSql = "SELECT * FROM UniversalCheckout WHERE AccountNo='" & id & "'"
             'Call The Data Access Layer 
             If UniversalCheckoutDataAccessLayer._mGetUniversalCheckout() Then
                 _mStatus = UniversalCheckoutDataAccessLayer._mStatus
@@ -226,13 +229,22 @@ Public Class UniversalCheckoutModel
                     _msysTranAmt = _mJsonObject("universalCheckout")("billingData")("sysTranAmt").ToString()
                     _msysTran_TotalAmt = _mJsonObject("universalCheckout")("billingData")("sysTran_TotalAmt").ToString()
                     'Account Codes Data
-                    _msystran_providerCode = _mJsonObject("universalCheckout")("accountCodeData")("systran_providerCode").ToString()
-                    _msystran_MainCode = _mJsonObject("universalCheckout")("accountCodeData")("systran_MainCode").ToString()
-                    _msystran_AncestorCode = _mJsonObject("universalCheckout")("accountCodeData")("systran_AncestorCode").ToString()
-                    _msysTran_SubAccCode = _mJsonObject("universalCheckout")("accountCodeData")("sysTran_SubAccCode").ToString()
+                    ' Iterate through all elements in the "accountCodeData" array
+                    _maccountCodeDataArray = _mJsonObject("universalCheckout")("accountCodeData")
+                    For Each item As JObject In _maccountCodeDataArray
+                        _msystran_providerCode = item("systran_providerCode").ToString()
+                        _msystran_codeDesc = item("systrans_codedesc").ToString()
+                        _msystran_codeamt = item("systems_codeamt").ToString()
+                        _msystran_MainCode = item("systran_MainCode").ToString()
+                        _msystran_AncestorCode = item("systran_AncestorCode").ToString()
+                        _msysTran_SubAccCode = item("sysTran_SubAccCode").ToString()
+                    Next
+
 
                     'Notification URL
                     _mNotificationSuccessURL = _mJsonObject("universalCheckout")("notificationUrl")("url").ToString()
+
+
                     'Default Checkout Status
                     _mUniversalCheckoutStatus = "Pending"
                     'Generate JWT TOKEN with para username or email and app name
@@ -250,17 +262,16 @@ Public Class UniversalCheckoutModel
                             Select Case _mAppName
                                 Case "CEDULAAPP"
                                     'Main Table
-                                    _mStrSql1 = "INSERT INTO UniversalCheckout (TransactionRef,AppName, Email, Fname, MiddleName, LastName,Suffix, AccountNo, BillingAmount, TotalAmount, BiilingDate, OtherFee, RawAmount, SpidcFee,  Token, CheckOutStatus, UrlOrigin, UrlSuccess, CheckOutDate, [Address], AssessmentNo,SysTran_ProviderCode, SysTran_MainCode, SysTran_AncestorCode, SysTran_SubAccCode,SysTranDesc,SysTranCode) " & _
-                                                "VALUES('" & _mUCPTransacionNo & "','" & _mAppName & "', '" & _mEmail & "', '" & _mFname & "', '" & _mMname & "', '" & _mLname & "', @Suffix, '" & _mAccountNo & "', '" & _msysTranAmt & "', '" & _msysTran_TotalAmt & "', GETDATE(), '" & _mOtherFee & "', '" & _msysTranAmt & "', '" & _mSpidcFee & "', '" & _mJWTTOKEN & "', '" & _mUniversalCheckoutStatus & "', '" & _mUrlOrigin & "', '" & _mNotificationSuccessURL & "', GETDATE(), '" & _mAddress & "', '" & _massessmentNo & "', '" & _msystran_providerCode & "','" & _msystran_MainCode & "', '" & _msystran_AncestorCode & "', '" & _msysTran_SubAccCode & "','" & _msysTranDesc & "','" & _mtransrefNo & "');"
-
+                                    _mStrSql1 = "INSERT INTO UniversalCheckout (TransactionRef,AppName, Email, Fname, MiddleName, LastName,Suffix, AccountNo, BillingAmount, TotalAmount, BiilingDate, OtherFee, RawAmount, SpidcFee,  Token, CheckOutStatus, UrlOrigin, UrlSuccess, CheckOutDate, [Address], AssessmentNo,transDesc) " & _
+                                                "VALUES('" & _mUCPTransacionNo & "','" & _mAppName & "', '" & _mEmail & "', '" & _mFname & "', '" & _mMname & "', '" & _mLname & "', @Suffix, '" & _mAccountNo & "', '" & _msysTranAmt & "', '" & _msysTran_TotalAmt & "', GETDATE(), '" & _mOtherFee & "', '" & _msysTranAmt & "', '" & _mSpidcFee & "', '" & _mJWTTOKEN & "', '" & _mUniversalCheckoutStatus & "', '" & _mUrlOrigin & "', '" & _mNotificationSuccessURL & "', GETDATE(), '" & _mAddress & "', '" & _massessmentNo & "','" & _msysTranDesc & "');"
 
                                 Case "HSIMS"
                                     _mStrSql1 = ""
 
                                 Case "PINNACLE"
 
-                                    _mStrSql1 = "INSERT INTO UniversalCheckout (TransactionRef,AppName, Email, Fname, MiddleName, LastName,Suffix, AccountNo, BillingAmount, TotalAmount, BiilingDate, OtherFee, RawAmount, SpidcFee,  Token, CheckOutStatus, UrlOrigin, UrlSuccess, CheckOutDate, [Address], AssessmentNo,SysTran_ProviderCode, SysTran_MainCode, SysTran_AncestorCode, SysTran_SubAccCode,SysTranDesc,SysTranCode) " & _
-                                                 "VALUES('" & _mUCPTransacionNo & "','" & _mAppName & "', '" & _mEmail & "', '" & _mFname & "', '" & _mMname & "', '" & _mLname & "', @Suffix, '" & _mAccountNo & "', '" & _msysTranAmt & "', '" & _msysTran_TotalAmt & "','" & _mbillingDate & "', '" & _mOtherFee & "', '" & _msysTranAmt & "', '" & _mSpidcFee & "', '" & _mJWTTOKEN & "', '" & _mUniversalCheckoutStatus & "', '" & _mUrlOrigin & "', '" & _mNotificationSuccessURL & "', GETDATE(), '" & _mAddress & "', '" & _massessmentNo & "', '" & _msystran_providerCode & "','" & _msystran_MainCode & "', '" & _msystran_AncestorCode & "', '" & _msysTran_SubAccCode & "','" & _msysTranDesc & "','" & _mtransrefNo & "');"
+                                    _mStrSql1 = "INSERT INTO UniversalCheckout (TransactionRef,TrefNo,AppName, Email, Fname, MiddleName, LastName,Suffix, AccountNo, BillingAmount, TotalAmount, BiilingDate, OtherFee, RawAmount, SpidcFee,  Token, CheckOutStatus, UrlOrigin, UrlSuccess, CheckOutDate, [Address], AssessmentNo,transDesc) " & _
+                                                 "VALUES('" & _mUCPTransacionNo & "','" & _mtransrefNo & "','" & _mAppName & "', '" & _mEmail & "', '" & _mFname & "', '" & _mMname & "', '" & _mLname & "', @Suffix, '" & _mAccountNo & "', '" & _msysTranAmt & "', '" & _msysTran_TotalAmt & "','" & _mbillingDate & "', '" & _mOtherFee & "', '" & _msysTranAmt & "', '" & _mSpidcFee & "', '" & _mJWTTOKEN & "', '" & _mUniversalCheckoutStatus & "', '" & _mUrlOrigin & "', '" & _mNotificationSuccessURL & "', GETDATE(), '" & _mAddress & "', '" & _massessmentNo & "','" & _msysTranDesc & "');"
 
                                 Case "QPAX"
                                     _mStrSql1 = ""
@@ -280,7 +291,7 @@ Public Class UniversalCheckoutModel
                         'Check if exist delete the existing
                         If UniversalCheckoutDataAccessLayer._mCheckAccountNoAlreadyExistAndDelete(_mAccountNo) Then
                             'Call The Data Access Layer And Insert Again
-                            If UniversalCheckoutDataAccessLayer._mPostUniversalCheckout(value, _mJWTTOKEN, hash1, hash2, hash3, _mUCPTransacionNo) Then
+                            If UniversalCheckoutDataAccessLayer._mPostUniversalCheckout(_mAppName, value, _mJWTTOKEN, hash1, hash2, hash3, _mUCPTransacionNo) Then
                                 _mStatus = UniversalCheckoutDataAccessLayer._mStatus
                                 _mData = UniversalCheckoutDataAccessLayer._mData
                                 _mMessage = UniversalCheckoutDataAccessLayer._mMessage
@@ -294,7 +305,7 @@ Public Class UniversalCheckoutModel
                         End If
                     Else
                         'Call The Data Access Layer And Insert Fresh
-                        If UniversalCheckoutDataAccessLayer._mPostUniversalCheckout(value, _mJWTTOKEN, hash1, hash2, hash3, _mUCPTransacionNo) Then
+                        If UniversalCheckoutDataAccessLayer._mPostUniversalCheckout(_mAppName, value, _mJWTTOKEN, hash1, hash2, hash3, _mUCPTransacionNo) Then
                             _mStatus = UniversalCheckoutDataAccessLayer._mStatus
                             _mData = UniversalCheckoutDataAccessLayer._mData
                             _mMessage = UniversalCheckoutDataAccessLayer._mMessage
@@ -321,7 +332,7 @@ Public Class UniversalCheckoutModel
                         _mMessage = UniversalCheckoutDataAccessLayer._mMessage
                         _mCode = UniversalCheckoutDataAccessLayer._mCode
                     End If
-
+                    Return True
             End Select
         Catch ex As Exception
             _mStatus = "error"
