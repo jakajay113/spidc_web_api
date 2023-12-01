@@ -198,6 +198,7 @@
     <Compile Include="Other Services\cBllRegistered.vb" />
     <Compile Include="Other Services\cDalAutoGenID.vb" />
     <Compile Include="Other Services\cDalChronicleError.vb" />
+    <Compile Include="Other Services\cDalPayment.vb" />
     <Compile Include="Other Services\cDalRegistered.vb" />
     <Compile Include="Other Services\cEncryption.vb" />
     <Compile Include="Other Services\cExecuteSQL.vb" />

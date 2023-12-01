@@ -72,18 +72,22 @@ Public Class GCashModel
         Public Property signature As String
     End Class
 
-
-    Public Shared PublicKey_XML As String = "<RSAKeyValue><Modulus>yl2KagdfJ2AS2L6tE19mC4rkbWsM8RzoVuM7G9a2EFCXlIyr0bQ1i2zFywZuDLp8jMLS/vkKfuSE42iki1mIP/UJTtVeQRId2/dKDNH8dv9tQUYx33ZdXm9JRuByVOeW3rqLAL/dv0eg7mIkStzaTsxHOOrsDWhVg/EC9EBxx1pNJbUp/U0Nn21vMQMQH33IZPdRWp3HMfRYqtMmAol3mjF/lzFqUxpedTCHIbmXiirdSQqze7VXxYUqqwspvnf5ISC14XbfG7/b3taOyECvXCNIUxS650HCpB9TZg3oZLtiyp4u005++dOog5CuG4U65IQcQotKJBNyes0L0zrNCQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
-    Public Shared PrivateKey_XML As String = "<RSAKeyValue><Modulus>yl2KagdfJ2AS2L6tE19mC4rkbWsM8RzoVuM7G9a2EFCXlIyr0bQ1i2zFywZuDLp8jMLS/vkKfuSE42iki1mIP/UJTtVeQRId2/dKDNH8dv9tQUYx33ZdXm9JRuByVOeW3rqLAL/dv0eg7mIkStzaTsxHOOrsDWhVg/EC9EBxx1pNJbUp/U0Nn21vMQMQH33IZPdRWp3HMfRYqtMmAol3mjF/lzFqUxpedTCHIbmXiirdSQqze7VXxYUqqwspvnf5ISC14XbfG7/b3taOyECvXCNIUxS650HCpB9TZg3oZLtiyp4u005++dOog5CuG4U65IQcQotKJBNyes0L0zrNCQ==</Modulus><Exponent>AQAB</Exponent><P>+kIsotWEndjB1fkyQ/PUjpb4W+52xmUE5I3KKJjhpLzj1ShM5aSKBehg+6VZCRk0TkbNnZ4IpRLzWUM68i0P3WMym2rEOdSn4N8cIqPTZ27LVVa4Qsx4LXuGAfDKQ1c0ccbemj7hs7A88fdsBPC1btHEhn0gNAx+1sNqjT3Jm98=</P><Q>zwIUQlTN7bz3EBJytwKlbjEe2vRyTZbZM3opfp8tt1R0XyagKRKgzbt/wQ5KRPVfp8uhu6f/hNlOguXnC/aTVJE4lOjEjcJO8vaoaJY6gEeM5LPHXpiM0KbHaODf6ZfnILYYHQK5IqAsFbq3ypIm+Gj+CG1a56i8ShxDnGwbtBc=</Q><DP>orW3s79DVCWEEYzOA6RaxMKfg5YNn3w6rCcME00jGCq/ru1e4cgS/ThTJgohU2sRuPsL4LjJQhqKIbU2dBKcSAKg+q92GWuMIwasklEVuCAvD7MsZjHuyROQ014tA4+FR5xXSs4rjNq/JUsK7kNak0zLi+16rJybMyMm+eH8XN0=</DP><DQ>OE/0eube7iFNhE3AbxCFOCicoCuHPJwgkeRVjWB36ztKPOghAYtTuyOaaUYd5gxp7Rdz87yLwfPra6hm5dY51fN7VObNMVL+bxGyVmEnoOXV6hEN1ynghJIaBOnHf6AW+8sNXDb1bfnshCy6+pwvhbvp/xjgdcxtDCwMKG0wTBk=</DQ><InverseQ>9PsydJga7rk05pIfYZ0tJdjWhpZkbtEhU25yXGFaoK/IxFH3QT2JNg5AGDMP2PbdrMe1x8l51ZBJ4Oheesx9kmy55o4bb+bpfJOiiww7RP3ofvMmbJhyQnpnd83FWGIL/GrdQNm3SH30UPNQ8QlvflzBkduU0dK5A9/duGgvVWw=</InverseQ><D>pjKsuufS/kOpNtliy8ZNyK0JbdO9jUhwiOuWYAa3AC8wTpA5jMC0OQ3cZCGjwFBoejKHl2BxfkWv3hTTDp85h013l4clIcv/OeieqGjNL+4XjMRZsW1EwYokZFFxlMme3s3V24e4VqA9S4rOw60enhinZdeKhnhpwzLteixzRYUsyrzyyVNz+QSMnmPmfQjg8LYdBrMhfApKi3mCaEhg1MOhUHjTw/23xLADUOZ880O8INz1+Z+BSC4/C/K0HTUjX1S1mxsvtZ5lOw3QXbjWvxNFZ9cMXCoMOZJrsXM3QiM+sIgZa1Bh9MHd0iHXrwj4zTJpIyom+GIwo3V5yPitAQ==</D></RSAKeyValue>"
-    Public Shared PublicKey_PEM As String = "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAyl2KagdfJ2AS2L6tE19mC4rkbWsM8RzoVuM7G9a2EFCXlIyr0bQ1i2zFywZuDLp8jMLS/vkKfuSE42iki1mIP/UJTtVeQRId2/dKDNH8dv9tQUYx33ZdXm9JRuByVOeW3rqLAL/dv0eg7mIkStzaTsxHOOrsDWhVg/EC9EBxx1pNJbUp/U0Nn21vMQMQH33IZPdRWp3HMfRYqtMmAol3mjF/lzFqUxpedTCHIbmXiirdSQqze7VXxYUqqwspvnf5ISC14XbfG7/b3taOyECvXCNIUxS650HCpB9TZg3oZLtiyp4u005++dOog5CuG4U65IQcQotKJBNyes0L0zrNCQIDAQAB"
-    Public Shared PrivateKey_PEM As String = "MIIEvwIBADANBgkqhkiG9w0BAQEFAASCBKkwggSlAgEAAoIBAQDKXYpqB18nYBLYvq0TX2YLiuRtawzxHOhW4zsb1rYQUJeUjKvRtDWLbMXLBm4MunyMwtL++Qp+5ITjaKSLWYg/9QlO1V5BEh3b90oM0fx2/21BRjHfdl1eb0lG4HJU55beuosAv92/R6DuYiRK3NpOzEc46uwNaFWD8QL0QHHHWk0ltSn9TQ2fbW8xAxAffchk91Fanccx9Fiq0yYCiXeaMX+XMWpTGl51MIchuZeKKt1JCrN7tVfFhSqrCym+d/khILXhdt8bv9ve1o7IQK9cI0hTFLrnQcKkH1NmDehku2LKni7TTn7506iDkK4bhTrkhBxCi0okE3J6zQvTOs0JAgMBAAECggEBAKYyrLrn0v5DqTbZYsvGTcitCW3TvY1IcIjrlmAGtwAvME6QOYzAtDkN3GQho8BQaHoyh5dgcX5Fr94U0w6fOYdNd5eHJSHL/znonqhozS/uF4zEWbFtRMGKJGRRcZTJnt7N1duHuFagPUuKzsOtHp4Yp2XXioZ4acMy7Xosc0WFLMq88slTc/kEjJ5j5n0I4PC2HQazIXwKSot5gmhIYNTDoVB408P9t8SwA1DmfPNDvCDc9fmfgUguPwvytB01I19UtZsbL7WeZTsN0F241r8TRWfXDFwqDDmSa7FzN0IjPrCIGWtQYfTB3dIh168I+M0yaSMqJvhiMKN1ecj4rQECgYEA+kIsotWEndjB1fkyQ/PUjpb4W+52xmUE5I3KKJjhpLzj1ShM5aSKBehg+6VZCRk0TkbNnZ4IpRLzWUM68i0P3WMym2rEOdSn4N8cIqPTZ27LVVa4Qsx4LXuGAfDKQ1c0ccbemj7hs7A88fdsBPC1btHEhn0gNAx+1sNqjT3Jm98CgYEAzwIUQlTN7bz3EBJytwKlbjEe2vRyTZbZM3opfp8tt1R0XyagKRKgzbt/wQ5KRPVfp8uhu6f/hNlOguXnC/aTVJE4lOjEjcJO8vaoaJY6gEeM5LPHXpiM0KbHaODf6ZfnILYYHQK5IqAsFbq3ypIm+Gj+CG1a56i8ShxDnGwbtBcCgYEAorW3s79DVCWEEYzOA6RaxMKfg5YNn3w6rCcME00jGCq/ru1e4cgS/ThTJgohU2sRuPsL4LjJQhqKIbU2dBKcSAKg+q92GWuMIwasklEVuCAvD7MsZjHuyROQ014tA4+FR5xXSs4rjNq/JUsK7kNak0zLi+16rJybMyMm+eH8XN0CgYA4T/R65t7uIU2ETcBvEIU4KJygK4c8nCCR5FWNYHfrO0o86CEBi1O7I5ppRh3mDGntF3PzvIvB8+trqGbl1jnV83tU5s0xUv5vEbJWYSeg5dXqEQ3XKeCEkhoE6cd/oBb7yw1cNvVt+eyELLr6nC+Fu+n/GOB1zG0MLAwobTBMGQKBgQD0+zJ0mBruuTTmkh9hnS0l2NaGlmRu0SFTbnJcYVqgr8jEUfdBPYk2DkAYMw/Y9t2sx7XHyXnVkEng6F56zH2SbLnmjhtv5ul8k6KLDDtE/eh+8yZsmHJCemd3zcVYYgv8at1A2bdIffRQ81DxCW9+XMGR25TR0rkD3924aC9VbA=="
-    Public Shared ClientId As String
-    Public Shared ClientSecret As String
-    Public Shared MerchantID As String
-    Public Shared ProductCode As String
+    Private Shadows Spidc_Web_API_Config As New Spidc_Web_API_Config
+    Public Shared MerchantName As String = Spidc_Web_API_Config._mAppGCASH_MERCHANT_NAME
+    Public Shared PublicKey_XML As String = Spidc_Web_API_Config._mAppGCASH_PUBLIC_KEY_XML
+    Public Shared PrivateKey_XML As String = Spidc_Web_API_Config._mAppGCASH_PRIVATE_KEY_XML
+    Public Shared PublicKey_PEM As String = Spidc_Web_API_Config._mAppGCASH_PUBLIC_KEY_PEM
+    Public Shared PrivateKey_PEM As String = Spidc_Web_API_Config._mAppGCASH_PRIVATE_KEY_PEM
+    Public Shared ClientId As String = Spidc_Web_API_Config._mAppGCASH_CLIENT_ID
+    Public Shared ClientSecret As String = Spidc_Web_API_Config._mAppGCASH_CLIENT_SECRET
+    Public Shared MerchantID As String = Spidc_Web_API_Config._mAppGCASH_MERCHANT_ID
+    Public Shared ProductCode As String = Spidc_Web_API_Config._mAppGCASH_PRODUCT_CODE
     Public Shared GCASH_PublicKey_PEM As String
     Public Shared ReqMsgID As String
-    Public Shared GCASH_PubKey As String = "-----BEGIN PUBLIC KEY-----" & vbCrLf & "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAsWcpXRPXOH3m0sytTeuPoFMCSWwg+ZJVc+K2krCJqRjWsiCtaGx6jUgRvL+eTJVIAvjwxpH3ftmnUjORCaD12Oam7L37c5tst5PHHyDC+ChPsdjLf8I6tl6bNUzdN08Cse+q09CIoaRo4KwO5FQupdqZjIXILogr14dMPgELCcxnqOgZ4bKqgVT2QH97f4Mx0uw+bWadOtMnmMkRtR1WEVULn7SYG7DMHTEEAsFhrX9fVDvoYBvBM5AIH+0nD2ZYOqR63VfgUxaiGk5d3BztK5UNfA+WjeclkKPVI7ED1NPdiojlUXrUchwMGYI+GPTHM8UkqAWtcDxobHrhnfMmoQIDAQAB" & vbCrLf & "-----END PUBLIC KEY-----"
+    Public Shared GCASH_PubKey As String = Spidc_Web_API_Config._mAppGCASH_PUBLIC_KEY
+
+    
+
     Public Shared Function Do_Sign(ByVal StringToSign As String) As String
         Try
             Dim originalData As Byte() = Encoding.UTF8.GetBytes(StringToSign)
@@ -95,7 +99,7 @@ Public Class GCashModel
             signedData = HashAndSignBytes(originalData, key)
             Return Convert.ToBase64String(signedData)
         Catch ex As Exception
-
+            Return False
         End Try
     End Function
     Public Shared Function HashAndSignBytes(ByVal DataToSign As Byte(), ByVal Key As RSAParameters) As Byte()
@@ -109,26 +113,23 @@ Public Class GCashModel
         End Try
     End Function
     Public Shared Function VerifySignature(ByVal OriginalString As String, ByVal SignedString As String) As Boolean
-        Try
-            Dim initialProvider As RSACryptoServiceProvider = New RSACryptoServiceProvider(2048)
-            Dim privateKey As String = ExportPrivateKey(initialProvider)
-            Dim publicKey As String = ExportPublicKey(initialProvider)
+        'Try
+        Dim initialProvider As RSACryptoServiceProvider = New RSACryptoServiceProvider(2048)
+        Dim privateKey As String = ExportPrivateKey(initialProvider)
+        Dim publicKey As String = ExportPublicKey(initialProvider)
 
-            Dim importedProvider As RSACryptoServiceProvider = ImportPublicKey(GCASH_PubKey)
-            publicKey = ExportPublicKey(importedProvider)
+        Dim importedProvider As RSACryptoServiceProvider = ImportPublicKey(GCASH_PubKey)
+        publicKey = ExportPublicKey(importedProvider)
 
-            Dim pubKey As RSAParameters = importedProvider.ExportParameters(False)
+        Dim pubKey As RSAParameters = importedProvider.ExportParameters(False)
 
-            Dim encoder = New UTF8Encoding()
-            Dim bytesToVerify As Byte() = encoder.GetBytes(OriginalString)
-            Dim signedBytes As Byte() = Convert.FromBase64String(SignedString)
+        Dim encoder = New UTF8Encoding()
+        Dim bytesToVerify As Byte() = encoder.GetBytes(OriginalString)
+        Dim signedBytes As Byte() = Convert.FromBase64String(SignedString)
 
-            Return importedProvider.VerifyData(bytesToVerify, SHA256.Create(), signedBytes)
-
-
-        Catch ex As Exception
-
-        End Try
+        Return importedProvider.VerifyData(bytesToVerify, SHA256.Create(), signedBytes)
+        'Catch ex As Exception
+        'End Try
     End Function
     Public Shared Function ImportPublicKey(ByVal pem As String) As RSACryptoServiceProvider
         Dim pr As PemReader = New PemReader(New StringReader(pem))

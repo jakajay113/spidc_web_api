@@ -404,7 +404,7 @@
                 var token = getParameterByName(window.location.href, "d");
                 var decodedPayload = decodeJwt(token);
                 var key = decodedPayload.accountNo;
-                getUniversalCheckoutPaymentMethod(token, key);
+                getUniversalCheckout(token, key);
             }
         };
         function getParameterByName(url, name) {
@@ -415,60 +415,13 @@
         }
         function decodeJwt(jwtToken) {
             if (jwtToken){
-                var base64Url = jwtToken.split('.')[1]; // Get the payload part of the JWT
-                var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); // Replace URL-safe characters
-                var jsonPayload = decodeURIComponent(atob(base64)); // Decode and parse the payload
+                var base64Url = jwtToken.split('.')[1]; 
+                var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); 
+                var jsonPayload = decodeURIComponent(atob(base64)); 
                 return JSON.parse(jsonPayload);
             }else{
                 window.location.href= '404.html'
             }
-        }
-        function getUniversalCheckoutPaymentMethod(token, key) {
-            $.ajax({
-                url: 'https://online.spidc.com.ph/spidc_web_api/api/v1/spidcproxy/universalcheckoutGetPaymentMethodOAIMS',
-                type: 'GET',
-                data: '{}',
-                async: true,
-                cache: false,
-                dataType: 'json',
-                beforeSend: function (xhr) {
-                    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
-                    loader.show();
-                },
-                success: function (response) {
-                    // const jsonData = JSON.parse(JSON.stringify(response))
-                    // console.log(response);
-                    // Iterate through the array using a for loop
-                    for (let i = 0; i < response.data.length; i++) {
-                        var paymentgatewaylogo = response.data[i].GatewayLogo || '';
-                        $(".universal-checkout-paymentmethod").append('<li class="splide__slide">\n'
-                             + '<div class="col-sm mb-1">\n'
-                             + '<div class="payment-method p-3 border rounded bg-light">\n'
-                             + '<div class="d-flex justify-content-between">\n'
-                             + '<div class="payment-method-icon">\n'
-                             + '<img src="' + paymentgatewaylogo + '" class="img-fluid payment-method-icon" alt="Payment Method 1" width="50" height="50">\n'
-                             + '<span class="form-check-label payment-method-icon fw-bold" for="' + response.data[i].Code + '">' + response.data[i].GatewayName + '</span>\n'
-                             + '</div>\n'
-                             + '<div>\n'
-                             + '<input class="form-check-input paymenthod-method-radio" type="radio" name="paymentMethod" value="' + response.data[i].Code + '">\n'
-                             + '</div>\n'
-                             + '</div>\n'
-                             + '</div>\n'
-                             + '</div>\n'
-                             + '</li>');
-                        //console.log(response.data[i].GatewayName);
-                    }
-                    initializeSplide();
-                    hideSplideArrows();
-                    addClickEventToPaymentMethods();
-                    loader.hide();
-                    getUniversalCheckout(token, key);
-                },
-                error: function (xhr, status, errorThrown) {
-                    console.log(xhr.responseText);
-                    window.location.href= '404.html'
-                }
-            });
         }
         function getUniversalCheckout(token, key) {
             $.ajax({
@@ -488,7 +441,7 @@
                     } else {
                         loader.hide();
                         const jsonData = JSON.parse(JSON.stringify(response))
-                        const SysTranDesc = jsonData.data.dataInformation[0].TrefNo;
+                        const SysTranDesc = jsonData.data.dataInformation[0].transDesc;
                         const email = jsonData.data.dataInformation[0].Email;
                         const accountNo = jsonData.data.dataInformation[0].AccountNo;
                         const firstName = jsonData.data.dataInformation[0].Fname;
@@ -539,10 +492,75 @@
                         document.getElementsByClassName("gate-way-fees")[0].textContent = spidcFee;
                         document.getElementsByClassName("billing-amount")[0].textContent = billingAmount;
                         document.getElementsByClassName("total-amount")[0].textContent = totalAmount;
-                        // Start or continue the timer
+                        getUniversalCheckoutPaymentMethod(token, key, jsonData.data.dataInformation[0].AppName);
                         checkoutTimer(token, key);
                     }
 
+                },
+                error: function (xhr, status, errorThrown) {
+                    console.log(xhr.responseText);
+                    window.location.href= '404.html'
+                }
+            });
+        }
+        function getUniversalCheckoutPaymentMethod(token, key, appName) {
+            $.ajax({
+                url: 'https://online.spidc.com.ph/spidc_web_api/api/v1/spidcproxy/universalcheckoutGetPaymentMethodOAIMS',
+                type: 'GET',
+                data: '{}',
+                async: true,
+                cache: false,
+                dataType: 'json',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+                    loader.show();
+                },
+                success: function (response) {
+                    if(appName =="CEDULAAPP"){
+                        for (let i = 0; i < response.data.length; i++) {
+                            var paymentgatewaylogo = response.data[i].GatewayLogo || '';
+                            $(".universal-checkout-paymentmethod").append('<li class="splide__slide">\n'
+                                 + '<div class="col-sm mb-1">\n'
+                                 + '<div class="payment-method p-3 border rounded bg-light">\n'
+                                 + '<div class="d-flex justify-content-between">\n'
+                                 + '<div class="payment-method-icon">\n'
+                                 + '<img src="' + paymentgatewaylogo + '" class="img-fluid payment-method-icon" alt="Payment Method 1" width="50" height="50">\n'
+                                 + '<span class="form-check-label payment-method-icon fw-bold" for="' + response.data[i].Code + '">' + response.data[i].GatewayName + '</span>\n'
+                                 + '</div>\n'
+                                 + '<div>\n'
+                                 + '<input class="form-check-input paymenthod-method-radio" type="radio" name="paymentMethod" value="' + response.data[i].Code + '">\n'
+                                 + '</div>\n'
+                                 + '</div>\n'
+                                 + '</div>\n'
+                                 + '</div>\n'
+                                 + '</li>');
+                        }
+                    }else{
+                        const jsonData = JSON.parse(JSON.stringify(response));
+                        const filteredData = jsonData.data.filter(item => item.Code !== "OTC");
+                        for (let i = 0; i < filteredData.length; i++) {
+                            var paymentgatewaylogo = filteredData[i].GatewayLogo || '';
+                            $(".universal-checkout-paymentmethod").append('<li class="splide__slide">\n'
+                                + '<div class="col-sm mb-1">\n'
+                                + '<div class="payment-method p-3 border rounded bg-light">\n'
+                                + '<div class="d-flex justify-content-between">\n'
+                                + '<div class="payment-method-icon">\n'
+                                + '<img src="' + paymentgatewaylogo + '" class="img-fluid payment-method-icon" alt="Payment Method 1" width="50" height="50">\n'
+                                + '<span class="form-check-label payment-method-icon fw-bold" for="' + filteredData[i].Code + '">' + filteredData[i].GatewayName + '</span>\n'
+                                + '</div>\n'
+                                + '<div>\n'
+                                + '<input class="form-check-input paymenthod-method-radio" type="radio" name="paymentMethod" value="' + filteredData[i].Code + '">\n'
+                                + '</div>\n'
+                                + '</div>\n'
+                                + '</div>\n'
+                                + '</div>\n'
+                                + '</li>');
+                        }
+                    } 
+                    initializeSplide();
+                    hideSplideArrows();
+                    addClickEventToPaymentMethods();
+                    loader.hide();
                 },
                 error: function (xhr, status, errorThrown) {
                     console.log(xhr.responseText);
@@ -676,6 +694,7 @@
                                         loader.hide();
                                         var currentUrl = window.location.href;
                                         var urlParts = currentUrl.split("/");
+
                                         if (urlParts.length >= 6) {
                                             var part1 = urlParts[0];
                                             var part2 = urlParts[1];
@@ -685,9 +704,16 @@
                                         } else {
                                             console.log('URL does not have enough parts.');
                                         }
-                                        var proccessingUrl = part1 + '//'+ part3 + '/' + part4 + '/' + part5 + '/' + response.data.urlProcess+'?payload='+JSON.stringify(response);
-                                        localStorage.setItem('payloadToProcess', JSON.stringify(response.data));
-                                        window.location.href = proccessingUrl;
+                                        if(response.data.transactionType == "OTC"){
+                                            console.log(response);
+                                            var proccessingUrl = part1 + '//'+ part3 + '/' + part4 + '/' + part5 + '/' + response.data.successURL;
+                                            localStorage.setItem('successPayload', JSON.stringify(response.data));
+                                            window.location.href = proccessingUrl; 
+                                        }else{
+                                                var proccessingUrl = part1 + '//'+ part3 + '/' + part4 + '/' + part5 + '/' + response.data.urlProcess;
+                                                localStorage.setItem('payloadToProcess', JSON.stringify(response.data));
+                                                window.location.href = proccessingUrl; 
+                                        }
                                     },
                                     error: function (xhr, status, errorThrown) {
                                         console.log(xhr.responseText);

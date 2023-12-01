@@ -494,12 +494,12 @@ Public Class Spidc_Web_API_Global_Connection
                     _mStrCR_ServerName = "HAVANA\MSSQL2019"
                     _mStrCR_ID = "sa"
                     _mStrCR_Pass = "P@ssw0rd"
-                    _mStrCR_DBName = "SOS_CR_CALOOCAN_20230928"
+                    _mStrCR_DBName = "SOS_CR_CALOOCAN_20231018"
                 Case "SOS_SPIDC_WEB_API_LIVE"
                     _mStrCR_ServerName = "WEBAPP\MSSQLSERVER2019"
                     _mStrCR_ID = "spidcweb"
                     _mStrCR_Pass = "#P@ssw0rd"
-                    _mStrCR_DBName = "SOS_CR_CALOOCAN_20230928"
+                    _mStrCR_DBName = "SOS_CR_CALOOCAN_20231018"
             End Select
 
 

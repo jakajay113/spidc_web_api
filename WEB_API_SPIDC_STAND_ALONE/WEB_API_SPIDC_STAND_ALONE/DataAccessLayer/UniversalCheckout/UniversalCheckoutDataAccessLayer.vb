@@ -63,6 +63,7 @@ Public Class UniversalCheckoutDataAccessLayer
     Public Shared _msystran_AncestorCode As String
     Public Shared _msysTran_SubAccCode As String
     Public Shared _maccountCodeDataArray As JArray
+    Public Shared _mDataArray As JArray
 
 
     Public Shared _mselectedGateway As String
@@ -169,7 +170,7 @@ Public Class UniversalCheckoutDataAccessLayer
                 ' Create a List to hold the tables as objects
                 Dim tableList As New List(Of Object)
                 If _mDataset1.Tables(0).Rows.Count > 0 Then
-                  ' Convert tables to JSON strings
+                    ' Convert tables to JSON strings
                     Dim mainTable = JsonConvert.SerializeObject(_mDataset.Tables(0))
                     Dim extentionTable = JsonConvert.SerializeObject(_mDataset1.Tables(0))
                     ' Build the final JSON response
@@ -273,20 +274,56 @@ Public Class UniversalCheckoutDataAccessLayer
         Try
             'Parse the json object in variable
             _mJsonObject = JObject.Parse(value.ToString)
+            'Gateway Selectec
             _mselectedGateway = _mJsonObject("paymentGateway").ToString()
-            ' Create a new JObject to include the data property
-            Dim jsonData As New JObject()
-            jsonData.Add("payload", _mJsonObject)
-            jsonData.Add("urlProcess", "processing.aspx")
-            ' If you need to convert it to a JSON string
-            Dim jsonString As String = jsonData.ToString()
-            ' If you need to convert it to a JObject (optional, as jsonData is already a JObject)
-            Dim _mJsonResponse As JObject = JsonConvert.DeserializeObject(Of JObject)(jsonString)
-            _mStatus = "success"
-            _mData = _mJsonResponse
-            _mMessage = "Checkout successfully posted."
-            _mCode = "200"
-            Return True
+            'Get The APP USE IT FOR OTC SELECTED GATEWAY
+            _mDataArray = _mJsonObject("dataInformation")
+            For Each item As JObject In _mDataArray
+                _mAppName = item("AppName").ToString()
+                _mControlNo = item("AccountNo").ToString()
+                _mEmail = item("Email").ToString()
+            Next
+            Select Case _mselectedGateway
+                Case "OTC" 'Checkout If OTC IS FOR CEDULA OR FOR OTHER ONLY CEDULA HAVE OTC FOR NOW
+                    Select Case _mAppName
+                        Case "CEDULAAPP" 'SET THE OTC TO 1 FOR CEDULA OVER THE COUNTER
+                            _mSqlCmd = New SqlCommand("UPDATE CTC_Online_Application SET OTC = 1 WHERE ControlNo='" & _mControlNo & "'", Spidc_Web_API_Global_Connection._pSqlCxn_TIMS)
+                            _mSqlCmd.ExecuteNonQuery()
+                            'Builf a respone json format
+                            _mJson = "{""transactionType"": """ & _mselectedGateway & """,""controlNo"": """ & _mControlNo & """,""email"": """ & _mEmail & """,""successURL"": """ & "succcess.aspx" & """}"
+                            ' If you want to parse the JSON into an object, you can use a library like Newtonsoft.Json (Json.NET):
+                            Dim _mJsonResponse = JsonConvert.DeserializeObject(Of JObject)(_mJson)
+                            _mStatus = "success"
+                            _mData = _mJsonResponse
+                            _mMessage = "Over the counter payment"
+                            _mCode = "200"
+                            Return True
+                            _mSqlCmd.Dispose()
+                            _mSqlCon.Close()
+                        Case Else 'Other APP
+                            _mStatus = "error"
+                            _mData = Nothing
+                            _mMessage = "Over the counter is not available!"
+                            _mCode = "500"
+                            Return True
+                    End Select
+
+                Case Else
+                    ' Create a new JObject to include the data property
+                    Dim jsonData As New JObject()
+                    jsonData.Add("payload", _mJsonObject)
+                    jsonData.Add("urlProcess", "processing.aspx")
+                    ' If you need to convert it to a JSON string
+                    Dim jsonString As String = jsonData.ToString()
+                    ' If you need to convert it to a JObject (optional, as jsonData is already a JObject)
+                    Dim _mJsonResponse As JObject = JsonConvert.DeserializeObject(Of JObject)(jsonString)
+                    _mStatus = "success"
+                    _mData = _mJsonResponse
+                    _mMessage = "Checkout successfully posted."
+                    _mCode = "200"
+                    Return True
+            End Select
+
         Catch ex As Exception
             _mStatus = "error"
             _mData = Nothing
