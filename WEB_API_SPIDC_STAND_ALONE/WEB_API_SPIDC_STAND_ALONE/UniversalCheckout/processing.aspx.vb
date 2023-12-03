@@ -26,13 +26,22 @@ Public Class processing
     Dim _sqlDateNow As DateTime
     Dim _sqlDateNow10 As DateTime
 
-    Private Shared _msecqLabel As String = Spidc_Web_API_Config._mAppSequenceLabel
+    Private Shared _msecqLabel As String
     Private Shared _ucpseqrandom As New Random()
     Private Shared _msgID As Integer = _ucpseqrandom.Next(10000, 100000)
 
-
+    Private Shared url As Uri
+    Private Shared scheme As String
+    Private Shared host As String
+    Private Shared port As String
+    Private Shared path As String
+    Private Shared replacePath As String
+    Private Shared buildURL As String
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+        'Call The Web API Config
+        Spidc_Web_API_Config.WebApiConfig()
+        _msecqLabel = Spidc_Web_API_Config._mAppSequenceLabel
 
         If Not IsPostBack Then
             'Do Nothing
@@ -73,7 +82,6 @@ Public Class processing
 
     End Sub
 
-
     '--------------------------------------------------------------------------GCASH PAYMENT METHOD ---------------------------------------------------------------------------------
     Private Sub _mGCASH(ByRef payload As String, Optional err As String = Nothing)
 
@@ -91,7 +99,11 @@ Public Class processing
         Dim _nClass As New cDalPayment
         _nClass._pSqlConnection = Spidc_Web_API_Global_Connection._pSqlCxn_OAIMS
         _nClass.GetsqlDateNow(_sqlDateNow, _sqlDateNow10)
+        'Call Gcash Model
         Dim objReq As New GCashModel.Gcash_OrderCreate
+        'Call Gcash Config
+        GCashModel.GCashConfig()
+
         objReq.request = New GCashModel.Request()
         objReq.request.head = New GCashModel.Head()
         objReq.request.body = New GCashModel.Body()
@@ -133,9 +145,9 @@ Public Class processing
         objReq.request.body.envInfo.orderTerminalType = "WEB"
         objReq.request.body.envInfo.terminalType = "WEB"
         objReq.signature = "signature string"
-        Dim client = New RestClient("https://api.saas.mynt.xyz/")
+        Dim client = New RestClient(GCashModel.GcashDomain)
         client.Timeout = -1
-        Dim request = New RestRequest("gcash/acquiring/order/create.htm", Method.POST)
+        Dim request = New RestRequest(GCashModel.GcashFunctionOrderCreate, Method.POST)
         Dim body = serializer.Serialize(objReq)
         'Dim strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery
         'Dim strUrl As String
@@ -152,10 +164,31 @@ Public Class processing
         'API_callback = strUrl & "API_Payment/api/GCASH_Notify"
         'Dim PostBack_callback As String = strUrl & "PaymentConfirmation.aspx?referenceCode=" & SPIDCRefNo & "&SelectedBank=GCASH"
 
+
+        url = HttpContext.Current.Request.Url
+        scheme = url.Scheme ' e.g., "https"
+        host = url.Host ' e.g., "www.example.com"
+        port = url.Port ' e.g., 8080
+        path = url.AbsolutePath ' e.g., "/path/to/resource"
+        If path = "/UniversalCheckout/processing.aspx" Then
+            replacePath = path.Replace("processing.aspx", "")
+        Else
+            replacePath = path.Replace("processing.aspx", "")
+        End If
+        If port Then
+            buildURL = scheme & "://" & host & ":" & port & replacePath
+        Else
+            buildURL = scheme & "://" & host & replacePath
+        End If
+
+
+
+
+
         Dim notifUrls As String = Nothing
-        notifUrls += "[{""type"":""PAY_RETURN"",""url"":""" & "http://localhost:39799/UniversalCheckout/test123.aspx" & "&S=S""},"
-        notifUrls += "{""type"":""CANCEL_RETURN"",""url"":""" & "http://localhost:39799/UniversalCheckout/test123.aspx" & "&S=F""},"
-        notifUrls += "{""type"":""NOTIFICATION"",""url"":""" & "http://localhost:39799/UniversalCheckout/test123.aspx" & """}]}}"
+        notifUrls += "[{""type"":""PAY_RETURN"",""url"":""" & buildURL & "&S=S""},"
+        notifUrls += "{""type"":""CANCEL_RETURN"",""url"":""" & buildURL & "&S=F""},"
+        notifUrls += "{""type"":""NOTIFICATION"",""url"":""" & buildURL & """}]}}"
         body = body.Replace("null}}", notifUrls)
         body = body.Replace("_function", "function")
         Dim StringToSign As String = Nothing

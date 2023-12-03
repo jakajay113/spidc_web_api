@@ -203,6 +203,13 @@ Public Class Spidc_Web_API_Config
 
 #Region "Varriable Payment Gateway "
     Public Shared Property _mAppSequenceLabel As String
+
+    Public Shared Property _mAppGCASH_DOMAIN As String
+    Public Shared Property _mAppGCASH_FUNCTION_CREATE_ORDER As String
+    Public Shared Property _mAppGCASH_FUNCTION_QUERY_ORDER As String
+    Public Shared Property _mAppGCASH_FUNCTION_CANCEL_ORDER As String
+    Public Shared Property _mAppGCASH_FUNCTION_REFUND_ORDER As String
+
     Public Shared Property _mAppGCASH_MERCHANT_NAME As String
     Public Shared Property _mAppGCASH_PUBLIC_KEY_XML As String
     Public Shared Property _mAppGCASH_PRIVATE_KEY_XML As String
@@ -330,6 +337,13 @@ Public Class Spidc_Web_API_Config
             _mAppSequenceLabel = Environment.GetEnvironmentVariable("APP_SEQUENCE_LABEL")
             'PAYMENT GATEWAY GCASH CONFIG
             '_mAppGCASH_PUBLIC_KEY_XML/_mAppGCASH_PRIVATE_KEY_XML/_mAppGCASH_PUBLIC_KEY_PEM/_mAppGCASH_PRIVATE_KEY_PEM  cannot display from .env because of long string 
+
+            _mAppGCASH_DOMAIN = Environment.GetEnvironmentVariable("APP_GCASH_DOMAIN")
+            _mAppGCASH_FUNCTION_CREATE_ORDER = Environment.GetEnvironmentVariable("APP_GCASH_FUNCTION_CREATE_ORDER")
+            _mAppGCASH_FUNCTION_QUERY_ORDER = Environment.GetEnvironmentVariable("APP_GCASH_FUNCTION_QUERY_ORDER")
+            _mAppGCASH_FUNCTION_CANCEL_ORDER = Environment.GetEnvironmentVariable("APP_GCASH_FUNCTION_CANCEL_ORDER")
+            _mAppGCASH_FUNCTION_REFUND_ORDER = Environment.GetEnvironmentVariable("APP_GCASH_FUNCTION_REFUND_ORDER")
+
             _mAppGCASH_MERCHANT_NAME = Environment.GetEnvironmentVariable("APP_GCASH_MERCHAND_NAME")
             _mAppGCASH_PUBLIC_KEY_XML = "<RSAKeyValue><Modulus>yl2KagdfJ2AS2L6tE19mC4rkbWsM8RzoVuM7G9a2EFCXlIyr0bQ1i2zFywZuDLp8jMLS/vkKfuSE42iki1mIP/UJTtVeQRId2/dKDNH8dv9tQUYx33ZdXm9JRuByVOeW3rqLAL/dv0eg7mIkStzaTsxHOOrsDWhVg/EC9EBxx1pNJbUp/U0Nn21vMQMQH33IZPdRWp3HMfRYqtMmAol3mjF/lzFqUxpedTCHIbmXiirdSQqze7VXxYUqqwspvnf5ISC14XbfG7/b3taOyECvXCNIUxS650HCpB9TZg3oZLtiyp4u005++dOog5CuG4U65IQcQotKJBNyes0L0zrNCQ==</Modulus><Exponent>AQAB</Exponent></RSAKeyValue>"
             _mAppGCASH_PRIVATE_KEY_XML = "<RSAKeyValue><Modulus>yl2KagdfJ2AS2L6tE19mC4rkbWsM8RzoVuM7G9a2EFCXlIyr0bQ1i2zFywZuDLp8jMLS/vkKfuSE42iki1mIP/UJTtVeQRId2/dKDNH8dv9tQUYx33ZdXm9JRuByVOeW3rqLAL/dv0eg7mIkStzaTsxHOOrsDWhVg/EC9EBxx1pNJbUp/U0Nn21vMQMQH33IZPdRWp3HMfRYqtMmAol3mjF/lzFqUxpedTCHIbmXiirdSQqze7VXxYUqqwspvnf5ISC14XbfG7/b3taOyECvXCNIUxS650HCpB9TZg3oZLtiyp4u005++dOog5CuG4U65IQcQotKJBNyes0L0zrNCQ==</Modulus><Exponent>AQAB</Exponent><P>+kIsotWEndjB1fkyQ/PUjpb4W+52xmUE5I3KKJjhpLzj1ShM5aSKBehg+6VZCRk0TkbNnZ4IpRLzWUM68i0P3WMym2rEOdSn4N8cIqPTZ27LVVa4Qsx4LXuGAfDKQ1c0ccbemj7hs7A88fdsBPC1btHEhn0gNAx+1sNqjT3Jm98=</P><Q>zwIUQlTN7bz3EBJytwKlbjEe2vRyTZbZM3opfp8tt1R0XyagKRKgzbt/wQ5KRPVfp8uhu6f/hNlOguXnC/aTVJE4lOjEjcJO8vaoaJY6gEeM5LPHXpiM0KbHaODf6ZfnILYYHQK5IqAsFbq3ypIm+Gj+CG1a56i8ShxDnGwbtBc=</Q><DP>orW3s79DVCWEEYzOA6RaxMKfg5YNn3w6rCcME00jGCq/ru1e4cgS/ThTJgohU2sRuPsL4LjJQhqKIbU2dBKcSAKg+q92GWuMIwasklEVuCAvD7MsZjHuyROQ014tA4+FR5xXSs4rjNq/JUsK7kNak0zLi+16rJybMyMm+eH8XN0=</DP><DQ>OE/0eube7iFNhE3AbxCFOCicoCuHPJwgkeRVjWB36ztKPOghAYtTuyOaaUYd5gxp7Rdz87yLwfPra6hm5dY51fN7VObNMVL+bxGyVmEnoOXV6hEN1ynghJIaBOnHf6AW+8sNXDb1bfnshCy6+pwvhbvp/xjgdcxtDCwMKG0wTBk=</DQ><InverseQ>9PsydJga7rk05pIfYZ0tJdjWhpZkbtEhU25yXGFaoK/IxFH3QT2JNg5AGDMP2PbdrMe1x8l51ZBJ4Oheesx9kmy55o4bb+bpfJOiiww7RP3ofvMmbJhyQnpnd83FWGIL/GrdQNm3SH30UPNQ8QlvflzBkduU0dK5A9/duGgvVWw=</InverseQ><D>pjKsuufS/kOpNtliy8ZNyK0JbdO9jUhwiOuWYAa3AC8wTpA5jMC0OQ3cZCGjwFBoejKHl2BxfkWv3hTTDp85h013l4clIcv/OeieqGjNL+4XjMRZsW1EwYokZFFxlMme3s3V24e4VqA9S4rOw60enhinZdeKhnhpwzLteixzRYUsyrzyyVNz+QSMnmPmfQjg8LYdBrMhfApKi3mCaEhg1MOhUHjTw/23xLADUOZ880O8INz1+Z+BSC4/C/K0HTUjX1S1mxsvtZ5lOw3QXbjWvxNFZ9cMXCoMOZJrsXM3QiM+sIgZa1Bh9MHd0iHXrwj4zTJpIyom+GIwo3V5yPitAQ==</D></RSAKeyValue>"

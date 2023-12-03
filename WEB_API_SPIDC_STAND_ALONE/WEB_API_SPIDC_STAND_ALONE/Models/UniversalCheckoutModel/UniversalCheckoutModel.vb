@@ -317,7 +317,6 @@ Public Class UniversalCheckoutModel
                             _mCode = UniversalCheckoutDataAccessLayer._mCode
                         End If
                     End If
-                    Return True
                     'Proceed To Payment Gateway
                 Case Spidc_Web_API_Config._mAppPostParamUniversalCheckOutProceed
                     'Call The Data Access Layer And Insert Fresh
@@ -332,8 +331,8 @@ Public Class UniversalCheckoutModel
                         _mMessage = UniversalCheckoutDataAccessLayer._mMessage
                         _mCode = UniversalCheckoutDataAccessLayer._mCode
                     End If
-                    Return True
             End Select
+            Return True
         Catch ex As Exception
             _mStatus = "error"
             _mData = Nothing

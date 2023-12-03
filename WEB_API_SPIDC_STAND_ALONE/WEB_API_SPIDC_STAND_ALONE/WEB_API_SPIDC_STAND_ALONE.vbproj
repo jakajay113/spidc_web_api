@@ -135,6 +135,7 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="index.html" />
+    <Content Include="index2.aspx" />
     <Content Include="UniversalCheckout\index.html" />
     <Content Include="UniversalCheckout\404.html" />
     <Content Include="UniversalCheckout\processing.aspx" />
@@ -165,6 +166,13 @@
     <Compile Include="DataAccessLayer\Webhooks\WebhooksDataAccessLayer.vb" />
     <Compile Include="Global.asax.vb">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="index2.aspx.designer.vb">
+      <DependentUpon>index2.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="index2.aspx.vb">
+      <DependentUpon>index2.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
     </Compile>
     <Compile Include="Models\CedulaAPIModel\CedulaModel.vb" />
     <Compile Include="Models\EISWebAPIModel\EISModel.vb" />
