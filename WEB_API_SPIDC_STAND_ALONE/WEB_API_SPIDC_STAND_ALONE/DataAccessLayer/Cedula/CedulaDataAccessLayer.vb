@@ -6,6 +6,7 @@ Imports System.IO
 
 Public Class CedulaDataAccessLayer
 #Region "Variable Data Access Layer CEDULA Web API"
+    Private Shared Spidc_Web_API_Config As New Spidc_Web_API_Config
     Public Shared _mSqlCon As New SqlConnection
     Public Shared _mSqlCmd As SqlCommand
     Public Shared _mDataTable As New DataTable
@@ -17,6 +18,7 @@ Public Class CedulaDataAccessLayer
     Public Shared _mStrSql3 As String
     Public Shared Property _mStatus As String
     Public Shared Property _mData As Object
+    Public Shared Property _mDataObjectDatatable As Object
     Public Shared Property _mMessage As String
     Public Shared Property _mCode As Object
 
@@ -108,23 +110,46 @@ Public Class CedulaDataAccessLayer
     End Function
     '----------------------------------------------------------------------------------GET with Parameters Data Access Layer-------------------------------------------------------------------------------------------------
     'GET with Parameters Data Access Layer
-    Public Shared Function _mDataAccessLayerGetValue() As Boolean
+    Public Shared Function _mDataAccessLayerGetValue(Optional ByRef param As String = Nothing) As Boolean
         Try
-            _mDataset = New DataSet
-            _mSqlCmd = New SqlCommand(_mStrSql, _mSqlCon)
-            _mDataAdapter = New SqlDataAdapter(_mSqlCmd)
-            _mDataAdapter.Fill(_mDataset)
-            If _mDataset.Tables(0).Rows.Count > 0 Then
-                _mStatus = "success"
-                _mData = _mDataset.Tables(0)
-                _mMessage = "Data retrieved successfully"
-                _mCode = "200"
-            Else
-                _mStatus = "Success"
-                _mData = Nothing
-                _mMessage = "No data in rows"
-                _mCode = "200"
-            End If
+            'Call The Web Config
+            Spidc_Web_API_Config.WebApiConfig()
+            'Check Param if If Get Account Codes else Do Other
+            Select Case param
+                Case Spidc_Web_API_Config._mAppGetParam10Toims
+                    _mDataset = New DataSet
+                    _mSqlCmd = New SqlCommand(_mStrSql, _mSqlCon)
+                    _mDataAdapter = New SqlDataAdapter(_mSqlCmd)
+                    _mDataAdapter.Fill(_mDataset)
+                    If _mDataset.Tables(0).Rows.Count > 0 Then
+                        _mStatus = "success"
+                        _mData = _mDataset.Tables(0).Rows(0)("Code2")
+                        _mMessage = "Data retrieved successfully"
+                        _mCode = "200"
+                    Else
+                        _mStatus = "Success"
+                        _mData = Nothing
+                        _mMessage = "No data in rows"
+                        _mCode = "200"
+                    End If
+
+                Case Else
+                    _mDataset = New DataSet
+                    _mSqlCmd = New SqlCommand(_mStrSql, _mSqlCon)
+                    _mDataAdapter = New SqlDataAdapter(_mSqlCmd)
+                    _mDataAdapter.Fill(_mDataset)
+                    If _mDataset.Tables(0).Rows.Count > 0 Then
+                        _mStatus = "success"
+                        _mData = _mDataset.Tables(0)
+                        _mMessage = "Data retrieved successfully"
+                        _mCode = "200"
+                    Else
+                        _mStatus = "Success"
+                        _mData = Nothing
+                        _mMessage = "No data in rows"
+                        _mCode = "200"
+                    End If
+            End Select
             Return True
         Catch ex As Exception
             _mStatus = "error"

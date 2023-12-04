@@ -144,6 +144,7 @@ Public Class Spidc_Web_API_Param_Checker_Config
             Spidc_Web_API_Config._mAppGetParam5Toims,
             Spidc_Web_API_Config._mAppGetParam6Toims,
             Spidc_Web_API_Config._mAppGetParam7Toims,
+            Spidc_Web_API_Config._mAppGetParam10Toims,
             Spidc_Web_API_Config._mAppGetParam8Tims,
             Spidc_Web_API_Config._mAppGetParam9Tims,
             Spidc_Web_API_Config._mAppPostParam,

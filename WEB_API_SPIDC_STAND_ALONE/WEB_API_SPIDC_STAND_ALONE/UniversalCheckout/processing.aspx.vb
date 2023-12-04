@@ -72,7 +72,7 @@ Public Class processing
         Select Case gatewaySelected
             Case "GCASH"
                 _mGCASH(payload)
-            Case "PAYMAYA"
+            Case "PAYMAYA", "PAYMAYA2"
                 _mPAYMAYA(payload)
             Case "LB1"
                 _mLB1(payload)
@@ -182,12 +182,9 @@ Public Class processing
         End If
 
 
-
-
-
         Dim notifUrls As String = Nothing
-        notifUrls += "[{""type"":""PAY_RETURN"",""url"":""" & buildURL & "&S=S""},"
-        notifUrls += "{""type"":""CANCEL_RETURN"",""url"":""" & buildURL & "&S=F""},"
+        notifUrls += "[{""type"":""PAY_RETURN"",""url"":""" & buildURL & "&gcash_payment_status=success""},"
+        notifUrls += "{""type"":""CANCEL_RETURN"",""url"":""" & buildURL & "&gcash_payment_status=failed""},"
         notifUrls += "{""type"":""NOTIFICATION"",""url"":""" & buildURL & """}]}}"
         body = body.Replace("null}}", notifUrls)
         body = body.Replace("_function", "function")

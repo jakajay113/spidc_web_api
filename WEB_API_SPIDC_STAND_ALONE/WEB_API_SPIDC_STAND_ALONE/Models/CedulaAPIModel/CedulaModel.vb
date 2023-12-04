@@ -166,9 +166,13 @@ Public Class CedulaModel
             Select Case param
                 Case Spidc_Web_API_Config._mAppGetParam9Tims
                     CedulaDataAccessLayer._mStrSql = "SELECT * FROM VW_CTC_Online_Application WHERE ControlNo ='" & id & "'"
+
+                Case Spidc_Web_API_Config._mAppGetParam10Toims
+                    CedulaDataAccessLayer._mStrSql = "SELECT Code1,Code2,Description,WebForm FROM tabextn WHERE WebForm ='" & id & "'"
             End Select
+
             'Call The Data Access Layer
-            If CedulaDataAccessLayer._mDataAccessLayerGetValue() Then
+            If CedulaDataAccessLayer._mDataAccessLayerGetValue(param) Then
                 _mStatus = CedulaDataAccessLayer._mStatus
                 _mData = CedulaDataAccessLayer._mData
                 _mMessage = CedulaDataAccessLayer._mMessage

@@ -173,6 +173,7 @@ Public Class Spidc_Web_API_Config
     Public Shared Property _mAppGetParam5Toims As String
     Public Shared Property _mAppGetParam6Toims As String
     Public Shared Property _mAppGetParam7Toims As String
+    Public Shared Property _mAppGetParam10Toims As String
     Public Shared Property _mAppGetParam8Tims As String
     Public Shared Property _mAppGetParam9Tims As String
     Public Shared Property _mAppPostParam As String
@@ -435,8 +436,10 @@ Public Class Spidc_Web_API_Config
             _mAppGetParam5Toims = Environment.GetEnvironmentVariable("APP_GET_PARAM5_CEDULA")
             _mAppGetParam6Toims = Environment.GetEnvironmentVariable("APP_GET_PARAM6_CEDULA")
             _mAppGetParam7Toims = Environment.GetEnvironmentVariable("APP_GET_PARAM7_CEDULA")
+            _mAppGetParam10Toims = Environment.GetEnvironmentVariable("APP_GET_PARAM10_CEDULA")
             _mAppGetParam8Tims = Environment.GetEnvironmentVariable("APP_GET_PARAM8_CEDULA")
             _mAppGetParam9Tims = Environment.GetEnvironmentVariable("APP_GET_PARAM9_CEDULA")
+
 
             'Post Method
             _mAppPostParam = Environment.GetEnvironmentVariable("APP_POST_PARAM_CEDULA")
