@@ -247,7 +247,7 @@ Public Class UniversalCheckoutDataAccessLayer
             Next
             'Build a url 
             _mUniversalCheckoutURL = Spidc_Web_API_Config._mUniversalCheckoutURL
-            _mUniversalCheckouTFinalURL = _mUniversalCheckoutURL & "?a=" & hash1 & "&b=" & hash2 & "&c=" & hash3 & "&d=" & jwttoken
+            _mUniversalCheckouTFinalURL = _mUniversalCheckoutURL & "?scv1=" & hash1 & "&vc1=" & hash2 & "&gg=" & hash3 & "&xyz=" & jwttoken
             _mJson = "{""transactonReferenceNo"": """ & transactionReferenceNo & """,""checkoutURL"": """ & _mUniversalCheckouTFinalURL & """}"
             ' If you want to parse the JSON into an object, you can use a library like Newtonsoft.Json (Json.NET):
             Dim _mJsonResponse = JsonConvert.DeserializeObject(Of JObject)(_mJson)

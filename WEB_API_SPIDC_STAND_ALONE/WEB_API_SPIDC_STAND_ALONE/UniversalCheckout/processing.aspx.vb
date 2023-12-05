@@ -38,6 +38,10 @@ Public Class processing
     Private Shared replacePath As String
     Private Shared buildURL As String
 
+
+
+
+
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
         'Call The Web API Config
         Spidc_Web_API_Config.WebApiConfig()
@@ -84,10 +88,8 @@ Public Class processing
 
     '--------------------------------------------------------------------------GCASH PAYMENT METHOD ---------------------------------------------------------------------------------
     Private Sub _mGCASH(ByRef payload As String, Optional err As String = Nothing)
-
         'Parse the json object in variable
         _mJsonObject = JObject.Parse(payload.ToString)
-
         Dim _function As String
         Dim _transactionId As String
         Dim _merchantTransId As String
@@ -149,22 +151,8 @@ Public Class processing
         client.Timeout = -1
         Dim request = New RestRequest(GCashModel.GcashFunctionOrderCreate, Method.POST)
         Dim body = serializer.Serialize(objReq)
-        'Dim strPathAndQuery = HttpContext.Current.Request.Url.PathAndQuery
-        'Dim strUrl As String
-        'Dim API_callback As String
-        'If HttpContext.Current.Request.Url.AbsoluteUri.ToUpper.Contains("TEST") Then
-        '    strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/TEST/")
-        'ElseIf HttpContext.Current.Request.Url.AbsoluteUri.ToUpper.Contains("ONLINE.SPIDC.COM.PH/CAINTA") Then
-        '    strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/Cainta/")
-        'ElseIf HttpContext.Current.Request.Url.AbsoluteUri.ToUpper.Contains("ONLINE.SPIDC.COM.PH/CALOOCAN") Then
-        '    strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/Caloocan/")
-        'Else
-        '    strUrl = HttpContext.Current.Request.Url.AbsoluteUri.Replace(strPathAndQuery, "/")
-        'End If
-        'API_callback = strUrl & "API_Payment/api/GCASH_Notify"
-        'Dim PostBack_callback As String = strUrl & "PaymentConfirmation.aspx?referenceCode=" & SPIDCRefNo & "&SelectedBank=GCASH"
 
-
+        'BUILD URL
         url = HttpContext.Current.Request.Url
         scheme = url.Scheme ' e.g., "https"
         host = url.Host ' e.g., "www.example.com"
@@ -180,7 +168,6 @@ Public Class processing
         Else
             buildURL = scheme & "://" & host & replacePath
         End If
-
 
         Dim notifUrls As String = Nothing
         notifUrls += "[{""type"":""PAY_RETURN"",""url"":""" & buildURL & "&gcash_payment_status=success""},"
@@ -218,23 +205,129 @@ Public Class processing
         _nClass._pSqlConnection = Spidc_Web_API_Global_Connection._pSqlCxn_OAIMS
         _nClass.GCASH_InsertLog(_function, "_transactionId", _merchantTransId, Response_JSON, "Response from GCASH", _acquirementId, _signature)
         'End SAVE RESPONSE FROM GCASH
-
         'Redirect To Checkout Of Payment Gateway
         Response.Redirect(_gcashResponse("response")("body")("checkoutUrl"))
-
-
     End Sub
     '--------------------------------------------------------------------------END GCASH PAYMENT METHOD ---------------------------------------------------------------------------------
 
-
-
-
-
+    '--------------------------------------------------------------------------PAYMAYA PAYMENT METHOD ---------------------------------------------------------------------------------
     Private Sub _mPAYMAYA(ByRef payload As String)
         'Parse the json object in variable
         _mJsonObject = JObject.Parse(payload.ToString)
 
+        Dim _Amount As Double = _mJsonObject.SelectToken("payload.dataInformation[0].BillingAmount").ToString()
+        Dim _ACCTNO As String = _mJsonObject.SelectToken("payload.dataInformation[0].AccountNo").ToString()
+        Dim _Email As String = _mJsonObject.SelectToken("payload.dataInformation[0].Email").ToString()
+        Dim _PaymentDesc As String = _mJsonObject.SelectToken("payload.dataInformation[0].transDesc").ToString() & " " & "Payment"
+        Dim _Fname As String = _mJsonObject.SelectToken("payload.dataInformation[0].Fname").ToString()
+        Dim _Mname As String = _mJsonObject.SelectToken("payload.dataInformation[0].MiddleName").ToString()
+        Dim _Lname As String = _mJsonObject.SelectToken("payload.dataInformation[0].LastName").ToString()
+
+        Dim objReq As New PayMayaModel
+        'Call PayMaya Config
+        PayMayaModel.PayMayaConfig()
+        objReq.totalAmount = New TotalAmount()
+        objReq.totalAmount.details = New Details()
+        objReq.buyer = New Buyer()
+        objReq.buyer.contact = New Contact()
+        objReq.buyer.shippingAddress = New ShippingAddress()
+        objReq.buyer.billingAddress = New BillingAddress()
+        objReq.items = New Item()
+        objReq.items.amount = New Amount()
+        objReq.items.amount.details = New Details()
+        objReq.items.totalAmount = New ItemTotalAmount()
+        objReq.items.totalAmount.details = New Details()
+        objReq.redirectUrl = New RedirectUrl()
+        'totalAmount
+        objReq.totalAmount.value = _Amount
+        objReq.totalAmount.currency = "PHP"
+        objReq.totalAmount.details.discount = 0
+        objReq.totalAmount.details.serviceCharge = 0
+        objReq.totalAmount.details.shippingFee = 0
+        objReq.totalAmount.details.tax = 0
+        objReq.totalAmount.details.subtotal = _Amount
+        'buyer
+        objReq.buyer.firstName = IIf(_Fname = Nothing, " ", _Fname)
+        objReq.buyer.middleName = IIf(_Mname = Nothing, " ", _Mname)
+        objReq.buyer.lastName = IIf(_Lname = Nothing, " ", _Lname)
+        objReq.buyer.birthday = "1995-10-24"
+        objReq.buyer.customerSince = "1995-10-24"
+        objReq.buyer.sex = "M"
+        'buyer > contact
+        objReq.buyer.contact.phone = "+639000000000"
+        objReq.buyer.contact.email = _Email
+        'buyer > shippingAddress
+        objReq.buyer.shippingAddress.firstName = IIf(_Fname = Nothing, " ", _Fname)
+        objReq.buyer.shippingAddress.middleName = IIf(_Mname = Nothing, " ", _Mname)
+        objReq.buyer.shippingAddress.lastName = IIf(_Lname = Nothing, " ", _Lname)
+        objReq.buyer.shippingAddress.phone = "+639000000000"
+        objReq.buyer.shippingAddress.email = _Email
+        objReq.buyer.shippingAddress.line1 = "Line 1"
+        objReq.buyer.shippingAddress.line2 = "Line 2"
+        objReq.buyer.shippingAddress.city = "City"
+        objReq.buyer.shippingAddress.state = "State"
+        objReq.buyer.shippingAddress.zipCode = "0000"
+        objReq.buyer.shippingAddress.countryCode = "PH"
+        objReq.buyer.shippingAddress.shippingType = "ST" ' ST - for standard, SD - for same day
+        'buyer > billingAddress
+        objReq.buyer.billingAddress.line1 = "Line 1"
+        objReq.buyer.billingAddress.line2 = "Line 2"
+        objReq.buyer.billingAddress.city = "City"
+        objReq.buyer.billingAddress.state = "State"
+        objReq.buyer.billingAddress.zipCode = "0000"
+        objReq.buyer.billingAddress.countryCode = "PH"
+        'items(0)
+        objReq.items.name = _ACCTNO
+        objReq.items.quantity = 1
+        objReq.items.code = _ACCTNO
+        objReq.items.description = _PaymentDesc
+        'items(0) > amount
+        objReq.items.amount.value = _Amount
+        'items(0) > amount > details
+        objReq.items.amount.details.discount = 0
+        objReq.items.amount.details.serviceCharge = 0
+        objReq.items.amount.details.shippingFee = 0
+        objReq.items.amount.details.tax = 0
+        objReq.items.amount.details.subtotal = _Amount
+        'items(1) > totalAmount 
+        objReq.items.totalAmount.value = _Amount
+        'items(1) > totalAmount > details
+        objReq.items.totalAmount.details.discount = 0
+        objReq.items.totalAmount.details.serviceCharge = 0
+        objReq.items.totalAmount.details.shippingFee = 0
+        objReq.items.totalAmount.details.tax = 0
+        objReq.items.totalAmount.details.subtotal = _Amount
+        'requestReferenceNumber
+        objReq.requestReferenceNumber = _msecqLabel & _msgID.ToString().PadLeft(10, "0"c)  '"SPIDCRefNo"
+
+        Dim CallbackURL As String = HttpContext.Current.Request.Url.AbsoluteUri
+        objReq.redirectUrl.success = CallbackURL.Replace("PayNow2", "PayMaya") & "?S=S&RRN=" & "SPIDCRefNo"
+        objReq.redirectUrl.failure = CallbackURL.Replace("PayNow2", "PayMaya") & "?S=F&RRN=" & "SPIDCRefNo"
+        objReq.redirectUrl.cancel = CallbackURL.Replace("PayNow2", "PayMaya") & "?S=C&RRN=" & "SPIDCRefNo"
+
+        Dim client = New RestClient(PayMayaModel.PayMayaDomain)
+        client.Timeout = -1
+        Dim request = New RestRequest(PayMayaModel.PayMayaCheckout, Method.POST)
+        Dim body = serializer.Serialize(objReq)
+        body = body.Replace("""items"":{", """items"":[{")
+        body = body.Replace("},""redirectUrl""", "}],""redirectUrl""")
+        body = body.Replace("null", "{}")
+
+        request.AddHeader("Authorization", "Basic " & PayMayaModel.Base64Encode(PayMayaModel.PrivateKey & ":" & PayMayaModel.PKPASS))
+        request.AddParameter("application/json", body, ParameterType.RequestBody)
+ 
+        Dim response1 As IRestResponse = client.Execute(request)
+        Dim _responsePayMaya As Object = New JavaScriptSerializer().Deserialize(Of Object)(response1.Content)
+
+        '--Insert to Paymaya Transactions POST AND RESPONSE
+        Dim _josnPost As String = body
+        Dim _josnResponse As String = response1.Content
+        PayMayaModel.insert_PaymayaTransactions("Checkout POST", _ACCTNO, _Email, _josnPost, _josnResponse, _msecqLabel & _msgID.ToString().PadLeft(10, "0"c))
+
+        'Redirect To Checkout Of Payment Gateway
+        Response.Redirect(_responsePayMaya("redirectUrl"))
     End Sub
+    '--------------------------------------------------------------------------END PAYMAYA PAYMENT METHOD ---------------------------------------------------------------------------------
 
     Private Sub _mLB1(ByRef payload As String)
         'Parse the json object in variable

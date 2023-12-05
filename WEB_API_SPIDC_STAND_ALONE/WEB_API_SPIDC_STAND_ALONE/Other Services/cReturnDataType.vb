@@ -49,7 +49,7 @@ Public Class cReturnDataType
                 Return Nothing
             End If
 
-            If IsDBNull(_nObject) Then
+            If String.IsNullOrWhiteSpace(_nObject) Then
                 Return Nothing
             End If
 
@@ -62,7 +62,7 @@ Public Class cReturnDataType
     Shared Function _pYieldInteger(ByVal _nObject As Object) As Integer
         Try
             '----------------------------------
-            If IsDBNull(_nObject) Then
+            If String.IsNullOrWhiteSpace(_nObject) Then
                 Return Nothing
             End If
 
@@ -75,7 +75,7 @@ Public Class cReturnDataType
     Shared Function _pYieldDecimal(ByVal _nObject As Object) As Decimal
         Try
             '----------------------------------
-            If IsDBNull(_nObject) Then
+            If String.IsNullOrWhiteSpace(_nObject) Then
                 Return Nothing
             End If
 
@@ -88,7 +88,7 @@ Public Class cReturnDataType
     Shared Function _pYieldByteArray(ByVal _nObject As Object) As Byte()
         Try
             '----------------------------------
-            If IsDBNull(_nObject) Then
+            If String.IsNullOrWhiteSpace(_nObject) Then
                 Return Nothing
             End If
 

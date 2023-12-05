@@ -91,35 +91,15 @@ Public Class GCashModel
     Public Shared ReqMsgID As String
     Public Shared GCASH_PubKey As String
 
-    'Public Shared GcashDomain As String = Spidc_Web_API_Config._mAppGCASH_DOMAIN
-    'Public Shared GcashFunctionOrderCreate As String = Spidc_Web_API_Config._mAppGCASH_FUNCTION_CREATE_ORDER
-    'Public Shared GcashFunctionOrderQuery As String = Spidc_Web_API_Config._mAppGCASH_FUNCTION_QUERY_ORDER
-    'Public Shared GcashFunctionOrderCancel As String = Spidc_Web_API_Config._mAppGCASH_FUNCTION_CANCEL_ORDER
-    'Public Shared GcashFunctionOrderRefund As String = Spidc_Web_API_Config._mAppGCASH_FUNCTION_REFUND_ORDER
-    'Public Shared MerchantName As String = Spidc_Web_API_Config._mAppGCASH_MERCHANT_NAME
-    'Public Shared PublicKey_XML As String = Spidc_Web_API_Config._mAppGCASH_PUBLIC_KEY_XML
-    'Public Shared PrivateKey_XML As String = Spidc_Web_API_Config._mAppGCASH_PRIVATE_KEY_XML
-    'Public Shared PublicKey_PEM As String = Spidc_Web_API_Config._mAppGCASH_PUBLIC_KEY_PEM
-    'Public Shared PrivateKey_PEM As String = Spidc_Web_API_Config._mAppGCASH_PRIVATE_KEY_PEM
-    'Public Shared ClientId As String = Spidc_Web_API_Config._mAppGCASH_CLIENT_ID
-    'Public Shared ClientSecret As String = Spidc_Web_API_Config._mAppGCASH_CLIENT_SECRET
-    'Public Shared MerchantID As String = Spidc_Web_API_Config._mAppGCASH_MERCHANT_ID
-    'Public Shared ProductCode As String = Spidc_Web_API_Config._mAppGCASH_PRODUCT_CODE
-    'Public Shared GCASH_PublicKey_PEM As String
-    'Public Shared ReqMsgID As String
-    'Public Shared GCASH_PubKey As String = Spidc_Web_API_Config._mAppGCASH_PUBLIC_KEY
-
 
     Public Shared Sub GCashConfig()
         'Call The Web Config
         Spidc_Web_API_Config.WebApiConfig()
-
         GcashDomain = Spidc_Web_API_Config._mAppGCASH_DOMAIN
         GcashFunctionOrderCreate = Spidc_Web_API_Config._mAppGCASH_FUNCTION_CREATE_ORDER
         GcashFunctionOrderQuery = Spidc_Web_API_Config._mAppGCASH_FUNCTION_QUERY_ORDER
         GcashFunctionOrderCancel = Spidc_Web_API_Config._mAppGCASH_FUNCTION_CANCEL_ORDER
         GcashFunctionOrderRefund = Spidc_Web_API_Config._mAppGCASH_FUNCTION_REFUND_ORDER
-
         MerchantName = Spidc_Web_API_Config._mAppGCASH_MERCHANT_NAME
         PublicKey_XML = Spidc_Web_API_Config._mAppGCASH_PUBLIC_KEY_XML
         PrivateKey_XML = Spidc_Web_API_Config._mAppGCASH_PRIVATE_KEY_XML

@@ -221,6 +221,23 @@ Public Class Spidc_Web_API_Config
     Public Shared Property _mAppGCASH_MERCHANT_ID As String
     Public Shared Property _mAppGCASH_PRODUCT_CODE As String
     Public Shared Property _mAppGCASH_PUBLIC_KEY As String
+
+
+    Public Shared Property _mAppPAYMAYA_DOMAIN As String
+    Public Shared Property _mAppPAYMAYA_CHECKOUT As String
+    Public Shared Property _mAppPAYMAYA_MERCHANT_CODE As String
+    Public Shared Property _mAppPAYMAYA_TEST_URL As String
+    Public Shared Property _mAppPAYMAYA_TEST_URL_RETURN As String
+    Public Shared Property _mAppPAYMAYA_PROD_URL As String
+    Public Shared Property _mAppPAYMAYA_PROD_URL_RETURN As String
+    Public Shared Property _mAppPAYMAYA_USERNAME As String
+    Public Shared Property _mAppPAYMAYA_PASSWORD As String
+    Public Shared Property _mAppPAYMAYA_PRIVATEKEY As String
+    Public Shared Property _mAppPAYMAYA_SECRETKEY As String
+    Public Shared Property _mAppPAYMAYA_PKPASS As String
+
+
+
 #End Region
 
 
@@ -356,6 +373,19 @@ Public Class Spidc_Web_API_Config
             _mAppGCASH_PRODUCT_CODE = Environment.GetEnvironmentVariable("APP_GCASH_PRODUCT_CODE")
             _mAppGCASH_PUBLIC_KEY = Environment.GetEnvironmentVariable("APP_GCASH_PUBLIC_KEY")
 
+            'PAYMENT GATEWAY PAYMAYA CONFIG
+            _mAppPAYMAYA_DOMAIN = Environment.GetEnvironmentVariable("APP_PAYMAYA_DOMAIN")
+            _mAppPAYMAYA_CHECKOUT = Environment.GetEnvironmentVariable("APP_PAYMAYA_CHECKOUT")
+            _mAppPAYMAYA_MERCHANT_CODE = Environment.GetEnvironmentVariable("APP_PAYMAYA_MERCHANT_CODE")
+            _mAppPAYMAYA_TEST_URL = Environment.GetEnvironmentVariable("APP_PAYMAYA_TEST_URL")
+            _mAppPAYMAYA_TEST_URL_RETURN = Environment.GetEnvironmentVariable("APP_PAYMAYA_TEST_URL_RETURN")
+            _mAppPAYMAYA_PROD_URL = Environment.GetEnvironmentVariable("APP_PAYMAYA_PROD_URL")
+            _mAppPAYMAYA_PROD_URL_RETURN = Environment.GetEnvironmentVariable("APP_PAYMAYA_PROD_URL_RETURN")
+            _mAppPAYMAYA_USERNAME = Environment.GetEnvironmentVariable("APP_PAYMAYA_USERNAME")
+            _mAppPAYMAYA_PASSWORD = Environment.GetEnvironmentVariable("APP_PAYMAYA_PASSWORD")
+            _mAppPAYMAYA_PRIVATEKEY = Environment.GetEnvironmentVariable("APP_PAYMAYA_PRIVATEKEY")
+            _mAppPAYMAYA_SECRETKEY = Environment.GetEnvironmentVariable("APP_PAYMAYA_SECRETKEY")
+            _mAppPAYMAYA_PKPASS = ""
 
             'WEB API Config Method
 

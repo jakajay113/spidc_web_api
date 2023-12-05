@@ -73,7 +73,9 @@ Public Class UniversalCheckoutModel
     Public Shared _mUniversalCheckoutStatus As String
     Public Shared _mJWTTOKEN As String
 
-    Public Shared inputString As String = "qwertyuiopasdfghjklzxcvbnm"
+    Public Shared _hash1String As String = "zxcvbnmljgfdsasqwertyuiop"
+    Public Shared _hash2String As String = "nbvcbcvbdfgdfgdfsgsdfgsdfg"
+    Public Shared _hash3String As String = "tyreterwtertertertertfsdfd"
     Public Shared startIndex As Integer = 5
     Public Shared length As Integer = 7
     Public Shared hash1 As String
@@ -282,9 +284,9 @@ Public Class UniversalCheckoutModel
                     End Select
 
                     'Make A Hash Parameters
-                    hash1 = ComputeSubstringHash(inputString, startIndex, length)
-                    hash2 = ComputeSubstringHash(inputString, startIndex, length)
-                    hash3 = ComputeSubstringHash(inputString, startIndex, length)
+                    hash1 = ComputeSubstringHash(_hash1String, startIndex, length)
+                    hash2 = ComputeSubstringHash(_hash2String, startIndex, length)
+                    hash3 = ComputeSubstringHash(_hash3String, startIndex, length)
 
                     ''Check iF AccountNo Already Exist
                     If UniversalCheckoutDataAccessLayer._mCheckAccountNoAlreadyExist(_mAccountNo) Then

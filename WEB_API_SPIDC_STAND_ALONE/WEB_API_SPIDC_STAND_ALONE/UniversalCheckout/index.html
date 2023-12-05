@@ -401,7 +401,7 @@
             if (document.readyState !== "complete") {
                 loader.show();
             } else {
-                var token = getParameterByName(window.location.href, "d");
+                var token = getParameterByName(window.location.href, "xyz");
                 var decodedPayload = decodeJwt(token);
                 var key = decodedPayload.accountNo;
                 getUniversalCheckout(token, key);
@@ -677,7 +677,7 @@
                         "paymentGateway": gateway,
                     };
                     var finalPayload = { ...existingPayload, ...newObject };
-                    var token = getParameterByName(window.location.href, "d");
+                    var token = getParameterByName(window.location.href, "xyz");
                     //setTimeout(function () {
                                 $.ajax({
                                     type: 'POST',
@@ -731,7 +731,7 @@
         });
         //Checkout Cancel
         document.getElementsByClassName("checkout-cancel")[0].addEventListener("click", function () {
-            var token = getParameterByName(window.location.href, "d");
+            var token = getParameterByName(window.location.href, "xyz");
             var decodedPayload = decodeJwt(token);
             var key = decodedPayload.accountNo;
             deleteUniversalCheckout(token, key);

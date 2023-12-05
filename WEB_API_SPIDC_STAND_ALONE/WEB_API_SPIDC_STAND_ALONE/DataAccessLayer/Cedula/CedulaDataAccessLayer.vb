@@ -11,7 +11,9 @@ Public Class CedulaDataAccessLayer
     Public Shared _mSqlCmd As SqlCommand
     Public Shared _mDataTable As New DataTable
     Public Shared _mDataAdapter As New SqlDataAdapter
+    Public Shared _mDataAdapter1 As New SqlDataAdapter
     Public Shared _mDataset As New DataSet
+    Public Shared _mDataset1 As New DataSet
     Public Shared _mStrSql As String
     Public Shared _mStrSql1 As String
     Public Shared _mStrSql2 As String
@@ -122,18 +124,25 @@ Public Class CedulaDataAccessLayer
                     _mDataAdapter = New SqlDataAdapter(_mSqlCmd)
                     _mDataAdapter.Fill(_mDataset)
                     If _mDataset.Tables(0).Rows.Count > 0 Then
-                        _mStatus = "success"
-                        _mData = _mDataset.Tables(0).Rows(0)("Code2")
-                        _mMessage = "Data retrieved successfully"
-                        _mCode = "200"
+                        'GET ACCOUNT CODES
+                        _mDataset1 = New DataSet
+                        _mStrSql1 = "select (SELECT main_code FROM COA WHERE acctno = AccountCd)Basicmain_code,(SELECT main_code FROM COA WHERE acctno = AccountCd)Basicancestor,AccountCd BasicAcctno, (SELECT main_code FROM COA WHERE acctno = AccountPen)Interestmain_code,(SELECT main_code FROM COA WHERE acctno = AccountPen)Interestancestor,AccountPen InterestAcctno FROM CTCSETUPCODE where Form_Use='" & _mDataset.Tables(0).Rows(0)("Code2") & "'"
+                        _mSqlCmd = New SqlCommand(_mStrSql1, _mSqlCon)
+                        _mDataAdapter1 = New SqlDataAdapter(_mSqlCmd)
+                        _mDataAdapter1.Fill(_mDataset1)
+                        If _mDataset1.Tables(0).Rows.Count > 0 Then
+                            _mStatus = "success"
+                            _mData = _mDataset1.Tables(0)
+                            _mMessage = "Data retrieved successfully"
+                            _mCode = "200"
+                        End If
                     Else
                         _mStatus = "Success"
                         _mData = Nothing
                         _mMessage = "No data in rows"
                         _mCode = "200"
                     End If
-
-                Case Else
+                Case Else 'OTHER
                     _mDataset = New DataSet
                     _mSqlCmd = New SqlCommand(_mStrSql, _mSqlCon)
                     _mDataAdapter = New SqlDataAdapter(_mSqlCmd)

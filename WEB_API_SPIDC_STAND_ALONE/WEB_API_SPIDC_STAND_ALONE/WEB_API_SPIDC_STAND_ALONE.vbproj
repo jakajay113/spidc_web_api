@@ -107,6 +107,9 @@
     <Reference Include="System.Configuration" />
     <Reference Include="System.Web.Services" />
     <Reference Include="System.EnterpriseServices" />
+    <Reference Include="Z.ExtensionMethods">
+      <HintPath>..\packages\Z.ExtensionMethods.2.1.1\lib\net45\Z.ExtensionMethods.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
@@ -208,6 +211,7 @@
     <Compile Include="Other Services\cDalChronicleError.vb" />
     <Compile Include="Other Services\cDalPayment.vb" />
     <Compile Include="Other Services\cDalRegistered.vb" />
+    <Compile Include="Other Services\cDalTransactionHistory.vb" />
     <Compile Include="Other Services\cEncryption.vb" />
     <Compile Include="Other Services\cExecuteSQL.vb" />
     <Compile Include="Other Services\cReturnDataType.vb" />
