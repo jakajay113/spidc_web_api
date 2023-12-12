@@ -1,4 +1,4 @@
-﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="index2.aspx.vb" Inherits="WEB_API_SPIDC_STAND_ALONE.index2" %>
+﻿<%@ Page Language="vb" AutoEventWireup="false" CodeBehind="test123.aspx.vb" Inherits="WEB_API_SPIDC_STAND_ALONE.test123" %>
 
 <!DOCTYPE html>
 
@@ -8,7 +8,6 @@
 </head>
 <body>
     <form id="form1" runat="server">
-         <asp:ScriptManager runat="server"></asp:ScriptManager>
     <div>
     
     </div>

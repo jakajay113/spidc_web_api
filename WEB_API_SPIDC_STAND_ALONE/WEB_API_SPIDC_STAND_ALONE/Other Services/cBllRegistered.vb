@@ -472,7 +472,7 @@ Public Class cBllRegistered
 
                     If _nSqlDataReader.HasRows Then
                         Do While _nSqlDataReader.Read
-                            _nPrmUserKeySalt = cReturnDataType._pYieldByteArray(_nSqlDataReader(_iUserKeySalt))
+                            _nPrmUserKeySalt = _nSqlDataReader(_iUserKeySalt)
                         Loop
 
                     End If

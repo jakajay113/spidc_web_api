@@ -517,27 +517,49 @@
                 },
                 success: function (response) {
                     if(appName =="CEDULAAPP"){
-                        for (let i = 0; i < response.data.length; i++) {
-                            var paymentgatewaylogo = response.data[i].GatewayLogo || '';
+                        const jsonData = JSON.parse(JSON.stringify(response));
+                        const filteredData = jsonData.data.filter(item => item.Code !== "LBP1" && item.Code !== "LBP2");
+                        for (let i = 0; i < filteredData.length; i++) {
+                            var paymentgatewaylogo = filteredData[i].GatewayLogo || '';
                             $(".universal-checkout-paymentmethod").append('<li class="splide__slide">\n'
-                                 + '<div class="col-sm mb-1">\n'
-                                 + '<div class="payment-method p-3 border rounded bg-light">\n'
-                                 + '<div class="d-flex justify-content-between">\n'
-                                 + '<div class="payment-method-icon">\n'
-                                 + '<img src="' + paymentgatewaylogo + '" class="img-fluid payment-method-icon" alt="Payment Method 1" width="50" height="50">\n'
-                                 + '<span class="form-check-label payment-method-icon fw-bold" for="' + response.data[i].Code + '">' + response.data[i].GatewayName + '</span>\n'
-                                 + '</div>\n'
-                                 + '<div>\n'
-                                 + '<input class="form-check-input paymenthod-method-radio" type="radio" name="paymentMethod" value="' + response.data[i].Code + '">\n'
-                                 + '</div>\n'
-                                 + '</div>\n'
-                                 + '</div>\n'
-                                 + '</div>\n'
-                                 + '</li>');
+                                + '<div class="col-sm mb-1">\n'
+                                + '<div class="payment-method p-3 border rounded bg-light">\n'
+                                + '<div class="d-flex justify-content-between">\n'
+                                + '<div class="payment-method-icon">\n'
+                                + '<img src="' + paymentgatewaylogo + '" class="img-fluid payment-method-icon" alt="Payment Method 1" width="50" height="50">\n'
+                                + '<span class="form-check-label payment-method-icon fw-bold" for="' + filteredData[i].Code + '">' + filteredData[i].GatewayName + '</span>\n'
+                                + '</div>\n'
+                                + '<div>\n'
+                                + '<input class="form-check-input paymenthod-method-radio" type="radio" name="paymentMethod" value="' + filteredData[i].Code + '">\n'
+                                + '</div>\n'
+                                + '</div>\n'
+                                + '</div>\n'
+                                + '</div>\n'
+                                + '</li>');
                         }
+                        //console.log(appName);
+                        //for (let i = 0; i < response.data.length; i++) {
+                        //    var paymentgatewaylogo = response.data[i].GatewayLogo || '';
+                        //    $(".universal-checkout-paymentmethod").append('<li class="splide__slide">\n'
+                        //         + '<div class="col-sm mb-1">\n'
+                        //         + '<div class="payment-method p-3 border rounded bg-light">\n'
+                        //         + '<div class="d-flex justify-content-between">\n'
+                        //         + '<div class="payment-method-icon">\n'
+                        //         + '<img src="' + paymentgatewaylogo + '" class="img-fluid payment-method-icon" alt="Payment Method 1" width="50" height="50">\n'
+                        //         + '<span class="form-check-label payment-method-icon fw-bold" for="' + response.data[i].Code + '">' + response.data[i].GatewayName + '</span>\n'
+                        //         + '</div>\n'
+                        //         + '<div>\n'
+                        //         + '<input class="form-check-input paymenthod-method-radio" type="radio" name="paymentMethod" value="' + response.data[i].Code + '">\n'
+                        //         + '</div>\n'
+                        //         + '</div>\n'
+                        //         + '</div>\n'
+                        //         + '</div>\n'
+                        //         + '</li>');
+                        //}
+                        //console.log(appName);
                     }else{
                         const jsonData = JSON.parse(JSON.stringify(response));
-                        const filteredData = jsonData.data.filter(item => item.Code !== "OTC");
+                        const filteredData = jsonData.data.filter(item => item.Code !== "OTC" && item.Code !== "LBP1" && item.Code !== "LBP1");
                         for (let i = 0; i < filteredData.length; i++) {
                             var paymentgatewaylogo = filteredData[i].GatewayLogo || '';
                             $(".universal-checkout-paymentmethod").append('<li class="splide__slide">\n'
@@ -705,9 +727,8 @@
                                             console.log('URL does not have enough parts.');
                                         }
                                         if(response.data.transactionType == "OTC"){
-                                            console.log(response);
                                             var proccessingUrl = part1 + '//'+ part3 + '/' + part4 + '/' + part5 + '/' + response.data.successURL;
-                                            localStorage.setItem('successPayload', JSON.stringify(response.data));
+                                            localStorage.setItem('payloadToProcess', JSON.stringify(response.data));
                                             window.location.href = proccessingUrl; 
                                         }else{
                                                 var proccessingUrl = part1 + '//'+ part3 + '/' + part4 + '/' + part5 + '/' + response.data.urlProcess;

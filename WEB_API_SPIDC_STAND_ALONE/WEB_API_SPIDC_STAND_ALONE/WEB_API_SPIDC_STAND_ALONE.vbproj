@@ -62,6 +62,7 @@
     <Reference Include="Microsoft.IdentityModel.Tokens">
       <HintPath>..\packages\Microsoft.IdentityModel.Tokens.6.33.0\lib\net45\Microsoft.IdentityModel.Tokens.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.ReportViewer.WebForms, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL" />
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\packages\Newtonsoft.Json.6.0.8\lib\net45\Newtonsoft.Json.dll</HintPath>
@@ -138,9 +139,10 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="index.html" />
-    <Content Include="index2.aspx" />
+    <Content Include="test123.aspx" />
     <Content Include="UniversalCheckout\index.html" />
     <Content Include="UniversalCheckout\404.html" />
+    <Content Include="UniversalCheckout\paymentconfirmation.aspx" />
     <Content Include="UniversalCheckout\processing.aspx" />
     <Content Include="Web.config" />
   </ItemGroup>
@@ -170,17 +172,11 @@
     <Compile Include="Global.asax.vb">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
-    <Compile Include="index2.aspx.designer.vb">
-      <DependentUpon>index2.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="index2.aspx.vb">
-      <DependentUpon>index2.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
     <Compile Include="Models\CedulaAPIModel\CedulaModel.vb" />
     <Compile Include="Models\EISWebAPIModel\EISModel.vb" />
     <Compile Include="Models\EmailAppModel\EmailAppModel.vb" />
     <Compile Include="Models\PaymentGatewayModel\GCashModel\GCashModel.vb" />
+    <Compile Include="Models\PaymentGatewayModel\GCashModel\GCashOrderQueryModel.vb" />
     <Compile Include="Models\PaymentGatewayModel\PaymayaModel\PayMayaModel.vb" />
     <Compile Include="Models\SpidcWebAPIModel\SpidcModel.vb" />
     <Compile Include="Models\UniversalCheckoutModel\UniversalCheckoutModel.vb" />
@@ -215,6 +211,20 @@
     <Compile Include="Other Services\cEncryption.vb" />
     <Compile Include="Other Services\cExecuteSQL.vb" />
     <Compile Include="Other Services\cReturnDataType.vb" />
+    <Compile Include="test123.aspx.designer.vb">
+      <DependentUpon>test123.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="test123.aspx.vb">
+      <DependentUpon>test123.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
+    <Compile Include="UniversalCheckout\paymentconfirmation.aspx.designer.vb">
+      <DependentUpon>paymentconfirmation.aspx</DependentUpon>
+    </Compile>
+    <Compile Include="UniversalCheckout\paymentconfirmation.aspx.vb">
+      <DependentUpon>paymentconfirmation.aspx</DependentUpon>
+      <SubType>ASPXCodebehind</SubType>
+    </Compile>
     <Compile Include="UniversalCheckout\processing.aspx.designer.vb">
       <DependentUpon>processing.aspx</DependentUpon>
     </Compile>

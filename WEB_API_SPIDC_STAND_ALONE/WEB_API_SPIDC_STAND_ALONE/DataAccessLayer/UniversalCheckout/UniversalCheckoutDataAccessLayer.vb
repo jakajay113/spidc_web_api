@@ -65,7 +65,8 @@ Public Class UniversalCheckoutDataAccessLayer
     Public Shared _maccountCodeDataArray As JArray
     Public Shared _mDataArray As JArray
 
-
+    Public Shared _mBillingAmount As String
+    Public Shared _mTotalAmmount As String
     Public Shared _mselectedGateway As String
 
     Private Shared _mAppStatus As String
@@ -76,6 +77,9 @@ Public Class UniversalCheckoutDataAccessLayer
 
     Private Shared _mUniversalCheckoutURL As String
     Private Shared _mUniversalCheckouTFinalURL As String
+
+    Private Shared _mSuccessPaymentConfirmationURL As String
+
 
 #End Region
 #Region "Property Data Access Layer Universal Checkout Web  Web API"
@@ -248,7 +252,7 @@ Public Class UniversalCheckoutDataAccessLayer
             'Build a url 
             _mUniversalCheckoutURL = Spidc_Web_API_Config._mUniversalCheckoutURL
             _mUniversalCheckouTFinalURL = _mUniversalCheckoutURL & "?scv1=" & hash1 & "&vc1=" & hash2 & "&gg=" & hash3 & "&xyz=" & jwttoken
-            _mJson = "{""transactonReferenceNo"": """ & transactionReferenceNo & """,""checkoutURL"": """ & _mUniversalCheckouTFinalURL & """}"
+            _mJson = "{""transactionReferenceNo"": """ & transactionReferenceNo & """,""checkoutURL"": """ & _mUniversalCheckouTFinalURL & """}"
             ' If you want to parse the JSON into an object, you can use a library like Newtonsoft.Json (Json.NET):
             Dim _mJsonResponse = JsonConvert.DeserializeObject(Of JObject)(_mJson)
 
@@ -276,12 +280,16 @@ Public Class UniversalCheckoutDataAccessLayer
             _mJsonObject = JObject.Parse(value.ToString)
             'Gateway Selectec
             _mselectedGateway = _mJsonObject("paymentGateway").ToString()
+
             'Get The APP USE IT FOR OTC SELECTED GATEWAY
             _mDataArray = _mJsonObject("dataInformation")
             For Each item As JObject In _mDataArray
                 _mAppName = item("AppName").ToString()
                 _mControlNo = item("AccountNo").ToString()
                 _mEmail = item("Email").ToString()
+                _mBillingAmount = item("BillingAmount").ToString()
+                _mTotalAmmount = item("TotalAmount").ToString()
+                _mbillingDate = item("BiilingDate").ToString()
             Next
             Select Case _mselectedGateway
                 Case "OTC" 'Checkout If OTC IS FOR CEDULA OR FOR OTHER ONLY CEDULA HAVE OTC FOR NOW
@@ -290,7 +298,9 @@ Public Class UniversalCheckoutDataAccessLayer
                             _mSqlCmd = New SqlCommand("UPDATE CTC_Online_Application SET OTC = 1 WHERE ControlNo='" & _mControlNo & "'", Spidc_Web_API_Global_Connection._pSqlCxn_TIMS)
                             _mSqlCmd.ExecuteNonQuery()
                             'Builf a respone json format
-                            _mJson = "{""transactionType"": """ & _mselectedGateway & """,""controlNo"": """ & _mControlNo & """,""email"": """ & _mEmail & """,""successURL"": """ & "succcess.aspx" & """}"
+                            'build Payment Confirmation URL THIS FOR OTC 
+                            _mSuccessPaymentConfirmationURL = "paymentconfirmation.aspx"
+                            _mJson = "{""transactionType"": """ & _mselectedGateway & """,""controlNo"": """ & _mControlNo & """,""email"": """ & _mEmail & """,""billingAmount"": """ & _mBillingAmount & """,""totalAmount"": """ & _mTotalAmmount & """,""billingDate"": """ & _mbillingDate & """,""successURL"": """ & _mSuccessPaymentConfirmationURL & """}"
                             ' If you want to parse the JSON into an object, you can use a library like Newtonsoft.Json (Json.NET):
                             Dim _mJsonResponse = JsonConvert.DeserializeObject(Of JObject)(_mJson)
                             _mStatus = "success"
@@ -309,6 +319,7 @@ Public Class UniversalCheckoutDataAccessLayer
                     End Select
 
                 Case Else
+                   
                     ' Create a new JObject to include the data property
                     Dim jsonData As New JObject()
                     jsonData.Add("payload", _mJsonObject)

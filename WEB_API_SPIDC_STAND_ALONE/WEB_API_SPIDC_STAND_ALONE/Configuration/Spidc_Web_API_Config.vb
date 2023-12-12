@@ -203,6 +203,7 @@ Public Class Spidc_Web_API_Config
 #End Region
 
 #Region "Varriable Payment Gateway "
+    Public Shared Property _mAppUniversal_Checkout_Return_URL As String
     Public Shared Property _mAppSequenceLabel As String
 
     Public Shared Property _mAppGCASH_DOMAIN As String
@@ -351,6 +352,8 @@ Public Class Spidc_Web_API_Config
             _mApiUrlParamEmailApp = Environment.GetEnvironmentVariable("APP_URL_PARAM_EMAIL_APP")
             _mApiUrlParamUniversalCheckout = Environment.GetEnvironmentVariable("APP_URL_PARAM_UNIVERSAL_CHECKOUT")
             _mApiUrlParamWebhooks = Environment.GetEnvironmentVariable("APP_URL_PARAM_WEBHOOKS")
+            'UNIVERSAL CHECKOUT  RETURN URL
+            _mAppUniversal_Checkout_Return_URL = Environment.GetEnvironmentVariable("APP_UNIVERSAL_CHECKOUT_RETURN_URL")
             'SEQUENCE LABEL
             _mAppSequenceLabel = Environment.GetEnvironmentVariable("APP_SEQUENCE_LABEL")
             'PAYMENT GATEWAY GCASH CONFIG

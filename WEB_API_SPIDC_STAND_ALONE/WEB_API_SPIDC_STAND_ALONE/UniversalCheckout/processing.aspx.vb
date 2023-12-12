@@ -22,10 +22,11 @@ Public Class processing
     Private Shared _mTotalAmount As String
     Private Shared _mPaymentDescription As String
 
-    Dim serializer As System.Web.Script.Serialization.JavaScriptSerializer = New Script.Serialization.JavaScriptSerializer()
-    Dim _sqlDateNow As DateTime
-    Dim _sqlDateNow10 As DateTime
+    Private Shared serializer As System.Web.Script.Serialization.JavaScriptSerializer = New Script.Serialization.JavaScriptSerializer()
+    Private Shared _sqlDateNow As DateTime
+    Private Shared _sqlDateNow10 As DateTime
 
+    Private Shared _mreturnUrl As String
     Private Shared _msecqLabel As String
     Private Shared _ucpseqrandom As New Random()
     Private Shared _msgID As Integer = _ucpseqrandom.Next(10000, 100000)
@@ -38,7 +39,7 @@ Public Class processing
     Private Shared replacePath As String
     Private Shared buildURL As String
 
-
+    Private Shared gcashTransactionIDGenerated As String
 
 
 
@@ -46,6 +47,7 @@ Public Class processing
         'Call The Web API Config
         Spidc_Web_API_Config.WebApiConfig()
         _msecqLabel = Spidc_Web_API_Config._mAppSequenceLabel
+        _mreturnUrl = Spidc_Web_API_Config._mAppUniversal_Checkout_Return_URL
 
         If Not IsPostBack Then
             'Do Nothing
@@ -159,9 +161,9 @@ Public Class processing
         port = url.Port ' e.g., 8080
         path = url.AbsolutePath ' e.g., "/path/to/resource"
         If path = "/UniversalCheckout/processing.aspx" Then
-            replacePath = path.Replace("processing.aspx", "")
+            replacePath = path.Replace("processing.aspx", _mreturnUrl)
         Else
-            replacePath = path.Replace("processing.aspx", "")
+            replacePath = path.Replace("processing.aspx", _mreturnUrl)
         End If
         If port Then
             buildURL = scheme & "://" & host & ":" & port & replacePath
@@ -170,8 +172,8 @@ Public Class processing
         End If
 
         Dim notifUrls As String = Nothing
-        notifUrls += "[{""type"":""PAY_RETURN"",""url"":""" & buildURL & "&gcash_payment_status=success""},"
-        notifUrls += "{""type"":""CANCEL_RETURN"",""url"":""" & buildURL & "&gcash_payment_status=failed""},"
+        notifUrls += "[{""type"":""PAY_RETURN"",""url"":""" & buildURL & "?paymentgateway=GCASH&transactionID=" & objReq.request.body.order.merchantTransId & "&status=SUCCESS" & """},"
+        notifUrls += "{""type"":""CANCEL_RETURN"",""url"":""" & buildURL & "?paymentgateway=GCASH&transactionID=" & objReq.request.body.order.merchantTransId & "&status=FAILED" & """},"
         notifUrls += "{""type"":""NOTIFICATION"",""url"":""" & buildURL & """}]}}"
         body = body.Replace("null}}", notifUrls)
         body = body.Replace("_function", "function")
@@ -197,16 +199,22 @@ Public Class processing
         'SAVE RESPONSE FROM GCASH
         Dim Response_JSON As String = response1.Content
         Dim _gcashResponse As Object = New JavaScriptSerializer().Deserialize(Of Object)(response1.Content)
+
+
+
+
         _function = _gcashResponse("response")("head")("function")
+        _transactionId = _gcashResponse("response")("body")("transactionId")
         _merchantTransId = _gcashResponse("response")("body")("merchantTransId")
         Dim _acquirementId As String = _gcashResponse("response")("body")("acquirementId")
         _signature = _gcashResponse("signature")
 
         _nClass._pSqlConnection = Spidc_Web_API_Global_Connection._pSqlCxn_OAIMS
-        _nClass.GCASH_InsertLog(_function, "_transactionId", _merchantTransId, Response_JSON, "Response from GCASH", _acquirementId, _signature)
+        _nClass.GCASH_InsertLog(_function, _transactionId, _merchantTransId, Response_JSON, "Response from GCASH", _acquirementId, _signature)
         'End SAVE RESPONSE FROM GCASH
         'Redirect To Checkout Of Payment Gateway
         Response.Redirect(_gcashResponse("response")("body")("checkoutUrl"))
+
     End Sub
     '--------------------------------------------------------------------------END GCASH PAYMENT METHOD ---------------------------------------------------------------------------------
 
@@ -300,10 +308,33 @@ Public Class processing
         'requestReferenceNumber
         objReq.requestReferenceNumber = _msecqLabel & _msgID.ToString().PadLeft(10, "0"c)  '"SPIDCRefNo"
 
+        'BUILD URL
+        url = HttpContext.Current.Request.Url
+        scheme = url.Scheme ' e.g., "https"
+        host = url.Host ' e.g., "www.example.com"
+        port = url.Port ' e.g., 8080
+        path = url.AbsolutePath ' e.g., "/path/to/resource"
+        If path = "/UniversalCheckout/processing.aspx" Then
+            replacePath = path.Replace("processing.aspx", _mreturnUrl)
+        Else
+            replacePath = path.Replace("processing.aspx", _mreturnUrl)
+        End If
+        If port Then
+            buildURL = scheme & "://" & host & ":" & port & replacePath
+        Else
+            buildURL = scheme & "://" & host & replacePath
+        End If
+
+        'Dim CallbackURL As String = HttpContext.Current.Request.Url.AbsoluteUri
+        'objReq.redirectUrl.success = CallbackURL.Replace("PayNow2", "PayMaya") & "?S=S&RRN=" & "SPIDCRefNo"
+        'objReq.redirectUrl.failure = CallbackURL.Replace("PayNow2", "PayMaya") & "?S=F&RRN=" & "SPIDCRefNo"
+        'objReq.redirectUrl.cancel = CallbackURL.Replace("PayNow2", "PayMaya") & "?S=C&RRN=" & "SPIDCRefNo"
+
+
         Dim CallbackURL As String = HttpContext.Current.Request.Url.AbsoluteUri
-        objReq.redirectUrl.success = CallbackURL.Replace("PayNow2", "PayMaya") & "?S=S&RRN=" & "SPIDCRefNo"
-        objReq.redirectUrl.failure = CallbackURL.Replace("PayNow2", "PayMaya") & "?S=F&RRN=" & "SPIDCRefNo"
-        objReq.redirectUrl.cancel = CallbackURL.Replace("PayNow2", "PayMaya") & "?S=C&RRN=" & "SPIDCRefNo"
+        objReq.redirectUrl.success = buildURL & "?paymentgateway=PAYMAYA&transactionID=" & objReq.requestReferenceNumber & "&status=SUCCESS"
+        objReq.redirectUrl.failure = buildURL & "?paymentgateway=PAYMAYA&transactionID=" & objReq.requestReferenceNumber & "&status=FAILED"
+        objReq.redirectUrl.cancel = buildURL & "?paymentgateway=PAYMAYA&transactionID=" & objReq.requestReferenceNumber & "&status=CANCEL"
 
         Dim client = New RestClient(PayMayaModel.PayMayaDomain)
         client.Timeout = -1
@@ -315,7 +346,7 @@ Public Class processing
 
         request.AddHeader("Authorization", "Basic " & PayMayaModel.Base64Encode(PayMayaModel.PrivateKey & ":" & PayMayaModel.PKPASS))
         request.AddParameter("application/json", body, ParameterType.RequestBody)
- 
+
         Dim response1 As IRestResponse = client.Execute(request)
         Dim _responsePayMaya As Object = New JavaScriptSerializer().Deserialize(Of Object)(response1.Content)
 
@@ -329,17 +360,22 @@ Public Class processing
     End Sub
     '--------------------------------------------------------------------------END PAYMAYA PAYMENT METHOD ---------------------------------------------------------------------------------
 
+    '--------------------------------------------------------------------------LBP1 PAYMENT METHOD ---------------------------------------------------------------------------------
     Private Sub _mLB1(ByRef payload As String)
         'Parse the json object in variable
         _mJsonObject = JObject.Parse(payload.ToString)
 
+
+
     End Sub
+    '--------------------------------------------------------------------------END LBP1 PAYMENT METHOD ---------------------------------------------------------------------------------
+    '--------------------------------------------------------------------------LBP2 PAYMENT METHOD ---------------------------------------------------------------------------------
     Private Sub _mLB2(ByRef payload As String)
         'Parse the json object in variable
         _mJsonObject = JObject.Parse(payload.ToString)
 
     End Sub
-
+    '--------------------------------------------------------------------------End LBP2 PAYMENT METHOD ---------------------------------------------------------------------------------
 
 
 

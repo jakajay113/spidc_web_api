@@ -12,7 +12,7 @@ Option Explicit On
 
 
 
-Partial Public Class index2
+Partial Public Class test123
 
     '''<summary>
     '''form1 control.
