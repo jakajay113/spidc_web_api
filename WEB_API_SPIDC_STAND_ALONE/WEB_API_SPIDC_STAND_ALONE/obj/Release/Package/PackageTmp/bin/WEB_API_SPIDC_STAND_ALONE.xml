@@ -6,7 +6,7 @@ WEB_API_SPIDC_STAND_ALONE
 </name>
 </assembly>
 <members>
-<member name="F:WEB_API_SPIDC_STAND_ALONE.test123.form1">
+<member name="F:WEB_API_SPIDC_STAND_ALONE.paymentconfirmation.form1">
 	<summary>
 form1 control.
 </summary>
@@ -14,9 +14,9 @@ form1 control.
 Auto-generated field.
 To modify move field declaration from designer file to code-behind file.
 </remarks>
-</member><member name="F:WEB_API_SPIDC_STAND_ALONE.paymentconfirmation.form1">
+</member><member name="F:WEB_API_SPIDC_STAND_ALONE.paymentconfirmation.Report_EOR">
 	<summary>
-form1 control.
+Report_EOR control.
 </summary>
 	<remarks>
 Auto-generated field.

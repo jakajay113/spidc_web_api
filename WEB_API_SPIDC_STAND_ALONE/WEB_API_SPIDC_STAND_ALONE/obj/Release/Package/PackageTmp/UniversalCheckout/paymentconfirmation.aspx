@@ -163,7 +163,7 @@
             <!--End Loader-->
 
      <%--<input type="hidden" id="_payload" runat="server"/>--%>
-        <%--<rsweb:ReportViewer ID="Report_EOR" runat="server" AsynRendering="true" SizeToReportContent = "true" KeepSessionAlive="false"></rsweb:ReportViewer>--%>
+       <rsweb:ReportViewer ID="Report_EOR" runat="server" AsynRendering="true" SizeToReportContent = "true" KeepSessionAlive="false"></rsweb:ReportViewer>
     </div>
     </form>
 

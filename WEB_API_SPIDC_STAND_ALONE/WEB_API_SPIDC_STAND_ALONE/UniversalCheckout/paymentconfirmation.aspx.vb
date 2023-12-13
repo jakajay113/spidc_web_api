@@ -4,6 +4,7 @@ Imports System.Net.Http
 Imports RestSharp
 Imports System.IdentityModel.Tokens.Jwt
 Imports System.Web.Script.Serialization
+Imports Newtonsoft.Json.Linq
 
 Public Class paymentconfirmation
     Inherits System.Web.UI.Page
@@ -20,6 +21,7 @@ Public Class paymentconfirmation
 
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
+
 
     End Sub
 
@@ -189,13 +191,22 @@ Public Class paymentconfirmation
 
         'SAVE RESPONSE FROM GCASH
         _nClass._pSqlConnection = Spidc_Web_API_Global_Connection._pSqlCxn_OAIMS
-        _nClass.GCASH_InsertLog(_function, _transactionId, transactionid, body, "Response from GCASH", _acquirementId, _signature)
+        _nClass.GCASH_InsertLog(_function, _transactionId, transactionid, body, "Response from GCASH", _acquirementStatus, _signature)
 
 
-        Dim responseJson As String = response1.Content
-        Dim responsepayload As String = payload
+        'Check If Status Is Payment Status Is Success
+        If _acquirementStatus = "SUCCESS" Then
 
-        _mGCASHPaymentInquiry = True
+            MsgBox("Payment Is Success")
+            _mGCASHPaymentInquiry = True
+
+        End If
+
+
+        'Payload Json
+        'Dim _payloadJson As Object = New JavaScriptSerializer().Deserialize(Of Object)(payload)
+        'Dim testdata = _payloadJson("payload")("dataInformation")(0)("TransactionRef")
+        '_mGCASHPaymentInquiry = True
 
     End Function
 

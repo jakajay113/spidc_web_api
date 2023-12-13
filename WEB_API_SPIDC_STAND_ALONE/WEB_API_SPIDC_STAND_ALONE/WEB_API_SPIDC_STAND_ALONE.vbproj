@@ -139,12 +139,13 @@
   <ItemGroup>
     <Content Include="Global.asax" />
     <Content Include="index.html" />
-    <Content Include="test123.aspx" />
     <Content Include="UniversalCheckout\index.html" />
     <Content Include="UniversalCheckout\404.html" />
     <Content Include="UniversalCheckout\paymentconfirmation.aspx" />
     <Content Include="UniversalCheckout\processing.aspx" />
-    <Content Include="Web.config" />
+    <Content Include="Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\Spidc_Web_API_Authorization_Config.vb" />
@@ -211,13 +212,6 @@
     <Compile Include="Other Services\cEncryption.vb" />
     <Compile Include="Other Services\cExecuteSQL.vb" />
     <Compile Include="Other Services\cReturnDataType.vb" />
-    <Compile Include="test123.aspx.designer.vb">
-      <DependentUpon>test123.aspx</DependentUpon>
-    </Compile>
-    <Compile Include="test123.aspx.vb">
-      <DependentUpon>test123.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
-    </Compile>
     <Compile Include="UniversalCheckout\paymentconfirmation.aspx.designer.vb">
       <DependentUpon>paymentconfirmation.aspx</DependentUpon>
     </Compile>

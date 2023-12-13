@@ -21,4 +21,13 @@ Partial Public Class paymentconfirmation
     '''To modify move field declaration from designer file to code-behind file.
     '''</remarks>
     Protected WithEvents form1 As Global.System.Web.UI.HtmlControls.HtmlForm
+
+    '''<summary>
+    '''Report_EOR control.
+    '''</summary>
+    '''<remarks>
+    '''Auto-generated field.
+    '''To modify move field declaration from designer file to code-behind file.
+    '''</remarks>
+    Protected WithEvents Report_EOR As Global.Microsoft.Reporting.WebForms.ReportViewer
 End Class
