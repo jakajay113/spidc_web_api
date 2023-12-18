@@ -168,6 +168,7 @@
     <Compile Include="Controllers\SpidcWebUniversalCheckout\UniversalCheckoutController.vb" />
     <Compile Include="DataAccessLayer\Cedula\CedulaDataAccessLayer.vb" />
     <Compile Include="DataAccessLayer\EmailApp\EmailAppDataAccessLayer.vb" />
+    <Compile Include="DataAccessLayer\EorPosting\EorPostingDataAccessLayer.vb" />
     <Compile Include="DataAccessLayer\UniversalCheckout\UniversalCheckoutDataAccessLayer.vb" />
     <Compile Include="DataAccessLayer\Webhooks\WebhooksDataAccessLayer.vb" />
     <Compile Include="Global.asax.vb">
@@ -176,6 +177,7 @@
     <Compile Include="Models\CedulaAPIModel\CedulaModel.vb" />
     <Compile Include="Models\EISWebAPIModel\EISModel.vb" />
     <Compile Include="Models\EmailAppModel\EmailAppModel.vb" />
+    <Compile Include="Models\EorPostingModel\EorPostingModel.vb" />
     <Compile Include="Models\PaymentGatewayModel\GCashModel\GCashModel.vb" />
     <Compile Include="Models\PaymentGatewayModel\GCashModel\GCashOrderQueryModel.vb" />
     <Compile Include="Models\PaymentGatewayModel\PaymayaModel\PayMayaModel.vb" />
@@ -234,6 +236,7 @@
       <CustomToolNamespace>My.Resources</CustomToolNamespace>
       <SubType>Designer</SubType>
     </EmbeddedResource>
+    <EmbeddedResource Include="Report\eOR_Universal.rdlc" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Configuration\spidc-config.json" />

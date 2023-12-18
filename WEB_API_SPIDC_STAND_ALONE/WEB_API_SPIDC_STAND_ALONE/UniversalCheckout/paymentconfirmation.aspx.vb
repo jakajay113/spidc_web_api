@@ -121,6 +121,14 @@ Public Class paymentconfirmation
                 '_mGCASHPaymentInquiry(paymentgateway, "CTC220624-00004", "20220624121212800110170676525926310", "628164264", payload)
                 _mprocessPaymentConfirmation = _mGCASHPaymentInquiry(paymentgateway, transactionid, acquirementId, shortTransId, payload)
             Case "PAYMAYA"
+                'PAYMAYA PAYMENT INQUIRY
+                'Add This To Display Response of api call
+                ServicePointManager.SecurityProtocol = CType(3072, SecurityProtocolType)
+                Dim _nClass As New cDalPayment
+                _nClass._pSqlConnection = Spidc_Web_API_Global_Connection._pSqlCxn_OAIMS
+                'Dim acquirementId As String = Nothing
+                'Dim shortTransId As String = Nothing
+                _mprocessPaymentConfirmation = _mPayMayaPaymentInquiry(paymentgateway, transactionid, payload)
 
             Case "LBP1"
 
@@ -196,22 +204,167 @@ Public Class paymentconfirmation
 
         'Check If Status Is Payment Status Is Success
         If _acquirementStatus = "SUCCESS" Then
+            Dim _payloadJson As Object = New JavaScriptSerializer().Deserialize(Of Object)(payload)
+            Dim api_accno = _payloadJson("payload")("dataInformation")(0)("AccountNo")
+            Dim api_lname = _payloadJson("payload")("dataInformation")(0)("LastName")
+            Dim api_fname = _payloadJson("payload")("dataInformation")(0)("Fname")
+            Dim api_mname = _payloadJson("payload")("dataInformation")(0)("MiddleName")
+            Dim api_address = _payloadJson("payload")("dataInformation")(0)("Address")
+            Dim api_PaymentRef = _payloadJson("payload")("dataInformation")(0)("TransactionRef")
+            Dim api_AssessmentNo = _payloadJson("payload")("dataInformation")(0)("AssessmentNo")
+            Dim api_AppName = _payloadJson("payload")("dataInformation")(0)("AppName")
+            Dim api_TransDesc = _payloadJson("payload")("dataInformation")(0)("transDesc")
+            Dim api_Total = _payloadJson("payload")("dataInformation")(0)("RawAmount")
+            Dim api_otherFee = _payloadJson("payload")("dataInformation")(0)("OtherFee")
+            Dim api_SPIDCFee = _payloadJson("payload")("dataInformation")(0)("SpidcFee")
+            Dim api_TotalAmt_Paid = _payloadJson("payload")("dataInformation")(0)("TotalAmount")
+            Dim api_BillingDate = _payloadJson("payload")("dataInformation")(0)("BiilingDate")
+            'for online payment reference
+            Dim api_email As String = _payloadJson("payload")("dataInformation")(0)("Email")
 
-            MsgBox("Payment Is Success")
+            Dim api_checkoutstatus As String = _payloadJson("payload")("dataInformation")(0)("CheckOutStatus")
+
+            'check and create dfrom base on APPNAME
+            Dim DFrom As String = Nothing
+            If api_AppName = "CEDULAAPP" Then
+
+                If api_TransDesc = "Individual Cedula" Then
+
+                    DFrom = "CCIWEB"
+
+                ElseIf api_TransDesc = "Corporation Cedula" Then
+
+                    DFrom = "CCCWEB"
+
+                End If
+
+            End If
+
+
+            Dim interest As String = Nothing
+            'check if cedulaApp has interest and get the 2nd data in array as interest
+            If api_AppName = "CEDULAAPP" Then
+                If _payloadJson("payload")("dataCode")(1)("systems_codeAmt") Then
+                    interest = _payloadJson("payload")("dataCode")(1)("systems_codeAmt")
+                Else
+                    interest = "0.00"
+                End If
+            Else
+                interest = "0.00"
+            End If
+
+            'CALL POST OF GEN OR AND EOR
+            Dim _cPaymentPosting As New EorPostingModel
+            _cPaymentPosting._pSqlConnection = Spidc_Web_API_Global_Connection._pSqlCxn_TOIMS
+            _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, _transactionId, api_email, api_checkoutstatus, _security, payload)
+
+
+            'MsgBox("Payment Is Success")
             _mGCASHPaymentInquiry = True
-
         End If
-
-
-        'Payload Json
-        'Dim _payloadJson As Object = New JavaScriptSerializer().Deserialize(Of Object)(payload)
-        'Dim testdata = _payloadJson("payload")("dataInformation")(0)("TransactionRef")
-        '_mGCASHPaymentInquiry = True
+   
 
     End Function
 
 
 
+
+    'PAYMAYA PAYMENT INQUIRY
+    Public Shared Function _mPayMayaPaymentInquiry(paymentgateway As String, transactionid As String, payload As String) As Boolean
+        _mPayMayaPaymentInquiry = False
+
+        Dim _nClass As New cDalPayment
+        Dim PayMayaModel As New PayMayaModel
+        'Call Gcash Config
+        PayMayaModel.PayMayaConfig()
+
+        Dim PK As String = PayMayaModel.PrivateKey
+        Dim SK As String = PayMayaModel.SecretKey
+        Dim PKPASS As String = ""
+        Dim SKPASS As String = ""
+        Dim rrn = transactionid
+
+        Dim client = New RestClient(PayMayaModel.PayMayaDomain & "/payments/v1/payment-rrns/" & rrn)
+        client.Timeout = -1
+
+        Dim request = New RestRequest(Method.[GET])
+        request.AddHeader("Authorization", "Basic " & PayMayaModel.Base64Encode(SK & ":" & SKPASS))
+
+        Dim response1 As IRestResponse = client.Execute(request)
+        Dim jsonResponse As String = response1.Content
+        Dim _paymayaResponse As Object = New JavaScriptSerializer().Deserialize(Of Object)(response1.Content)
+
+        Dim valueType As Type = _paymayaResponse.[GetType]()
+        Dim PAYMENT_STATUS As String = Nothing
+        Dim PAYMENT_RRN As String = Nothing
+        Dim PAYMENT_ID As String = Nothing
+        Dim _paymentGatewayRefNo As String = Nothing
+        Dim _paymentGateway As String = paymentgateway
+        Dim _transactionId As String = transactionid
+        Dim _security As String = _paymayaResponse(_paymayaResponse.length - 1)("fundSource")("id")
+        PAYMENT_STATUS = _paymayaResponse(_paymayaResponse.length - 1)("status")
+        PAYMENT_RRN = _paymayaResponse(_paymayaResponse.length - 1)("requestReferenceNumber")
+        PAYMENT_ID = _paymayaResponse(_paymayaResponse.length - 1)("id")
+        _paymentGatewayRefNo = PAYMENT_ID
+
+        'Check If Status Is Payment Status Is Success
+        If PAYMENT_STATUS = "PAYMENT_SUCCESS" Then
+            Dim _payloadJson As Object = New JavaScriptSerializer().Deserialize(Of Object)(payload)
+            Dim api_accno = _payloadJson("payload")("dataInformation")(0)("AccountNo")
+            Dim api_lname = _payloadJson("payload")("dataInformation")(0)("LastName")
+            Dim api_fname = _payloadJson("payload")("dataInformation")(0)("Fname")
+            Dim api_mname = _payloadJson("payload")("dataInformation")(0)("MiddleName")
+            Dim api_address = _payloadJson("payload")("dataInformation")(0)("Address")
+            Dim api_PaymentRef = _payloadJson("payload")("dataInformation")(0)("TransactionRef")
+            Dim api_AssessmentNo = _payloadJson("payload")("dataInformation")(0)("AssessmentNo")
+            Dim api_AppName = _payloadJson("payload")("dataInformation")(0)("AppName")
+            Dim api_TransDesc = _payloadJson("payload")("dataInformation")(0)("transDesc")
+            Dim api_Total = _payloadJson("payload")("dataInformation")(0)("RawAmount")
+            Dim api_otherFee = _payloadJson("payload")("dataInformation")(0)("OtherFee")
+            Dim api_SPIDCFee = _payloadJson("payload")("dataInformation")(0)("SpidcFee")
+            Dim api_TotalAmt_Paid = _payloadJson("payload")("dataInformation")(0)("TotalAmount")
+            Dim api_BillingDate = _payloadJson("payload")("dataInformation")(0)("BiilingDate")
+            'for online payment reference
+            Dim api_email As String = _payloadJson("payload")("dataInformation")(0)("Email")
+
+            Dim api_checkoutstatus As String = _payloadJson("payload")("dataInformation")(0)("CheckOutStatus")
+
+            'check and create dfrom base on APPNAME
+            Dim DFrom As String = Nothing
+            If api_AppName = "CEDULAAPP" Then
+                If api_TransDesc = "Individual Cedula" Then
+                    DFrom = "CCIWEB"
+                ElseIf api_TransDesc = "Corporation Cedula" Then
+                    DFrom = "CCCWEB"
+                End If
+            End If
+
+
+            Dim interest As String = Nothing
+            'check if cedulaApp has interest and get the 2nd data in array as interest
+            If api_AppName = "CEDULAAPP" Then
+                If _payloadJson("payload")("dataCode")(1)("systems_codeAmt") Then
+                    interest = _payloadJson("payload")("dataCode")(1)("systems_codeAmt")
+                Else
+                    interest = "0.00"
+                End If
+            Else
+                interest = "0.00"
+            End If
+
+
+            'CALL POST OF GEN OR AND EOR
+            Dim _cPaymentPosting As New EorPostingModel
+            _cPaymentPosting._pSqlConnection = Spidc_Web_API_Global_Connection._pSqlCxn_TOIMS
+            _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, _transactionId, api_email, api_checkoutstatus, _security, payload)
+
+            'MsgBox("Payment Is Success")
+            _mPayMayaPaymentInquiry = True
+
+        End If
+
+
+    End Function
 
 
 
