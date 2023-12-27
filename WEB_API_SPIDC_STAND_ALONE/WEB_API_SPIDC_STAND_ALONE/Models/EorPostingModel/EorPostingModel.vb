@@ -22,6 +22,7 @@ Imports System.Drawing.Imaging
 Imports System.Drawing
 Imports QRCoder
 Imports System.Threading.Tasks
+Imports System.Net.Mime
 
 
 
@@ -98,6 +99,14 @@ Public Class EorPostingModel
 
     Public Shared API_APP_NAME As String = Nothing
 
+    '-----------------------------------------------
+    Public Shared _mSenderEmailAddress As String
+    Public Shared _mSenderEmailPassword As String
+    Public Shared _mHost As String
+    Public Shared _mPort As String
+    Public Shared _mCC As String
+    Public Shared _mBCC As String
+    Public Shared _mSSL As String
 
 
 
@@ -421,7 +430,7 @@ Public Class EorPostingModel
                 Return False
             End If
 
-
+            'Insert in Online Payment Refference
             Dim OnlPaymentRefQry As String = "INSERT INTO OnlinePaymentRefno(TXNREFNO, EMAILADDR, PAYMENTCHANNEL, ACCTNO, strDATE, StatusID, Status, GateWayRefNo, Security, Type, TransDate, TRXDATE, rawAmount, totAmount, feeAmount, DateVerified, VerifiedBy, Verifying, Via, PostStatus, PostedDate, FeeAmountSPIDC, minORNO, maxORNO) VALUES ('" & transactionId & "', '" & Email & "','" & Gateway & "','" & AccNo & "',FORMAT(GETDATE(), 'yyMMdd'),'" & Checkoutstatus & "','" & Checkoutstatus & "','" & GatewayRef & "', '" & Security & "', '" & DFrom & "','" & Gateway_conf & "', '" & Gateway_conf & "','" & Total & "', '" & TotalAmt_Paid & "', '" & SPIDC_Fee & "', null , null, null, '" & Gateway & "', '1', FORMAT(GETDATE(), 'yyyy-M-dd'), '" & SPIDC_Fee & "', '" & eORno & "', '" & eORno & "')"
             EorPostingDataAccessLayer._mStrSql = OnlPaymentRefQry
             EorPostingDataAccessLayer._mSqlCon = Spidc_Web_API_Global_Connection._pSqlCxn_OAIMS
@@ -432,6 +441,21 @@ Public Class EorPostingModel
                 Return False
             End If
 
+
+
+
+
+
+            If APPName = "CEDULAAPP" Then
+                Dim UpdateCTCPostStatusQry As String = "update [CTC_Online_Application] set PostedStatus = 'Paid' where ControlNo = '" & AccNo & "'  "
+                EorPostingDataAccessLayer._mStrSql = UpdateCTCPostStatusQry
+                EorPostingDataAccessLayer._mSqlCon = Spidc_Web_API_Global_Connection._pSqlCxn_TIMS
+                'INSERT OnlinePaymentRef
+                If EorPostingDataAccessLayer.Execute_Update_CTC_Online_App_PostStatus() Then
+                Else
+                    Return False
+                End If
+            End If
 
 
             Return True
@@ -759,6 +783,300 @@ Public Class EorPostingModel
 
 
 #End Region
+
+#Region "ReportData"
+    Public Function Print_Template() As DataTable
+        _mDataTable = New DataTable
+        Try
+            Dim _Query As String = "SELECT *,(select LGU_LOGO from [" & Spidc_Web_API_Global_Connection._pSqlCxn_CR.Database & "].dbo.[LGU_Profile]) LGU_LOGO FROM EOR_SETUP"
+            'Dim _nSqlDataAdapter As New SqlDataAdapter(_Query, Spidc_Web_API_Global_Connection._pSqlCxn_OAIMS)
+            '_nSqlDataAdapter.Fill(_mDataTable)
+
+
+            EorPostingDataAccessLayer._mStrSql = _Query
+            EorPostingDataAccessLayer._mSqlCon = Spidc_Web_API_Global_Connection._pSqlCxn_OAIMS
+
+            'INSERT OnlinePaymentRef
+            If EorPostingDataAccessLayer.Execute_Print_Template(_mDataTable) Then
+
+            End If
+
+
+
+        Catch ex As Exception
+        End Try
+        Return _mDataTable
+
+    End Function
+
+
+    Public Function Print_Report(ByVal eORNO As String) As DataTable
+        _mDataTable = New DataTable
+        Try
+            Dim _Query As String = "SELECT * FROM EOR WHERE eORNO='" & eORNO & "'"
+
+            'Dim _nSqlDataAdapter As New SqlDataAdapter(_Query, Spidc_Web_API_Global_Connection._pSqlCxn_OAIMS)
+            '_nSqlDataAdapter.Fill(_mDataTable)
+
+            EorPostingDataAccessLayer._mStrSql = _Query
+            EorPostingDataAccessLayer._mSqlCon = Spidc_Web_API_Global_Connection._pSqlCxn_OAIMS
+
+            If EorPostingDataAccessLayer.Execute_Print_Report(_mDataTable) Then
+
+            End If
+
+        Catch ex As Exception
+        End Try
+        Return _mDataTable
+    End Function
+
+    Public Function Print_TOP(eORNO) As DataTable
+        _mDataTable = New DataTable
+        Dim _SQLcon As New SqlConnection
+        Try
+            Dim _Query As String
+            _Query = "SELECT * FROM EOR_EXTN WHERE eORNO='" & eORNO & "'"
+            'Dim _nSqlDataAdapter As New SqlDataAdapter(_Query, Spidc_Web_API_Global_Connection._pSqlCxn_OAIMS)
+            '_nSqlDataAdapter.Fill(_mDataTable)
+
+            EorPostingDataAccessLayer._mStrSql = _Query
+            EorPostingDataAccessLayer._mSqlCon = Spidc_Web_API_Global_Connection._pSqlCxn_OAIMS
+
+            If EorPostingDataAccessLayer.Execute_Print_TOP(_mDataTable) Then
+
+            End If
+
+        Catch ex As Exception
+        End Try
+        Return _mDataTable
+    End Function
+
+
+    Public Shared Function NumberToWords(ByVal number As Integer) As String
+        Dim ones() As String = {"", "one", "two", "three", "four", "five", "six", "seven", "eight", "nine"}
+        Dim teens() As String = {"ten", "eleven", "twelve", "thirteen", "fourteen", "fifteen", "sixteen", "seventeen", "eighteen", "nineteen"}
+        Dim tens() As String = {"", "", "twenty", "thirty", "forty", "fifty", "sixty", "seventy", "eighty", "ninety"}
+
+        If number < 10 Then
+            Return ones(number)
+        ElseIf number < 20 Then
+            Return teens(number - 10)
+        ElseIf number < 100 Then
+            Return tens(number \ 10) & " " & ones(number Mod 10)
+        ElseIf number < 1000 Then
+            Return ones(number \ 100) & " hundred " & NumberToWords(number Mod 100)
+        ElseIf number < 1000000 Then
+            Return NumberToWords(number \ 1000) & " thousand " & NumberToWords(number Mod 1000)
+        Else
+            Return ""
+        End If
+    End Function
+
+    Public Shared Function AmountInWords(ByVal amount As Decimal) As String
+        Dim cents As Integer = Math.Round((amount - Math.Truncate(amount)) * 100)
+        Dim dollars As Integer = Math.Truncate(amount)
+        Dim centavo As String = ""
+        Dim dollarText As String = ""
+
+        ' Get centavo text
+        If cents > 0 Then
+            centavo = " and " & NumberToWords(cents) & " centavos"
+        Else
+            centavo = " and zero centavos"
+        End If
+
+        ' Get dollar text
+        If dollars > 0 Then
+            dollarText = NumberToWords(dollars)
+            If dollars = 1 Then
+                dollarText &= " pesos"
+            Else
+                dollarText &= " pesos"
+            End If
+        Else
+            '  dollarText = "zero dollars"
+        End If
+
+        Return dollarText & centavo
+    End Function
+
+
+
+#End Region
+
+#Region "Sending Email EOR"
+
+    Public Shared Function _pSubGetEmailMaster()
+        Try
+            '----------------------------------      
+            Dim _nQuery As String
+            _nQuery = _
+                "select EmailAddress,Password,Port,Host,isnull(EmailCC,'0')EmailCC,isnull(EmailBCC,'0')EmailBCC,SSL from [SetupWebEmailMaster]"
+
+            EorPostingDataAccessLayer._mStrSql = _nQuery
+            EorPostingDataAccessLayer._mSqlCon = Spidc_Web_API_Global_Connection._pSqlCxn_CR
+
+            If EorPostingDataAccessLayer.Execute_pSubGetEmailMaster() Then
+                Return True
+            Else
+                Return False
+            End If
+
+            '----------------------------------
+        Catch ex As Exception
+            Return False
+        End Try
+
+    End Function
+
+    Public Shared Function Send_eOR(ByVal ReceiverEmail As String, _
+                       ByVal Subject As String, _
+                       ByVal Body As String, _
+                       ByVal eOR As Byte(), _
+                       ByRef Sent As Boolean,
+                       ByRef btnLink As String,
+                       Optional ByRef err As String = Nothing)
+        Try
+            Dim _nClass2 As New cHardwareInformation
+            Dim _nMachineName As String = _nClass2._pMachineName.ToUpper
+            Dim curr_url As String = HttpContext.Current.Request.Url.AbsoluteUri
+            Dim clr As String = "#ccc"
+            Dim Footer As String = Nothing
+
+            Dim Logo_Data As Byte()
+            Dim Logo_Name As String
+            Dim Logo_Ext As String
+
+            Dim FullUrl As String = HttpContext.Current.Request.Url.AbsoluteUri
+            Dim PagePath As String = HttpContext.Current.Request.Url.AbsolutePath
+            Dim PageName As String = System.IO.Path.GetFileName(PagePath)
+            Try
+                If FullUrl.IndexOf("?") > 0 Then
+                    FullUrl = FullUrl.Substring(0, FullUrl.IndexOf("?"))
+                End If
+            Catch ex As Exception
+
+            End Try
+
+            Dim loginURL As String = FullUrl.Replace(PageName, "Register.aspx?email=" & ReceiverEmail)
+
+
+            EorPostingModel.get_Header_DATA(Logo_Data, Logo_Name, Logo_Ext)
+
+            Dim Logo_IMG As System.Web.UI.WebControls.Image = New System.Web.UI.WebControls.Image()
+            Logo_IMG.ImageUrl = "data:" & Logo_Ext & ";base64," & Convert.ToBase64String(Logo_Data)
+
+            Dim LOGOBytes As Byte() = Convert.FromBase64String(Replace(Logo_IMG.ImageUrl, "data:" & Logo_Ext & ";base64,", ""))
+            Dim LOGOBitmap As System.IO.MemoryStream = New System.IO.MemoryStream(LOGOBytes)
+            Dim LOGOResource As LinkedResource = New LinkedResource(LOGOBitmap, MediaTypeNames.Image.Jpeg)
+
+
+
+            Body = "<style>.panel1{color:black; width:60%;}" & _
+                                     "@media screen and (max-width: 360px) {.panel1 {width: width:100%;}}" & _
+            "</style>" & _
+                    "<center style='font-size:x-large;'> " & _
+                    "  <div style='border:2px solid white;background-color:#EAEAEA;font-family:calibri;padding:20px';>" & _
+                    "  <div class='panel1'>" & _
+                    "  <div style='font-size:large;padding:5px;border:2px solid white;color:white;background-color:" & clr & "'>" & _
+              " <img   style='object-fit: contain;width:100%;' src='cid:" & LOGOResource.ContentId & "'/>" & _
+"  <p><strong>" & _
+                    Subject & _
+                    "  </strong> </p>" & _
+"  <div style='text-align:left;padding:10px;background-color:white;color:black;'>" & _
+Body & _
+"<a href='" & btnLink & "'" & " target='_blank' style='text-decoration:none;display: block;width: 200px;height: 25px;background: #5373DC;padding: 10px;text-align: center;border-radius: 5px;color: white;font-weight: bold;line-height: 25px;font-size:small;'> Visit Web Service Portal </a><br/><br/>" & _
+Footer & _
+"  </div></br></br>*** This is an electronic message please do not reply ***<div></div></div></center>"
+
+            'Dim _nclass As New EorPostingModel
+            '_nclass._pSqlConnection = Spidc_Web_API_Global_Connection._pSqlCxn_CR
+            EorPostingModel._pSubGetEmailMaster()
+
+            Using mm As New MailMessage(_mSenderEmailAddress, ReceiverEmail)
+                mm.Subject = Subject
+                mm.Body = Body
+
+                If String.IsNullOrEmpty(_mBCC) = False Then
+                    Dim BlindCarbonCopy As MailAddress = New MailAddress(_mBCC)
+                    mm.Bcc.Add(BlindCarbonCopy)
+                End If
+
+                If String.IsNullOrEmpty(_mCC) = False Then
+                    Dim CarbonCopy As MailAddress = New MailAddress(_mCC)
+                    mm.CC.Add(CarbonCopy)
+                End If
+
+                If LCase(ReceiverEmail).Contains("@gmail.com") = True Then
+                    Dim alternativeView As AlternateView = AlternateView.CreateAlternateViewFromString(Body, Nothing, MediaTypeNames.Text.Html)
+                    alternativeView.LinkedResources.Add(LOGOResource)
+                    mm.AlternateViews.Add(alternativeView)
+                End If
+
+
+
+                mm.IsBodyHtml = True
+                Dim smtp As New SmtpClient()
+                smtp.Host = _mHost
+
+                If _mSSL = 1 Then
+                    smtp.EnableSsl = True
+                Else
+                    smtp.EnableSsl = False
+                End If
+
+                Dim NetworkCred As New NetworkCredential(_mSenderEmailAddress, _mSenderEmailPassword)
+                smtp.UseDefaultCredentials = False
+                smtp.Credentials = NetworkCred
+                smtp.Port = _mPort
+
+                Dim attachment As New Attachment(New System.IO.MemoryStream(eOR), "Electronic Official Receipt.pdf")
+
+                ' Add the PDF attachment to the email.
+                mm.Attachments.Add(attachment)
+
+                smtp.Send(mm)
+                Sent = True
+
+                If Sent = True Then
+                    Return True
+                Else
+                    Return False
+                End If
+
+
+            End Using
+        Catch ex As Exception
+            Sent = False
+            err = ex.Message
+            Return False
+        End Try
+    End Function
+
+
+    Public Shared Function get_Header_DATA(ByRef HEADER_TEMPLATE As Byte(), ByRef HEADER_TEMPLATE_Name As String, ByRef HEADER_TEMPLATE_Ext As String)
+        Try
+            Dim _nQuery As String = Nothing
+            _nQuery = " SELECT HEADER_TEMPLATE,HEADER_TEMPLATE_Name,HEADER_TEMPLATE_Ext from [LGU_Profile]"
+
+            EorPostingDataAccessLayer._mStrSql = _nQuery
+            EorPostingDataAccessLayer._mSqlCon = Spidc_Web_API_Global_Connection._pSqlCxn_CR
+
+            If EorPostingDataAccessLayer.Execute_get_Header_DATA(HEADER_TEMPLATE, HEADER_TEMPLATE_Name, HEADER_TEMPLATE_Ext) Then
+                Return True
+            Else
+                Return False
+            End If
+
+        Catch ex As Exception
+            Return False
+        End Try
+    End Function
+
+
+
+#End Region
+
 
 
 

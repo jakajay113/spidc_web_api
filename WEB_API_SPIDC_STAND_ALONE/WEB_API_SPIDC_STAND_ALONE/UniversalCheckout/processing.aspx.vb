@@ -173,7 +173,7 @@ Public Class processing
 
         Dim notifUrls As String = Nothing
         notifUrls += "[{""type"":""PAY_RETURN"",""url"":""" & buildURL & "?paymentgateway=GCASH&transactionID=" & objReq.request.body.order.merchantTransId & "&status=SUCCESS" & """},"
-        notifUrls += "{""type"":""CANCEL_RETURN"",""url"":""" & buildURL & "?paymentgateway=GCASH&transactionID=" & objReq.request.body.order.merchantTransId & "&status=FAILED" & """},"
+        notifUrls += "{""type"":""CANCEL_RETURN"",""url"":""" & buildURL & "?paymentgateway=GCASH&transactionID=" & objReq.request.body.order.merchantTransId & "&status=CANCEL" & """},"
         notifUrls += "{""type"":""NOTIFICATION"",""url"":""" & buildURL & """}]}}"
         body = body.Replace("null}}", notifUrls)
         body = body.Replace("_function", "function")

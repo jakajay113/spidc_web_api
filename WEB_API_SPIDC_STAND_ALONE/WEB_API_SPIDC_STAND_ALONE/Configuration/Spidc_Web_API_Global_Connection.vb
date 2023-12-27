@@ -434,23 +434,26 @@ Public Class Spidc_Web_API_Global_Connection
             _nMachineIP = _nClass._pMachineIP
 
             'Server Names should be in Upper Casing.
+            'Select Case _nMachineName
+            '    Case "HAVANA"
+            '        Dim curr_url As String = HttpContext.Current.Request.Url.AbsoluteUri
+            '        If curr_url.ToUpper.Contains("SPIDC_WEB_API") = True Then
+            '            _nStringConnection = _FnGetCRCon("SOS_SPIDC_WEB_API")
+            '        End If
+            '    Case "WEBAPP"
+            '        _nStringConnection = _FnGetCRCon("SOS_SPIDC_WEB_API_LIVE")
+            '    Case Else
+            '        _nStringConnection = _FnGetCRCon("SOS_SPIDC_WEB_API") 'localhost
+            'End Select
+            'Get Spidc Web Api Condfig
+            Dim Spidc_Web_API_Config As New Spidc_Web_API_Config
+            Spidc_Web_API_Config.WebApiConfig()
 
-            Select Case _nMachineName
-                Case "HAVANA"
-                    Dim curr_url As String = HttpContext.Current.Request.Url.AbsoluteUri
-                    If curr_url.ToUpper.Contains("SPIDC_WEB_API") = True Then
-                        _nStringConnection = _FnGetCRCon("SOS_SPIDC_WEB_API")
-                    End If
-                Case "WEBAPP"
-                    '_nStringConnection = _FnGetCRCon("SOS_LCR_CAVITE_LIVE")
-                    _nStringConnection = _FnGetCRCon("SOS_SPIDC_WEB_API_LIVE")
-                Case Else
-                    '_nStringConnection = _FnGetCRCon("SOS_LCR") 'localhost
-                    _nStringConnection = _FnGetCRCon("SOS_SPIDC_WEB_API") 'localhost
-
-
-            End Select
-
+            _nStringConnection = "Data Source=" & Spidc_Web_API_Config._mMainServerName & _
+                           ";Initial Catalog=" & Spidc_Web_API_Config._mMainDBName & _
+                           ";User ID=" & Spidc_Web_API_Config._mMainDBID & _
+                           ";Password=" & Spidc_Web_API_Config._mMainDBPassword & _
+                           ";MultipleActiveResultSets=True"
             _mStrCxn_CR = _nStringConnection
             '----------------------------------
         Catch ex As Exception

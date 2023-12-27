@@ -5,6 +5,8 @@ Imports Newtonsoft.Json.Linq
 Imports System.IO
 Imports System.Net.Mail
 Imports System.Net
+Imports Microsoft.Reporting.WebForms
+
 Public Class WebhooksDataAccessLayer
     'SPIDC Config
     Private Shared Spidc_Web_API_Config As New Spidc_Web_API_Config
@@ -31,6 +33,21 @@ Public Class WebhooksDataAccessLayer
     Private Shared _mCTCType As String
     Private Shared _mActionType As String
     Private Shared _mDataResponse As String
+
+    'Webhook Payload
+    Private Shared _mWebhookEvent As String
+    Private Shared _mWebhookSubject As String
+    Private Shared _mWebhookType As String
+    Private Shared _mEORNo As String
+    Private Shared _mAccountNo As String
+    Private Shared _mTotalAmount As String
+    Private Shared _mEmail As String
+    Private Shared _mTransactionRef As String
+    Private Shared _mTransactionType As String
+    Private Shared _mAppName As String
+    Private Shared _mUrlOrigin As String
+
+
 #End Region
 #Region "Property Data Access Layer Webhooks Web API"
     Public Shared ReadOnly Property _pDataAdapter() As SqlDataAdapter
@@ -82,43 +99,111 @@ Public Class WebhooksDataAccessLayer
             'Parse the json object in variable
             _mJsonObject = JObject.Parse(value.ToString)
 
-            Dim fromAddress As New MailAddress(Spidc_Web_API_Config._mApiMailFromAddress, Spidc_Web_API_Config._mApiMailFromName) 'Sender Email
-            Dim toAddress As New MailAddress("jakajaysitjar13@gmail.com", "Jaka Jay S. Sitjar")
-            Dim fromPassword As String = Spidc_Web_API_Config._mApiMailPassword  'Sender Password
-            Dim smtpClient As New SmtpClient()
-            smtpClient.Host = Spidc_Web_API_Config._mApiMailHost ' Update with your SMTP server
-            smtpClient.Port = Spidc_Web_API_Config._mApiMailPort ' Update with the port for your SMTP server
-            smtpClient.EnableSsl = True ' Enable SSL for secure connection
-            smtpClient.UseDefaultCredentials = False
-            smtpClient.Credentials = New NetworkCredential(fromAddress.Address, fromPassword)
-            Dim mailMessage As New MailMessage(fromAddress, toAddress)
-            mailMessage.Subject = "Webhooks Testing"
-            Dim body As String = "<!DOCTYPE html><html lang='en'><head> <meta charset='UTF-8'> <meta name='viewport' content='width=device-width, initial-scale=1.0'> <title>HTML Email</title></head><body bgcolor='#f7f7f7' width='100%' style='margin: 0;'> <table bgcolor='#f7f7f7' cellpadding='0' cellspacing='0' border='0' height='100%' width='100%' style='border-collapse:collapse;'> <tr> <td> <center style='width: 100%;'> <table cellspacing='0' cellpadding='0' border='0' align='center' bgcolor='#ffffff' width='600' class='email-container'> <tr> <td style='padding: 20px; text-align: center; font-family: sans-serif; font-size: 12px; mso-height-rule: exactly; line-height: 20px; color: #555555;'> Email Header Bla bla<br> <br> </td> </tr> </table> <table align='center' width='600' class='email-container'> <tr> <td style='padding: 0px; text-align: center'><img src='https://defendmusic.com/_site/wp-content/uploads/2017/09/Nike-Banner1.jpg' width='100%' alt='alt_text' border='0'></td> </tr> </table> <table cellspacing='0' cellpadding='0' border='0' align='center' bgcolor='#ffffff' width='600' class='email-container'> <tr> <td style='padding: 40px; text-align: center; font-family: sans-serif; font-size: 15px; mso-height-rule: exactly; line-height: 20px; color: #555555;'><h1 style='color: black;'>Hi Your Webhooks Is Dope. </h1> <img src='https://images.squarespace-cdn.com/content/v1/5a863eb564b05f76722c62f2/1655521401241-5XTSCVI4KDEOB8BR6NCF/IMG_6917.jpg?format=1000w' width='50%' height='50%' alt='alt_text' border='0'> <br> <br> </td> </tr> <tr> <td background='file:///Macintosh HD/Users/Finy/Library/Application Support/Adobe/Dreamweaver CC 2015/en_US/Configuration/Temp/Assets/eam8f18613.TMP/images/Image_600x230.png' bgcolor='black' style='text-align: center; background-position: center center !important; background-size: cover !important;'> <div> <table align='center' border='0' cellpadding='0' cellspacing='0' width='100%'> <tr> <td valign='middle' style='text-align: center; padding: 40px; font-family: sans-serif; font-size: 15px; mso-height-rule: exactly; line-height: 20px; color: #ffffff;'> Before Footer </td> </tr> </table> </div> </td> </tr> </table> <table align='center' width='600' class='email-container'> <tr> <td style='padding: 10px 10px;width: 100%;font-size: 12px; font-family: sans-serif; mso-height-rule: exactly; line-height:18px; text-align: center; color: #888888;'> <span class='mobile-link--footer'>Copyright &copy; 2023 spdic. All rights reserved.<br> address </span> <br> <br> <span style='color:#888888;'>Please do not reply to this message. This email was sent from a notification-only email address that cannot accept incoming email</span> </td> </tr> </table> <!-- Email Footer : END --> </center> </td> </tr> </table> </body></html>"
-            mailMessage.IsBodyHtml = True ' Indicates that the email body is HTML
-            mailMessage.Body = body ' HTML Email
+            'Payload Webhook Event
+            _mWebhookEvent = _mJsonObject("event")
+            _mWebhookSubject = _mJsonObject("subject")
+            _mWebhookType = _mJsonObject("type")
 
-            ' Attach the files (add more attachments as needed)
-            'Dim attachmentPaths As String() = {"C:\path\to\attachment1.pdf", "C:\path\to\attachment2.docx"}
-            'For Each attachmentPath As String In attachmentPaths
-            '    Dim attachment As New Attachment(attachmentPath)
-            '    mailMessage.Attachments.Add(attachment)
-            'Next
+            'Check Webhook Event
+            Select Case _mWebhookEvent
+                Case "send_email_eor" 'Send Email EOR
+                    'Payload Webhook 
+                    _mAppName = _mJsonObject("data")("appName")
+                    _mEORNo = _mJsonObject("data")("oRno")
+                    _mAccountNo = _mJsonObject("data")("accontNo")
+                    _mTotalAmount = _mJsonObject("data")("totalPaid")
+                    _mTransactionRef = _mJsonObject("data")("totalPaid")
+                    _mTransactionType = _mJsonObject("data")("transactionType")
+                    _mEmail = _mJsonObject("data")("email")
+                    _mUrlOrigin = _mJsonObject("data")("urlOrigin")
 
-            ' Attach the files (add more attachments as needed)
-            Dim attachmentPaths As String() = {HttpContext.Current.Server.MapPath("~/Configuration/LCR-UCD.pdf")}
-            For Each attachmentPath As String In attachmentPaths
-                Dim attachment As New Attachment(attachmentPath)
-                mailMessage.Attachments.Add(attachment)
-            Next
+                    Dim reportViewer As New ReportViewer()
+                    reportViewer.LocalReport.DataSources.Clear()
+                    'generate datatable for RDLC
+                    Dim EorPostingModel As New EorPostingModel
+                    Dim _nDataTable0 As New DataTable
+                    _nDataTable0 = EorPostingModel.Print_Template
 
-            ' Send the email
-            smtpClient.Send(mailMessage)
+                    Dim _nDataTable1 As New DataTable
+                    _nDataTable1 = EorPostingModel.Print_Report(_mEORNo)
+                    Dim _nDataTable2 As New DataTable
+                    _nDataTable2 = EorPostingModel.Print_TOP(_mEORNo)
+                    reportViewer.ProcessingMode = ProcessingMode.Local
 
-            _mStatus = "success"
-            _mData = Nothing
-            _mMessage = "Email successfully sent."
-            _mCode = "200"
-            Return True
+                    Dim fullPath As String = System.Web.HttpContext.Current.Server.MapPath("../../Report/eOR_Universal.rdlc")
+                    Dim replace_fullpath = fullPath.Replace("\api", "")
+                    reportViewer.LocalReport.ReportPath = replace_fullpath
+                    'Pass the datatable into the rdlc
+                    Dim _nReportDataSource0 As New ReportDataSource
+                    _nReportDataSource0.Name = "DataSet0"
+                    _nReportDataSource0.Value = _nDataTable0
+                    reportViewer.LocalReport.DataSources.Add(_nReportDataSource0)
+
+                    Dim _nReportDataSource1 As New ReportDataSource
+                    _nReportDataSource1.Name = "DataSet1"
+                    _nReportDataSource1.Value = _nDataTable1
+                    reportViewer.LocalReport.DataSources.Add(_nReportDataSource1)
+
+                    Dim _nReportDataSource2 As New ReportDataSource
+                    _nReportDataSource2.Name = "DataSet2"
+                    _nReportDataSource2.Value = _nDataTable2
+                    reportViewer.LocalReport.DataSources.Add(_nReportDataSource2)
+
+                    'convert amount money into letters
+                    Dim strAmount As String = Nothing
+                    strAmount = EorPostingModel.AmountInWords(_mTotalAmount)
+
+                    'set the converted money in words into parameter on RDLC
+                    Dim paramList As New List(Of ReportParameter)
+                    paramList.Add(New ReportParameter("AmountInWords", strAmount))
+                    reportViewer.LocalReport.SetParameters(paramList)
+
+                    reportViewer.LocalReport.Refresh()
+
+                    'Sending the generated report into pdf to email
+                    Dim bytes As Byte() = reportViewer.LocalReport.Render("PDF")
+                    Dim sent As Boolean = False
+                    Dim err As String = Nothing
+                    Dim body As String
+
+                    body = "Dear Valued Tax Payer, <br> " & _
+                           "This confirms your bill payment transaction with the following details: <br> " & _
+                           "Transaction Number: " & _mTransactionRef & "<br>" & _
+                           "Transaction Type: " & _mTransactionType & "<br>" & _
+                           "Account No. : " & _mAccountNo & "<br>" & _
+                           "Amount Paid : " & _mTotalAmount & "<br> <br>" & _
+                           "Your Electronic Official Receipt is attached in this e-mail."
+
+
+                    'Send  The Email  check if  successfully send
+                    If EorPostingModel.Send_eOR(_mEmail, _mWebhookSubject, body, bytes, sent, _mUrlOrigin, err) Then
+                        _mStatus = "success"
+                        _mData = Nothing
+                        _mMessage = "Email successfully sent."
+                        _mCode = "200"
+                        Return True
+                    Else
+                        _mStatus = "error"
+                        _mData = Nothing
+                        _mMessage = "Error sending email"
+                        _mCode = "500"
+                        Return False
+                    End If
+
+
+
+                Case "send_email" 'Send Email 
+
+
+
+
+                Case Else 'Recieve Payment Gateway Notification
+
+
+
+            End Select
+
+       
         Catch ex As Exception
             _mStatus = "error"
             _mData = Nothing
@@ -128,7 +213,6 @@ Public Class WebhooksDataAccessLayer
         End Try
         Return False
     End Function
-
 
 
 

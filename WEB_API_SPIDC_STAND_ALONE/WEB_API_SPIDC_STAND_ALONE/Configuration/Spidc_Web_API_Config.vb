@@ -15,6 +15,11 @@ Imports System.Collections.Generic
 Public Class Spidc_Web_API_Config
 
 #Region "Varriable Web API Config"
+    Public Shared Property _mMainServerName As String
+    Public Shared Property _mMainDBID As String
+    Public Shared Property _mMainDBPassword As String
+    Public Shared Property _mMainDBName As String
+
     Public Shared Property _mconfig As String
     Public Shared Property _mAppName As String
     Public Shared Property _mAppKey As String
@@ -161,7 +166,7 @@ Public Class Spidc_Web_API_Config
 #Region "Varriable EIS Param Method GET/POST/PUT/DELETE Web API Config "
     Public Shared Property _mAppGetParam1Eis As String
     Public Shared Property _mAppGetParam2Eis As String
-   
+
 #End Region
 
 #Region "Varriable CEDULA Param Method GET/POST/PUT/DELETE Web API Config "
@@ -276,6 +281,11 @@ Public Class Spidc_Web_API_Config
                 End If
             Next
             ' Now you can access the environment variables
+            'APP MAIN SERVER
+            _mMainServerName = Environment.GetEnvironmentVariable("APP_MAIN_SERVER")
+            _mMainDBID = Environment.GetEnvironmentVariable("APP_MAIN_DATABASE_ID")
+            _mMainDBPassword = Environment.GetEnvironmentVariable("APP_MAIN_DATABASE_PASSWORD")
+            _mMainDBName = Environment.GetEnvironmentVariable("APP_MAIN_DATABASE_NAME")
             'APP NAME
             _mAppName = Environment.GetEnvironmentVariable("APP_NAME")
             _mAppNameOAIMS = Environment.GetEnvironmentVariable("APP_NAME_OAIMS")

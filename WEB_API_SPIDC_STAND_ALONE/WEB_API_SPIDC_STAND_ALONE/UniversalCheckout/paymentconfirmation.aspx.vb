@@ -1,10 +1,15 @@
-﻿Imports System.Net
+﻿
+Imports System.Net
 Imports System.Web.Services
 Imports System.Net.Http
 Imports RestSharp
 Imports System.IdentityModel.Tokens.Jwt
 Imports System.Web.Script.Serialization
 Imports Newtonsoft.Json.Linq
+Imports Microsoft.Reporting.WebForms
+Imports SPIDC.Resources
+Imports System.Reflection
+Imports WEB_API_SPIDC_STAND_ALONE.My.Resources
 
 Public Class paymentconfirmation
     Inherits System.Web.UI.Page
@@ -55,18 +60,19 @@ Public Class paymentconfirmation
                 Select Case status
                     Case "SUCCESS"
                         PaymentConfirmationStatus = _mprocessPaymentConfirmation(paymentgateway, transactionid, payload)
-                    Case Else
-
-
+                    Case "CANCEL"
+                        PaymentConfirmationStatus = _mprocessPaymentConfirmation(paymentgateway, transactionid, payload)
                 End Select
-
 
             Case "PAYMAYA"
                 'Check paymentgateway Status
                 Select Case status
                     Case "SUCCESS"
                         PaymentConfirmationStatus = _mprocessPaymentConfirmation(paymentgateway, transactionid, payload)
-                    Case Else
+                    Case "FAILED"
+                        PaymentConfirmationStatus = _mprocessPaymentConfirmation(paymentgateway, transactionid, payload)
+                    Case "CANCEL"
+                        PaymentConfirmationStatus = _mprocessPaymentConfirmation(paymentgateway, transactionid, payload)
 
                 End Select
 
@@ -75,7 +81,6 @@ Public Class paymentconfirmation
                 'Check paymentgateway Status
                 Select Case status
                     Case "SUCCESS"
-
                         PaymentConfirmationStatus = _mprocessPaymentConfirmation(paymentgateway, transactionid, payload)
                     Case Else
 
@@ -105,8 +110,8 @@ Public Class paymentconfirmation
 
 
 
-    Public Shared Function _mprocessPaymentConfirmation(paymentgateway As String, transactionid As String, payload As String) As Boolean
-        _mprocessPaymentConfirmation = False
+    Public Shared Function _mprocessPaymentConfirmation(paymentgateway As String, transactionid As String, payload As String) As String()
+        _mprocessPaymentConfirmation = Nothing
         Select Case paymentgateway
             Case "GCASH"
                 'GCASH PAYMENT INQUIRY
@@ -136,14 +141,12 @@ Public Class paymentconfirmation
 
         End Select
 
-
-
+        Return _mprocessPaymentConfirmation
     End Function
 
-
     'GCASH PAYMENT INQUIRY
-    Public Shared Function _mGCASHPaymentInquiry(paymentgateway As String, transactionid As String, _acquirementId As String, _shortTransId As String, payload As String) As Boolean
-        _mGCASHPaymentInquiry = False
+    Public Shared Function _mGCASHPaymentInquiry(paymentgateway As String, transactionid As String, _acquirementId As String, _shortTransId As String, payload As String) As String()
+        _mGCASHPaymentInquiry = Nothing
         Dim serializer As System.Web.Script.Serialization.JavaScriptSerializer = New Script.Serialization.JavaScriptSerializer()
         Dim _sqlDateNow As DateTime
         Dim _sqlDateNow10 As DateTime
@@ -224,6 +227,8 @@ Public Class paymentconfirmation
 
             Dim api_checkoutstatus As String = _payloadJson("payload")("dataInformation")(0)("CheckOutStatus")
 
+            Dim api_OriginLink = _payloadJson("payload")("dataInformation")(0)("UrlOrigin")
+
             'check and create dfrom base on APPNAME
             Dim DFrom As String = Nothing
             If api_AppName = "CEDULAAPP" Then
@@ -256,22 +261,27 @@ Public Class paymentconfirmation
             'CALL POST OF GEN OR AND EOR
             Dim _cPaymentPosting As New EorPostingModel
             _cPaymentPosting._pSqlConnection = Spidc_Web_API_Global_Connection._pSqlCxn_TOIMS
-            _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, _transactionId, api_email, api_checkoutstatus, _security, payload)
 
-
-            'MsgBox("Payment Is Success")
-            _mGCASHPaymentInquiry = True
+            'Check If POSTING IS SUCCESS
+            If _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, _transactionId, api_email, api_checkoutstatus, _security, payload) Then
+                'Call Webhook To Send EOR Email
+                If _mWebhooks("appName", EorPostingModel.eORno, "Notification Test", api_TotalAmt_Paid, api_email, api_OriginLink, api_PaymentRef, api_TransDesc, api_accno) Then
+                    _mGCASHPaymentInquiry = {}
+                Else
+                    _mGCASHPaymentInquiry = {}
+                End If
+            Else
+                _mGCASHPaymentInquiry = {}
+            End If
+            Return _mGCASHPaymentInquiry
         End If
-   
+
 
     End Function
 
-
-
-
     'PAYMAYA PAYMENT INQUIRY
-    Public Shared Function _mPayMayaPaymentInquiry(paymentgateway As String, transactionid As String, payload As String) As Boolean
-        _mPayMayaPaymentInquiry = False
+    Public Shared Function _mPayMayaPaymentInquiry(paymentgateway As String, transactionid As String, payload As String) As String()
+        _mPayMayaPaymentInquiry = Nothing
 
         Dim _nClass As New cDalPayment
         Dim PayMayaModel As New PayMayaModel
@@ -293,7 +303,6 @@ Public Class paymentconfirmation
         Dim response1 As IRestResponse = client.Execute(request)
         Dim jsonResponse As String = response1.Content
         Dim _paymayaResponse As Object = New JavaScriptSerializer().Deserialize(Of Object)(response1.Content)
-
         Dim valueType As Type = _paymayaResponse.[GetType]()
         Dim PAYMENT_STATUS As String = Nothing
         Dim PAYMENT_RRN As String = Nothing
@@ -306,6 +315,12 @@ Public Class paymentconfirmation
         PAYMENT_RRN = _paymayaResponse(_paymayaResponse.length - 1)("requestReferenceNumber")
         PAYMENT_ID = _paymayaResponse(_paymayaResponse.length - 1)("id")
         _paymentGatewayRefNo = PAYMENT_ID
+
+        Dim _mpayload As Object = New JavaScriptSerializer().Deserialize(Of Object)(payload)
+        Dim _Email As String = _mpayload("payload")("dataInformation")(0)("Email")
+        Dim _ACCTNO As String = _mpayload("payload")("dataInformation")(0)("AccountNo")
+        'SAVE RESPONE FROM PAYMAYA
+        PayMayaModel.insert_PaymayaTransactions("Payment Response", _ACCTNO, _Email, "", jsonResponse, PAYMENT_RRN)
 
         'Check If Status Is Payment Status Is Success
         If PAYMENT_STATUS = "PAYMENT_SUCCESS" Then
@@ -329,6 +344,8 @@ Public Class paymentconfirmation
 
             Dim api_checkoutstatus As String = _payloadJson("payload")("dataInformation")(0)("CheckOutStatus")
 
+            Dim api_OriginLink = _payloadJson("payload")("dataInformation")(0)("UrlOrigin")
+
             'check and create dfrom base on APPNAME
             Dim DFrom As String = Nothing
             If api_AppName = "CEDULAAPP" Then
@@ -356,18 +373,72 @@ Public Class paymentconfirmation
             'CALL POST OF GEN OR AND EOR
             Dim _cPaymentPosting As New EorPostingModel
             _cPaymentPosting._pSqlConnection = Spidc_Web_API_Global_Connection._pSqlCxn_TOIMS
-            _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, _transactionId, api_email, api_checkoutstatus, _security, payload)
 
-            'MsgBox("Payment Is Success")
-            _mPayMayaPaymentInquiry = True
-
+            'Check If POSTING IS SUCCESS
+            If _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, _transactionId, api_email, api_checkoutstatus, _security, payload) Then
+                'Call Webhook To Send EOR Email
+                If _mWebhooks("appName", EorPostingModel.eORno, "Notification Test", api_TotalAmt_Paid, api_email, api_OriginLink, api_PaymentRef, api_TransDesc, api_accno) Then
+                    _mPayMayaPaymentInquiry = {}
+                Else
+                    _mPayMayaPaymentInquiry = {}
+                End If
+            Else
+                _mPayMayaPaymentInquiry = {}
+            End If
         End If
 
-
+        Return _mPayMayaPaymentInquiry
     End Function
 
 
 
+    Public Shared Function _mWebhooks(appName As String, notificationSubject As String, eorNo As String, totalPaid As String, email As String, urlOrigin As String, transactionRef As String, transactionDesc As String, accountNo As String) As Boolean
+        'Get Web Config
+        Spidc_Web_API_Config.WebApiConfig()
+        ' Replace with your API endpoint WEB HOOK URL
+        Dim webhookURL As String = Spidc_Web_API_Config._mApiEndPointWebhooks
+        ' Replace "your-api-key" with your actual API key
+        Dim apiKey As String = Spidc_Web_API_Config._mApiKey
+        ' Create a RestClient
+        Dim client As New RestClient(webhookURL)
+        ' Create a request with the desired HTTP method (POST in this case)
+        Dim request As New RestRequest(Method.POST)
+        ' Set the request content type (application/json in this example)
+        request.AddHeader("Content-Type", "application/json")
+        ' Add API key to the request headers
+        request.AddHeader("Authorization", apiKey)
+        ' Add any parameters or request body as needed
+        ' Create a JObject to represent the JSON structure
+        Dim jsonObject As New JObject From {
+              {"event", "send_email_eor"},
+              {"subject", notificationSubject},
+              {"type", "webhook"},
+              {"data", New JObject From {
+                  {"appName", appName},
+                  {"oRno", eorNo},
+                  {"accontNo", accountNo},
+                  {"transactionRef", transactionRef},
+                  {"transactionType", transactionDesc},
+                  {"email", email},
+                  {"totalPaid", totalPaid},
+                  {"urlOrigin", urlOrigin}
+              }}
+          }
+        ' Convert JObject to a JSON string
+        Dim jsonPayload As String = jsonObject.ToString()
+        request.AddParameter("application/json", jsonPayload, ParameterType.RequestBody)
+        ' Execute the request
+        Dim response As IRestResponse = client.Execute(request)
+        Dim _jsonResponse As Object = New JavaScriptSerializer().Deserialize(Of Object)(response.Content)
+
+        'Check If Status is Success
+        If _jsonResponse("status") = "success" Then
+            Return True
+        Else
+            Return False
+        End If
+
+    End Function
 
 
 

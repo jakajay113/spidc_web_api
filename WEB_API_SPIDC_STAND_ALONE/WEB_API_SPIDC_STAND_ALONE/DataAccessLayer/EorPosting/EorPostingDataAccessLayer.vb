@@ -595,4 +595,131 @@ Public Class EorPostingDataAccessLayer
 
 
 
+
+    Public Shared Function Execute_pSubGetEmailMaster()
+
+        Try
+            _mSqlCmd = New SqlCommand(_mStrSql, _mSqlCon)
+            Using _nSqlDataReader As SqlDataReader = _mSqlCmd.ExecuteReader
+                Try
+                    Do Until _nSqlDataReader.Read = False
+                        EorPostingModel._mSenderEmailAddress = _nSqlDataReader("EmailAddress")
+                        EorPostingModel._mSenderEmailPassword = _nSqlDataReader("Password")
+                        EorPostingModel._mPort = _nSqlDataReader("port")
+                        EorPostingModel._mHost = _nSqlDataReader("host")
+                        EorPostingModel._mCC = IIf(_nSqlDataReader("EmailCC") = "0", Nothing, _nSqlDataReader("EmailCC"))
+                        EorPostingModel._mBCC = IIf(_nSqlDataReader("EmailBCC") = "0", Nothing, _nSqlDataReader("EmailBCC"))
+                        EorPostingModel._mSSL = _nSqlDataReader("SSL")
+                    Loop
+                Finally
+                    _nSqlDataReader.Close()
+                End Try
+
+            End Using
+            Return True
+        Catch ex As Exception
+            Return False
+        End Try
+
+
+    End Function
+
+
+
+
+
+    Public Shared Function Execute_get_Header_DATA(ByRef HEADER_TEMPLATE As Byte(), ByRef HEADER_TEMPLATE_Name As String, ByRef HEADER_TEMPLATE_Ext As String) As Boolean
+
+        Try
+            _mSqlCmd = New SqlCommand(_mStrSql, _mSqlCon)
+            Using _nSqlDataReader As SqlDataReader = _mSqlCmd.ExecuteReader
+                Try
+                    Do Until _nSqlDataReader.Read = False
+                        HEADER_TEMPLATE = _nSqlDataReader("HEADER_TEMPLATE")
+                        HEADER_TEMPLATE_Name = _nSqlDataReader("HEADER_TEMPLATE_Name")
+                        HEADER_TEMPLATE_Ext = _nSqlDataReader("HEADER_TEMPLATE_Ext")
+                    Loop
+                Finally
+                    _nSqlDataReader.Close()
+                End Try
+
+            End Using
+            Return True
+        Catch ex As Exception
+            Return False
+        End Try
+
+    End Function
+
+
+    '----------------------------------------------------------------------
+    'generate report datatable
+
+
+    Public Shared Function Execute_Print_Template(ByRef _passTable As DataTable) As Boolean
+
+        Try
+
+            Dim _nSqlDataAdapter As New SqlDataAdapter(_mStrSql, _mSqlCon)
+            _nSqlDataAdapter.Fill(_passTable)
+            Return True
+        Catch ex As Exception
+            Return False
+        End Try
+
+    End Function
+
+
+
+    Public Shared Function Execute_Print_Report(ByRef _passTable As DataTable) As Boolean
+
+        Try
+
+            Dim _nSqlDataAdapter As New SqlDataAdapter(_mStrSql, _mSqlCon)
+            _nSqlDataAdapter.Fill(_passTable)
+            Return True
+        Catch ex As Exception
+            Return False
+        End Try
+
+    End Function
+
+
+
+
+    Public Shared Function Execute_Print_TOP(ByRef _passTable As DataTable) As Boolean
+
+        Try
+
+            Dim _nSqlDataAdapter As New SqlDataAdapter(_mStrSql, _mSqlCon)
+            _nSqlDataAdapter.Fill(_passTable)
+            Return True
+        Catch ex As Exception
+            Return False
+        End Try
+
+    End Function
+
+
+
+    Public Shared Function Execute_Update_CTC_Online_App_PostStatus() As Boolean
+
+        Try
+            _mSqlCmd = New SqlCommand(_mStrSql, _mSqlCon)
+            _mSqlCmd.ExecuteNonQuery()
+
+            Return True
+
+        Catch ex As Exception
+            EorPostingModel.ERRORLOGS(EorPostingModel.API_APP_NAME, "Insert_OnlinePaymentRef", ex.ToString())
+            Return False
+        End Try
+
+        _mSqlCmd.Dispose()
+        _mSqlCon.Close()
+
+    End Function
+
+
+
 End Class

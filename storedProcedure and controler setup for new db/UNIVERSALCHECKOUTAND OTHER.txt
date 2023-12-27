@@ -1,0 +1,9 @@
+SELECT * FROM ControlSetup
+SELECT * FROM UniversalCheckout
+SELECT * FROM UniversalCheckout_Extn
+SELECT * FROM WebhooksLogs
+
+
+SELECT * FROM ControlSetup
+SELECT * FROM CTC_Online_Application
+SELECT * FROM CTC_Online_Application_File_Attachement
