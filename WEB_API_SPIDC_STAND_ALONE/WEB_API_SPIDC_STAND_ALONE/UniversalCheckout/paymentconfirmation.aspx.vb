@@ -266,9 +266,9 @@ Public Class paymentconfirmation
             If _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, _transactionId, api_email, api_checkoutstatus, _security, payload) Then
                 'Call Webhook To Send EOR Email
                 If _mWebhooks("appName", EorPostingModel.eORno, "Notification Test", api_TotalAmt_Paid, api_email, api_OriginLink, api_PaymentRef, api_TransDesc, api_accno) Then
-                    _mGCASHPaymentInquiry = {}
+                    _mGCASHPaymentInquiry = {"success", api_TransDesc, api_accno, api_email, api_TotalAmt_Paid, api_TotalAmt_Paid, api_BillingDate}
                 Else
-                    _mGCASHPaymentInquiry = {}
+                    _mGCASHPaymentInquiry = {"error", api_TransDesc, api_accno, api_email, api_TotalAmt_Paid, api_TotalAmt_Paid, api_BillingDate}
                 End If
             Else
                 _mGCASHPaymentInquiry = {}
@@ -378,9 +378,9 @@ Public Class paymentconfirmation
             If _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, _transactionId, api_email, api_checkoutstatus, _security, payload) Then
                 'Call Webhook To Send EOR Email
                 If _mWebhooks("appName", EorPostingModel.eORno, "Notification Test", api_TotalAmt_Paid, api_email, api_OriginLink, api_PaymentRef, api_TransDesc, api_accno) Then
-                    _mPayMayaPaymentInquiry = {}
+                    _mPayMayaPaymentInquiry = {"success", api_TransDesc, api_accno, api_email, api_TotalAmt_Paid, api_TotalAmt_Paid, api_BillingDate}
                 Else
-                    _mPayMayaPaymentInquiry = {}
+                    _mPayMayaPaymentInquiry = {"error", api_TransDesc, api_accno, api_email, api_TotalAmt_Paid, api_TotalAmt_Paid, api_BillingDate}
                 End If
             Else
                 _mPayMayaPaymentInquiry = {}
