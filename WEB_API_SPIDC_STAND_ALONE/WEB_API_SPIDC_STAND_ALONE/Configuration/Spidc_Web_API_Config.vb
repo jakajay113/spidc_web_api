@@ -15,6 +15,11 @@ Imports System.Collections.Generic
 Public Class Spidc_Web_API_Config
 
 #Region "Varriable Web API Config"
+    Public Shared Property _mAppLinkSystem1 As String
+    Public Shared Property _mAppLinkSystem2 As String
+    Public Shared Property _mAppLinkSystem3 As String
+    Public Shared Property _mAppLinkSystem4 As String
+
     Public Shared Property _mMainServerName As String
     Public Shared Property _mMainDBID As String
     Public Shared Property _mMainDBPassword As String
@@ -179,6 +184,7 @@ Public Class Spidc_Web_API_Config
     Public Shared Property _mAppGetParam6Toims As String
     Public Shared Property _mAppGetParam7Toims As String
     Public Shared Property _mAppGetParam10Toims As String
+    Public Shared Property _mAppGetParam11Toims As String
     Public Shared Property _mAppGetParam8Tims As String
     Public Shared Property _mAppGetParam9Tims As String
     Public Shared Property _mAppPostParam As String
@@ -281,6 +287,12 @@ Public Class Spidc_Web_API_Config
                 End If
             Next
             ' Now you can access the environment variables
+            'APP LINK SYSTEM 
+            _mAppLinkSystem1 = Environment.GetEnvironmentVariable("APP_LINK_SYSTEM1")
+            _mAppLinkSystem2 = Environment.GetEnvironmentVariable("APP_LINK_SYSTEM2")
+            _mAppLinkSystem3 = Environment.GetEnvironmentVariable("APP_LINK_SYSTEM3")
+            _mAppLinkSystem4 = Environment.GetEnvironmentVariable("APP_LINK_SYSTEM4")
+
             'APP MAIN SERVER
             _mMainServerName = Environment.GetEnvironmentVariable("APP_MAIN_SERVER")
             _mMainDBID = Environment.GetEnvironmentVariable("APP_MAIN_DATABASE_ID")
@@ -480,6 +492,7 @@ Public Class Spidc_Web_API_Config
             _mAppGetParam6Toims = Environment.GetEnvironmentVariable("APP_GET_PARAM6_CEDULA")
             _mAppGetParam7Toims = Environment.GetEnvironmentVariable("APP_GET_PARAM7_CEDULA")
             _mAppGetParam10Toims = Environment.GetEnvironmentVariable("APP_GET_PARAM10_CEDULA")
+            _mAppGetParam11Toims = Environment.GetEnvironmentVariable("APP_GET_PARAM11_CEDULA")
             _mAppGetParam8Tims = Environment.GetEnvironmentVariable("APP_GET_PARAM8_CEDULA")
             _mAppGetParam9Tims = Environment.GetEnvironmentVariable("APP_GET_PARAM9_CEDULA")
 

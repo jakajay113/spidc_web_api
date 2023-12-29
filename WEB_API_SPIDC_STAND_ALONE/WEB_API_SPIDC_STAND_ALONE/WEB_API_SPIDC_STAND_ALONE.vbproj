@@ -272,7 +272,6 @@
     <EmbeddedResource Include="Report\eOR_Universal.rdlc" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Configuration\spidc-config.json" />
     <Content Include="Configuration\LCR-UCD.pdf" />
     <Content Include="Configuration\client-side-config.json" />
     <None Include="My Project\Application.myapp">

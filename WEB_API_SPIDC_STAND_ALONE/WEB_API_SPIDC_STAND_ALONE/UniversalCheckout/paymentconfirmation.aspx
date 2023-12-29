@@ -532,10 +532,6 @@
      <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
     <script>
-
-
-
-
         function preventBack() {
             window.history.forward();
         }
@@ -553,34 +549,12 @@
         //setTimeout(function () {
         //    __doPostBack('PaymentConfirmation')
         //}, 1000);
-
-
-        
         document.getElementsByClassName('wrapperCheck')[0].style.display = 'none'
-        //document.getElementById('notificationHeaderSuccess').textContent = "Payment successfuly"
-        //document.getElementById('_transactionType').textContent = "_transactionType"
-        //document.getElementById('_controlNo').textContent = "_controlNo"
-        //document.getElementById('_email').textContent = "_email"
-        //document.getElementById('_billing').textContent = "_billing"
-        //document.getElementById('_totalAmount').textContent = "_totalAmount"
-        //document.getElementById('_billingDate').textContent = "_billingDate"
-        //document.getElementById('_btnSuccessBackToHome').addEventListener('click', function () {
-        //    window.location.href = "#";
-        //});
-
-
         document.getElementsByClassName('wrapperAlertCross')[0].style.display = 'none'
-        //document.getElementById('notificationHeaderFailed').textContent = "Payment Failed"
-       // document.getElementById('_payment-failed-decription').textContent = "Something went wrong try again later!"
-        //document.getElementById('_btnFailedBackToHome').addEventListener('click', function () {
-        //    window.location.href = "#";
-        //});
-       
-
-   
         var url = window.location.href;
         //localStorage.getItem('payloadToProcess')
-        var payload = '{"payload":{"dataInformation":[{"TransactionRef":"UCP2023121158784","TrefNo":null,"AppName":"CEDULAAPP","Email":"spidcenduser@yopmail.com","Fname":"jay","MiddleName":"jay","LastName":"jay","Suffix":null,"AccountNo":"2023-11-00002","BillingAmount":"13.42","TotalAmount":"13.42","BiilingDate":"2023-12-11T11:48:33.907","OtherFee":"0.00","RawAmount":"13.42","SpidcFee":"0.00","Token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJzcGlkY2VuZHVzZXJAeW9wbWFpbC5jb20iLCJhcHBOYW1lIjoiQ0VEVUxBQVBQIiwiYWNjb3VudE5vIjoiMjAyMy0xMS0wMDAwMiIsImlhdCI6IjEyLzExLzIwMjMgMzo0ODozMyBBTSIsIm5iZiI6MTcwMjI2NjUxMywiZXhwIjoxNzAyMjY3MTEzLCJpc3MiOiJcIlNQSURDIFVOSVZFUlNBTCBDSEVDS09VVFwiIiwiYXVkIjoiaHR0cHM6Ly9vbmxpbmUuc3BpZGMuY29tLnBoL2NhbG9vY2FuL1dlYlBvcnRhbC9DZWR1bGFBcHAvVGF4cGF5ZXIvaW5kZXguaHRtbCJ9.XZiOl9WqJdvxk9IMycEX0QdCGZ6lRU46-TuFXyPwCZk","CheckOutStatus":"Pending","UrlOrigin":"https://online.spidc.com.ph/caloocan/WebPortal/CedulaApp/Taxpayer/index.html","UrlSuccess":"https://online.spidc.com.ph/caloocan/WebPortal/CedulaApp/Taxpayer/index.html","CheckOutDate":"2023-12-11T11:48:33.907","Address":"jay","AssessmentNo":"2023-11-00002","transDesc":"Individual Cedula"}],"dataCode":[{"accountNo":"2023-11-00002","SysTran_ProviderCode":"SF-002","systrans_codeDesc":"diploma fee","systems_codeAmt":"500.00","SysTran_MainCode":"4-02-02-010-01","SysTran_AncestorCode":"4-02-02-010-01","SysTran_SubAccCode":"4-02-02-010-01-002"},{"accountNo":"2023-11-00002","SysTran_ProviderCode":"SF-002","systrans_codeDesc":"diploma fee","systems_codeAmt":"500.00","SysTran_MainCode":"4-02-02-010-01","SysTran_AncestorCode":"4-02-02-010-01","SysTran_SubAccCode":"4-02-02-010-01-002"},{"accountNo":"WEB-CTC-2023-11-00010","SysTran_ProviderCode":"","systrans_codeDesc":"","systems_codeAmt":"110.00","SysTran_MainCode":"4-01-01-050-51","SysTran_AncestorCode":"4-01-01-050-51","SysTran_SubAccCode":"4-01-01-050-51-001"},{"accountNo":"WEB-CTC-2023-11-00010","SysTran_ProviderCode":"","systrans_codeDesc":"","systems_codeAmt":"24.20","SysTran_MainCode":"4-01-05-010-01","SysTran_AncestorCode":"4-01-05-010-01","SysTran_SubAccCode":"4-01-05-010-01-001"}],"paymentGateway":"GCASH"},"urlProcess":"processing.aspx"}'; 
+        //var payload = '{"payload":{"dataInformation":[{"TransactionRef":"UCP2023121158784","TrefNo":null,"AppName":"CEDULAAPP","Email":"spidcenduser@yopmail.com","Fname":"jay","MiddleName":"jay","LastName":"jay","Suffix":null,"AccountNo":"2023-11-00002","BillingAmount":"13.42","TotalAmount":"13.42","BiilingDate":"2023-12-11T11:48:33.907","OtherFee":"0.00","RawAmount":"13.42","SpidcFee":"0.00","Token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJzcGlkY2VuZHVzZXJAeW9wbWFpbC5jb20iLCJhcHBOYW1lIjoiQ0VEVUxBQVBQIiwiYWNjb3VudE5vIjoiMjAyMy0xMS0wMDAwMiIsImlhdCI6IjEyLzExLzIwMjMgMzo0ODozMyBBTSIsIm5iZiI6MTcwMjI2NjUxMywiZXhwIjoxNzAyMjY3MTEzLCJpc3MiOiJcIlNQSURDIFVOSVZFUlNBTCBDSEVDS09VVFwiIiwiYXVkIjoiaHR0cHM6Ly9vbmxpbmUuc3BpZGMuY29tLnBoL2NhbG9vY2FuL1dlYlBvcnRhbC9DZWR1bGFBcHAvVGF4cGF5ZXIvaW5kZXguaHRtbCJ9.XZiOl9WqJdvxk9IMycEX0QdCGZ6lRU46-TuFXyPwCZk","CheckOutStatus":"Pending","UrlOrigin":"https://online.spidc.com.ph/caloocan/WebPortal/CedulaApp/Taxpayer/index.html","UrlSuccess":"https://online.spidc.com.ph/caloocan/WebPortal/CedulaApp/Taxpayer/index.html","CheckOutDate":"2023-12-11T11:48:33.907","Address":"jay","AssessmentNo":"2023-11-00002","transDesc":"Individual Cedula"}],"dataCode":[{"accountNo":"2023-11-00002","SysTran_ProviderCode":"SF-002","systrans_codeDesc":"diploma fee","systems_codeAmt":"500.00","SysTran_MainCode":"4-02-02-010-01","SysTran_AncestorCode":"4-02-02-010-01","SysTran_SubAccCode":"4-02-02-010-01-002"},{"accountNo":"2023-11-00002","SysTran_ProviderCode":"SF-002","systrans_codeDesc":"diploma fee","systems_codeAmt":"500.00","SysTran_MainCode":"4-02-02-010-01","SysTran_AncestorCode":"4-02-02-010-01","SysTran_SubAccCode":"4-02-02-010-01-002"},{"accountNo":"WEB-CTC-2023-11-00010","SysTran_ProviderCode":"","systrans_codeDesc":"","systems_codeAmt":"110.00","SysTran_MainCode":"4-01-01-050-51","SysTran_AncestorCode":"4-01-01-050-51","SysTran_SubAccCode":"4-01-01-050-51-001"},{"accountNo":"WEB-CTC-2023-11-00010","SysTran_ProviderCode":"","systrans_codeDesc":"","systems_codeAmt":"24.20","SysTran_MainCode":"4-01-05-010-01","SysTran_AncestorCode":"4-01-05-010-01","SysTran_SubAccCode":"4-01-05-010-01-001"}],"paymentGateway":"GCASH"},"urlProcess":"processing.aspx"}'; 
+        var payload = localStorage.getItem('payloadToProcess');
         $.ajax({
             url: "paymentconfirmation.aspx/PaymentConfirmation",
             type: "post",
@@ -592,7 +566,28 @@
             },
             success: function (reponse) {
                 loader.hide();
-                console.log(reponse.d);
+               // console.log(reponse.d[0]);
+                if (reponse.d[0] == "success") {
+                    document.getElementsByClassName('wrapperCheck')[0].style.display = 'block'
+                    document.getElementById('notificationHeaderSuccess').textContent = "Payment successfuly"
+                    document.getElementById('_transactionType').textContent = reponse.d[1];
+                    document.getElementById('_controlNo').textContent = reponse.d[2];
+                    document.getElementById('_email').textContent = reponse.d[3];
+                    document.getElementById('_billing').textContent = reponse.d[4];
+                    document.getElementById('_totalAmount').textContent = reponse.d[5];
+                    document.getElementById('_billingDate').textContent = reponse.d[6];
+                    document.getElementById('_btnSuccessBackToHome').addEventListener('click', function () {
+                        window.location.href = reponse.d[7];
+                    });
+                }else {
+                    document.getElementsByClassName('wrapperAlertCross')[0].style.display = 'block'
+                    document.getElementById('notificationHeaderFailed').textContent = "Payment Failed"
+                    document.getElementById('_payment-failed-decription').textContent = "Something went wrong try again later!"
+                    document.getElementById('_btnFailedBackToHome').addEventListener('click', function () {
+                        window.location.href = reponse.d[7];
+                    });
+                }
+
 
             },
             error: function (xhr, status, errorThrown) {

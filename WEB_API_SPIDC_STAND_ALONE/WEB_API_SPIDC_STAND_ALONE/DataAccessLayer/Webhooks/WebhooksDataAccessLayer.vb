@@ -158,10 +158,15 @@ Public Class WebhooksDataAccessLayer
                     paramList.Add(New ReportParameter("AmountInWords", strAmount))
                     reportViewer.LocalReport.SetParameters(paramList)
 
+
+                    Dim bytes As Byte() = reportViewer.LocalReport.Render("PDF")
+
+
+
                     reportViewer.LocalReport.Refresh()
 
                     'Sending the generated report into pdf to email
-                    Dim bytes As Byte() = reportViewer.LocalReport.Render("PDF")
+
                     Dim sent As Boolean = False
                     Dim err As String = Nothing
                     Dim body As String

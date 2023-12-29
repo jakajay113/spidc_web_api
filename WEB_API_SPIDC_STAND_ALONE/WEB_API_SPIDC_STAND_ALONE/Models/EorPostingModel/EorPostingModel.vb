@@ -65,6 +65,8 @@ Public Class EorPostingModel
     Public Shared BirthDate As String = Nothing
     Public Shared Civil_Status As String = Nothing
     Public Shared Citizenship As String = Nothing
+    Public Shared BrgyCode As String = Nothing
+    Public Shared BrgyDesc As String = Nothing
 
     '-----------------------------------------------
 
@@ -221,6 +223,14 @@ Public Class EorPostingModel
             Return False
         End If
 
+        If get_BrgyDesc(BrgyCode) Then
+        Else
+            Return False
+        End If
+
+
+
+
         'GET EOR TIME
         If get_timeEOR(timenow) Then
         Else
@@ -228,7 +238,7 @@ Public Class EorPostingModel
         End If
 
         'GENERATE NEW EORNO
-        If get_EORNO(or_no) Then
+        If get_EORNO(srs, or_no) Then
         Else
             Return False
         End If
@@ -357,7 +367,7 @@ Public Class EorPostingModel
 
 
             _QSelect_EOR = " Select (Concat('" & Lname & "',',','" & Fname & "',' ', '" & Mname & "' ))PayorName, " &
-                        " (null)Barangay, " &
+                        " ('" & BrgyDesc & "')Barangay, " &
                         " (null)TaxType, " &
                         " (null)TDNBIN, " &
                         " (null)PIN, " &
@@ -365,7 +375,7 @@ Public Class EorPostingModel
                         " ('" & AssessmentNo & "')AssessNo, " &
                         " ('" & eORno & "')eORno, " &
                         " (FORMAT(GETDATE(), 'MMMM dd, yyyy'))DateTime, " &
-                        " (null)OnlineID, " &
+                        " ('" & PaymentRefNo & "')OnlineID, " &
                         " ('" & Gateway & "')Gateway_Selected, " &
                         " ('" & GatewayRef & "')Gateway_RefNo, " &
                         " ('" & Gateway_conf & "')Gateway_ConfDate, " &
@@ -550,12 +560,34 @@ Public Class EorPostingModel
         Try
             Dim _nQuery As String = Nothing
             _nQuery = _
-           "SELECT * FROM [CTC_Online] where ControlNo = '" & AccNo & "'  "
+           "SELECT * FROM [CTC_Online_Application] where ControlNo = '" & AccNo & "'  "
 
             EorPostingDataAccessLayer._mStrSql = _nQuery
             EorPostingDataAccessLayer._mSqlCon = Spidc_Web_API_Global_Connection._pSqlCxn_TIMS
 
             If EorPostingDataAccessLayer.Execute_get_other_TOIMS_Data2() Then
+                Return True
+            Else
+                Return False
+            End If
+
+        Catch ex As Exception
+            Return False
+        End Try
+
+    End Function
+
+    Public Function get_BrgyDesc(ByRef BrgyCode As String) As String
+        Try
+            Dim _nQuery As String = Nothing
+
+            _nQuery = _
+           " SELECT * FROM MuniCitySubBrgy where MuniCityBrgyCode = '" & BrgyCode & "' "
+
+            EorPostingDataAccessLayer._mStrSql = _nQuery
+            EorPostingDataAccessLayer._mSqlCon = Spidc_Web_API_Global_Connection._pSqlCxn_TOIMS
+
+            If EorPostingDataAccessLayer.Execute_get_BrgyDesc() Then
                 Return True
             Else
                 Return False
@@ -642,13 +674,13 @@ Public Class EorPostingModel
     End Function
 
 
-    Public Function get_EORNO(ByRef OR_No As String) As String
+    Public Function get_EORNO(ByRef srs As String, ByRef OR_No As String) As String
         Dim EORNO As String = Nothing
         Try
             Dim _nQuery As String = Nothing
 
             _nQuery = _
-           "select Concat(  'CAL',Format(getdate(), 'yyyyMM-'), '" & OR_No & "' ) AS EOR_NO"
+           "select Concat(  '" & srs & "',Format(getdate(), 'yyyyMM-'), '" & OR_No & "' ) AS EOR_NO"
 
             EorPostingDataAccessLayer._mStrSql = _nQuery
             EorPostingDataAccessLayer._mSqlCon = Spidc_Web_API_Global_Connection._pSqlCxn_TOIMS

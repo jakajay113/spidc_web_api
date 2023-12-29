@@ -253,6 +253,7 @@ Public Class EorPostingDataAccessLayer
                             EorPostingModel.BirthDate = _nSqlDataReader("BirthDate").ToString
                             EorPostingModel.Civil_Status = _nSqlDataReader("CivilStatus").ToString
                             EorPostingModel.Citizenship = _nSqlDataReader("Citizenship").ToString
+                            EorPostingModel.BrgyCode = _nSqlDataReader("Barangay").ToString
                         End If
                     End While
                 Finally
@@ -276,9 +277,9 @@ Public Class EorPostingDataAccessLayer
             End If
 
 
-            If EorPostingModel.Gender = "M" Then
+            If EorPostingModel.Gender = "M" Or EorPostingModel.Gender = "Male" Then
                 EorPostingModel.Gender = "1"
-            ElseIf EorPostingModel.Gender = "F" Then
+            ElseIf EorPostingModel.Gender = "F" Or EorPostingModel.Gender = "Female" Then
                 EorPostingModel.Gender = "0"
             End If
 
@@ -343,7 +344,33 @@ Public Class EorPostingDataAccessLayer
     End Function
 
 
+    Public Shared Function Execute_get_BrgyDesc() As Boolean
 
+        Try
+            _mSqlCmd = New SqlCommand(_mStrSql, _mSqlCon)
+            Using _nSqlDataReader As SqlDataReader = _mSqlCmd.ExecuteReader
+                Try
+                    While _nSqlDataReader.Read()
+                        If _nSqlDataReader.HasRows Then
+                            EorPostingModel.BrgyDesc = _nSqlDataReader("MuniCityBrgyName").ToString
+                        End If
+                    End While
+                Finally
+                    _nSqlDataReader.Close()
+                End Try
+            End Using
+
+            Return True
+
+        Catch ex As Exception
+            EorPostingModel.ERRORLOGS(EorPostingModel.API_APP_NAME, "get_BrgyDesc", ex.ToString())
+            Return False
+        End Try
+
+        _mSqlCmd.Dispose()
+        _mSqlCon.Close()
+
+    End Function
 
     Public Shared Function Execute_get_timeEOR() As Boolean
 
@@ -485,7 +512,7 @@ Public Class EorPostingDataAccessLayer
             Return True
 
         Catch ex As Exception
-            EorPostingModel.ERRORLOGS(EorPostingModel.API_APP_NAME, "EorPostingModel", ex.ToString())
+            EorPostingModel.ERRORLOGS(EorPostingModel.API_APP_NAME, "Update_EOR_COUNT", ex.ToString())
             Return False
         End Try
 
@@ -711,7 +738,7 @@ Public Class EorPostingDataAccessLayer
             Return True
 
         Catch ex As Exception
-            EorPostingModel.ERRORLOGS(EorPostingModel.API_APP_NAME, "Insert_OnlinePaymentRef", ex.ToString())
+            EorPostingModel.ERRORLOGS(EorPostingModel.API_APP_NAME, "Update_CTC_Online_App_PostStatus", ex.ToString())
             Return False
         End Try
 
