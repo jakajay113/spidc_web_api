@@ -714,6 +714,26 @@
                                     },
                                     success: function (response) {
                                         loader.hide();
+
+                                       
+                                        // Extract relevant information
+                                        var dataInformation = response.data.payload.dataInformation;
+                                        var dataCode = response.data.payload.dataCode;
+
+                                        // Get the accountNo values from dataInformation
+                                        var accountNosToMatch = dataInformation.map(item => item.AccountNo);
+
+                                        // Remove items from dataCode where accountNo does not match any in dataInformation
+                                        var filteredDataCode = dataCode.filter(item => accountNosToMatch.includes(item.accountNo));
+
+                                        // Update the dataCode array in jsonData
+                                        var finalFilteredJson = response.data;
+                                        finalFilteredJson.payload.dataCode = filteredDataCode;
+
+                                        // Use the updated jsonData here or call another function
+                                        //console.log(finalFilteredJson);
+
+                                     
                                         var currentUrl = window.location.href;
                                         var urlParts = currentUrl.split("/");
 
@@ -728,11 +748,11 @@
                                         }
                                         if(response.data.transactionType == "OTC"){
                                             var proccessingUrl = part1 + '//'+ part3 + '/' + part4 + '/' + part5 + '/' + response.data.successURL;
-                                            localStorage.setItem('payloadToProcess', JSON.stringify(response.data));
+                                            localStorage.setItem('payloadToProcess', JSON.stringify(finalFilteredJson));
                                             window.location.href = proccessingUrl; 
                                         }else{
                                                 var proccessingUrl = part1 + '//'+ part3 + '/' + part4 + '/' + part5 + '/' + response.data.urlProcess;
-                                                localStorage.setItem('payloadToProcess', JSON.stringify(response.data));
+                                                localStorage.setItem('payloadToProcess', JSON.stringify(finalFilteredJson));
                                                 window.location.href = proccessingUrl; 
                                         }
                                     },

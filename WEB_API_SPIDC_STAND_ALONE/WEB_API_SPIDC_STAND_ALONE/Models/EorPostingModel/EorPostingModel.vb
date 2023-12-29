@@ -211,23 +211,39 @@ Public Class EorPostingModel
             Return False
         End If
 
-        'GET OTHER DATA FOR TOIMS FROM TIMS
-        If get_Other_TOIMS_data2(AccNo, TIN, Weight, Height, Gender, Birth_Place, BirthDate, Civil_Status, Citizenship) Then
-        Else
-            Return False
-        End If
+        If APPName = "CEDULAAPP" Then
 
-        'GET CITIZENSHIPCODE
-        If get_CitizenshipCode(Citizenship) Then
-        Else
-            Return False
-        End If
 
-        If get_BrgyDesc(BrgyCode) Then
-        Else
-            Return False
-        End If
+            If get_Other_TOIMS_data2(AccNo, TIN, Weight, Height, Gender, Birth_Place, BirthDate, Civil_Status, Citizenship) Then
+            Else
+                Return False
+            End If
 
+            'GET CITIZENSHIPCODE
+            If get_CitizenshipCode(Citizenship) Then
+            Else
+                Return False
+            End If
+
+            If get_BrgyDesc(BrgyCode) Then
+            Else
+                Return False
+            End If
+
+        Else
+
+            TIN = ""
+            Height = ""
+            Weight = ""
+            Gender = ""
+            Birth_Place = ""
+            BirthDate = ""
+            Civil_Status = ""
+            Citizenship = ""
+            BrgyCode = ""
+            BrgyDesc = ""
+
+        End If
 
 
 
