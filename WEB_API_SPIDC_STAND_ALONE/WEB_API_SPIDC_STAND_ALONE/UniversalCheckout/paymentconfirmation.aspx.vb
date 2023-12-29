@@ -277,8 +277,8 @@ Public Class paymentconfirmation
             'Check If POSTING IS SUCCESS
             If _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, _transactionId, api_email, api_checkoutstatus, _security, payload) Then
                 'Call Webhook To Send EOR Email
-                If _mWebhooks("appName", "Notification Test", EorPostingModel.eORno, api_TotalAmt_Paid, api_email, api_OriginLink, api_PaymentRef, api_TransDesc, api_accno) Then
-                    'Check If System Is Not SPIDC  FOR SENDING NOTIFICATION OF PAYMENT
+                If sendEOR(api_AppName, "Notification Test", EorPostingModel.eORno, api_TotalAmt_Paid, api_email, api_OriginLink, api_PaymentRef, api_TransDesc, api_accno) Then
+                    '    'Check If System Is Not SPIDC  FOR SENDING NOTIFICATION OF PAYMENT
                     Select Case api_AppName
                         Case Spidc_Web_API_Config._mAppLinkSystem2
                             'Post Notification To Other App WebHook To Get Payment Status APP NAME / NOTIFICATION URL/ PAYMENT REF / STATUS 1 FOR SUCCESS
@@ -286,12 +286,14 @@ Public Class paymentconfirmation
                         Case Else
 
                     End Select
+
                     _mGCASHPaymentInquiry = {"success", api_TransDesc, api_accno, api_email, api_TotalAmt_Paid, api_TotalAmt_Paid, api_BillingDate, api_OriginLink}
-                   
                 Else
                     _mGCASHPaymentInquiry = {"error", api_TransDesc, api_accno, api_email, api_TotalAmt_Paid, api_TotalAmt_Paid, api_BillingDate, api_OriginLink}
                 End If
+
             Else
+
                 _mGCASHPaymentInquiry = {"error", api_OriginLink}
             End If
             Return _mGCASHPaymentInquiry
@@ -402,8 +404,9 @@ Public Class paymentconfirmation
             'Check If POSTING IS SUCCESS
             If _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, _transactionId, api_email, api_checkoutstatus, _security, payload) Then
                 'Call Webhook To Send EOR Email
-                If _mWebhooks("appName", "Notification Test", EorPostingModel.eORno, api_TotalAmt_Paid, api_email, api_OriginLink, api_PaymentRef, api_TransDesc, api_accno) Then
-                    'Check If System Is Not SPIDC  FOR SENDING NOTIFICATION OF PAYMENT
+                'Call Webhook To Send EOR Email
+                If sendEOR(api_AppName, "Notification Test", EorPostingModel.eORno, api_TotalAmt_Paid, api_email, api_OriginLink, api_PaymentRef, api_TransDesc, api_accno) Then
+                    '    'Check If System Is Not SPIDC  FOR SENDING NOTIFICATION OF PAYMENT
                     Select Case api_AppName
                         Case Spidc_Web_API_Config._mAppLinkSystem2
                             'Post Notification To Other App WebHook To Get Payment Status APP NAME / NOTIFICATION URL/ PAYMENT REF / STATUS 1 FOR SUCCESS
@@ -411,6 +414,7 @@ Public Class paymentconfirmation
                         Case Else
 
                     End Select
+
                     _mPayMayaPaymentInquiry = {"success", api_TransDesc, api_accno, api_email, api_TotalAmt_Paid, api_TotalAmt_Paid, api_BillingDate, api_OriginLink}
                 Else
                     _mPayMayaPaymentInquiry = {"error", api_TransDesc, api_accno, api_email, api_TotalAmt_Paid, api_TotalAmt_Paid, api_BillingDate, api_OriginLink}
@@ -475,6 +479,86 @@ Public Class paymentconfirmation
         End If
 
     End Function
+
+
+    Public Shared Function sendEOR(appName As String, notificationSubject As String, eorNo As String, totalPaid As String, email As String, urlOrigin As String, transactionRef As String, transactionDesc As String, accountNo As String) As Boolean
+        Dim reportViewer As New ReportViewer()
+        reportViewer.LocalReport.DataSources.Clear()
+        'generate datatable for RDLC
+        Dim EorPostingModel As New EorPostingModel
+        Dim _nDataTable0 As New DataTable
+        _nDataTable0 = EorPostingModel.Print_Template
+
+        Dim _nDataTable1 As New DataTable
+        _nDataTable1 = EorPostingModel.Print_Report(eorNo)
+        Dim _nDataTable2 As New DataTable
+        _nDataTable2 = EorPostingModel.Print_TOP(eorNo)
+        reportViewer.ProcessingMode = ProcessingMode.Local
+
+        Dim fullPath As String = System.Web.HttpContext.Current.Server.MapPath("../Report/eOR_Universal.rdlc")
+        reportViewer.LocalReport.ReportPath = fullPath
+        'Pass the datatable into the rdlc
+        Dim _nReportDataSource0 As New ReportDataSource
+        _nReportDataSource0.Name = "DataSet0"
+        _nReportDataSource0.Value = _nDataTable0
+        reportViewer.LocalReport.DataSources.Add(_nReportDataSource0)
+
+        Dim _nReportDataSource1 As New ReportDataSource
+        _nReportDataSource1.Name = "DataSet1"
+        _nReportDataSource1.Value = _nDataTable1
+        reportViewer.LocalReport.DataSources.Add(_nReportDataSource1)
+
+        Dim _nReportDataSource2 As New ReportDataSource
+        _nReportDataSource2.Name = "DataSet2"
+        _nReportDataSource2.Value = _nDataTable2
+        reportViewer.LocalReport.DataSources.Add(_nReportDataSource2)
+
+        'convert amount money into letters
+        Dim strAmount As String = Nothing
+        strAmount = EorPostingModel.AmountInWords(totalPaid)
+
+        'set the converted money in words into parameter on RDLC
+        Dim paramList As New List(Of ReportParameter)
+        paramList.Add(New ReportParameter("AmountInWords", strAmount))
+        reportViewer.LocalReport.SetParameters(paramList)
+
+
+        Dim bytes As Byte() = reportViewer.LocalReport.Render("PDF")
+
+
+
+        reportViewer.LocalReport.Refresh()
+
+        'Sending the generated report into pdf to email
+
+        Dim sent As Boolean = False
+        Dim err As String = Nothing
+        Dim body As String
+
+        body = "Dear Valued Tax Payer, <br> " & _
+               "This confirms your bill payment transaction with the following details: <br> " & _
+               "Transaction Number: " & transactionRef & "<br>" & _
+               "Transaction Type: " & transactionDesc & "<br>" & _
+               "Account No. : " & accountNo & "<br>" & _
+               "Amount Paid : " & totalPaid & "<br> <br>" & _
+               "Your Electronic Official Receipt is attached in this e-mail."
+
+
+        'Send  The Email  check if  successfully send
+        If EorPostingModel.Send_eOR(email, notificationSubject, body, bytes, sent, urlOrigin, err) Then
+            Return True
+        Else
+            Return False
+        End If
+
+
+
+
+    End Function
+
+
+
+
 
 
     'WEBHOOK NOTIFICATIONS

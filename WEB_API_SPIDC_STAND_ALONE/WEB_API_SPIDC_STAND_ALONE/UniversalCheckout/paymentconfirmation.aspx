@@ -553,7 +553,8 @@
         document.getElementsByClassName('wrapperAlertCross')[0].style.display = 'none'
         var url = window.location.href;
         //localStorage.getItem('payloadToProcess')
-        //var payload = '{"payload":{"dataInformation":[{"TransactionRef":"UCP2023121158784","TrefNo":null,"AppName":"CEDULAAPP","Email":"spidcenduser@yopmail.com","Fname":"jay","MiddleName":"jay","LastName":"jay","Suffix":null,"AccountNo":"2023-11-00002","BillingAmount":"13.42","TotalAmount":"13.42","BiilingDate":"2023-12-11T11:48:33.907","OtherFee":"0.00","RawAmount":"13.42","SpidcFee":"0.00","Token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJzcGlkY2VuZHVzZXJAeW9wbWFpbC5jb20iLCJhcHBOYW1lIjoiQ0VEVUxBQVBQIiwiYWNjb3VudE5vIjoiMjAyMy0xMS0wMDAwMiIsImlhdCI6IjEyLzExLzIwMjMgMzo0ODozMyBBTSIsIm5iZiI6MTcwMjI2NjUxMywiZXhwIjoxNzAyMjY3MTEzLCJpc3MiOiJcIlNQSURDIFVOSVZFUlNBTCBDSEVDS09VVFwiIiwiYXVkIjoiaHR0cHM6Ly9vbmxpbmUuc3BpZGMuY29tLnBoL2NhbG9vY2FuL1dlYlBvcnRhbC9DZWR1bGFBcHAvVGF4cGF5ZXIvaW5kZXguaHRtbCJ9.XZiOl9WqJdvxk9IMycEX0QdCGZ6lRU46-TuFXyPwCZk","CheckOutStatus":"Pending","UrlOrigin":"https://online.spidc.com.ph/caloocan/WebPortal/CedulaApp/Taxpayer/index.html","UrlSuccess":"https://online.spidc.com.ph/caloocan/WebPortal/CedulaApp/Taxpayer/index.html","CheckOutDate":"2023-12-11T11:48:33.907","Address":"jay","AssessmentNo":"2023-11-00002","transDesc":"Individual Cedula"}],"dataCode":[{"accountNo":"2023-11-00002","SysTran_ProviderCode":"SF-002","systrans_codeDesc":"diploma fee","systems_codeAmt":"500.00","SysTran_MainCode":"4-02-02-010-01","SysTran_AncestorCode":"4-02-02-010-01","SysTran_SubAccCode":"4-02-02-010-01-002"},{"accountNo":"2023-11-00002","SysTran_ProviderCode":"SF-002","systrans_codeDesc":"diploma fee","systems_codeAmt":"500.00","SysTran_MainCode":"4-02-02-010-01","SysTran_AncestorCode":"4-02-02-010-01","SysTran_SubAccCode":"4-02-02-010-01-002"},{"accountNo":"WEB-CTC-2023-11-00010","SysTran_ProviderCode":"","systrans_codeDesc":"","systems_codeAmt":"110.00","SysTran_MainCode":"4-01-01-050-51","SysTran_AncestorCode":"4-01-01-050-51","SysTran_SubAccCode":"4-01-01-050-51-001"},{"accountNo":"WEB-CTC-2023-11-00010","SysTran_ProviderCode":"","systrans_codeDesc":"","systems_codeAmt":"24.20","SysTran_MainCode":"4-01-05-010-01","SysTran_AncestorCode":"4-01-05-010-01","SysTran_SubAccCode":"4-01-05-010-01-001"}],"paymentGateway":"GCASH"},"urlProcess":"processing.aspx"}'; 
+        //var payload = '{"payload":{"dataInformation":[{"TransactionRef":"UCP2023122989202","TrefNo":"t1233454","AppName":"PINNACLE","Email":"jakajaysitjar13@gmail.com","Fname":"Ivan","MiddleName":"Delina","LastName":"Drei","Suffix":null,"AccountNo":"2024-01-00001","BillingAmount":"16.00","TotalAmount":"16.00","BiilingDate":"1900-01-01T00:00:00","OtherFee":"0.00","RawAmount":"16.00","SpidcFee":"0.00","Token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJtYXRhdmVyZGVrZW5uZXRoQGdtYWlsLmNvbSIsImFwcE5hbWUiOiJQSU5OQUNMRSIsImFjY291bnRObyI6IjIwMjQtMDEtMDAwMDEiLCJpYXQiOiIxMi8yOS8yMDIzIDY6MjI6MjUgQU0iLCJuYmYiOjE3MDM4MzA5NDUsImV4cCI6MTcwMzgzMTU0NSwiaXNzIjoiXCJTUElEQyBVTklWRVJTQUwgQ0hFQ0tPVVRcIiIsImF1ZCI6Imh0dHBzOi8vZ29vZ2xlLmNvbSJ9.uNd1TwY64ci9HLBYA5icZpEz1S79PQf1ivtQQUMMf_8","CheckOutStatus":"Pending","UrlOrigin":"https://google.com","UrlSuccess":"https://google.com","CheckOutDate":"2023-12-29T14:22:25.24","Address":"Taytay Rizal","AssessmentNo":"2024-01-00012","transDesc":"Tuituion Fees"}],"dataCode":[{"accountNo":"2024-01-00001","SysTran_ProviderCode":"SF-001","systrans_codeDesc":"dental fee","systems_codeAmt":"16.00","SysTran_MainCode":"4-02-02-010-02","SysTran_AncestorCode":"4-02-02-010-02","SysTran_SubAccCode":"4-02-02-010-01-003"}],"paymentGateway":"GCASH"},"urlProcess":"processing.aspx"}';
+        //console.log(payload);
         var payload = localStorage.getItem('payloadToProcess');
         $.ajax({
             url: "paymentconfirmation.aspx/PaymentConfirmation",
@@ -566,7 +567,7 @@
             },
             success: function (reponse) {
                 loader.hide();
-               // console.log(reponse.d[0]);
+               //console.log(reponse.d);
                 if (reponse.d[0] == "success") {
                     document.getElementsByClassName('wrapperCheck')[0].style.display = 'block'
                     document.getElementById('notificationHeaderSuccess').textContent = "Payment successfuly"
@@ -592,6 +593,8 @@
             },
             error: function (xhr, status, errorThrown) {
                 console.log(xhr.responseText);
+                console.log(status);
+                console.log(errorThrown);
             }
         });
 
