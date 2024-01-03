@@ -216,8 +216,8 @@ Public Class UniversalCheckoutModel
                     _mUrlOrigin = _mJsonObject("universalCheckout")("systemInformation")("urlOrigin").ToString()
                     'Payor Information
                     _mFname = _mJsonObject("universalCheckout")("payorInfo")("firstName").ToString()
-                    _mMname = _mJsonObject("universalCheckout")("payorInfo")("lastName").ToString()
-                    _mLname = _mJsonObject("universalCheckout")("payorInfo")("middleName").ToString()
+                    _mMname = _mJsonObject("universalCheckout")("payorInfo")("middleName").ToString()
+                    _mLname = _mJsonObject("universalCheckout")("payorInfo")("lastName").ToString()
                     _mSuffix = _mJsonObject("universalCheckout")("payorInfo")("suffix").ToString()
                     _mAddress = _mJsonObject("universalCheckout")("payorInfo")("address").ToString()
                     'Universal Checkout Other Fee
