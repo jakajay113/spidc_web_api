@@ -385,13 +385,13 @@ Public Class EorPostingModel
             _QSelect_EOR = " Select (Concat('" & Lname & "',',','" & Fname & "',' ', '" & Mname & "' ))PayorName, " &
                         " ('" & BrgyDesc & "')Barangay, " &
                         " (null)TaxType, " &
-                        " (null)TDNBIN, " &
+                        " ('" & [AccNo] & "')TDNBIN, " &
                         " (null)PIN, " &
                         " (null)PeriodCovered, " &
                         " ('" & AssessmentNo & "')AssessNo, " &
                         " ('" & eORno & "')eORno, " &
                         " (FORMAT(GETDATE(), 'MMMM dd, yyyy'))DateTime, " &
-                        " ('" & PaymentRefNo & "')OnlineID, " &
+                        " ('" & transactionId & "')OnlineID, " &
                         " ('" & Gateway & "')Gateway_Selected, " &
                         " ('" & GatewayRef & "')Gateway_RefNo, " &
                         " ('" & Gateway_conf & "')Gateway_ConfDate, " &

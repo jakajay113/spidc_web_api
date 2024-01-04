@@ -275,7 +275,7 @@ Public Class paymentconfirmation
             _cPaymentPosting._pSqlConnection = Spidc_Web_API_Global_Connection._pSqlCxn_TOIMS
 
             'Check If POSTING IS SUCCESS
-            If _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, _transactionId, api_email, api_checkoutstatus, _security, payload) Then
+            If _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, transactionid, api_email, api_checkoutstatus, _security, payload) Then
                 'Call Webhook To Send EOR Email
                 If sendEOR(api_AppName, "Notification Test", EorPostingModel.eORno, api_TotalAmt_Paid, api_email, api_OriginLink, api_PaymentRef, api_TransDesc, api_accno) Then
                     '    'Check If System Is Not SPIDC  FOR SENDING NOTIFICATION OF PAYMENT
@@ -402,7 +402,7 @@ Public Class paymentconfirmation
             _cPaymentPosting._pSqlConnection = Spidc_Web_API_Global_Connection._pSqlCxn_TOIMS
 
             'Check If POSTING IS SUCCESS
-            If _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, _transactionId, api_email, api_checkoutstatus, _security, payload) Then
+            If _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, transactionid, api_email, api_checkoutstatus, _security, payload) Then
                 'Call Webhook To Send EOR Email
                 'Call Webhook To Send EOR Email
                 If sendEOR(api_AppName, "Notification Test", EorPostingModel.eORno, api_TotalAmt_Paid, api_email, api_OriginLink, api_PaymentRef, api_TransDesc, api_accno) Then
@@ -432,53 +432,53 @@ Public Class paymentconfirmation
 
 
     'WEBHOOK SEND EMAIL EOR 
-    Public Shared Function _mWebhooks(appName As String, notificationSubject As String, eorNo As String, totalPaid As String, email As String, urlOrigin As String, transactionRef As String, transactionDesc As String, accountNo As String) As Boolean
-        'Get Web Config
-        Spidc_Web_API_Config.WebApiConfig()
-        ' Replace with your API endpoint WEB HOOK URL
-        Dim webhookURL As String = Spidc_Web_API_Config._mApiEndPointWebhooks
-        ' Replace "your-api-key" with your actual API key
-        Dim apiKey As String = Spidc_Web_API_Config._mApiKey
-        ' Create a RestClient
-        Dim client As New RestClient(webhookURL)
-        ' Create a request with the desired HTTP method (POST in this case)
-        Dim request As New RestRequest(Method.POST)
-        ' Set the request content type (application/json in this example)
-        request.AddHeader("Content-Type", "application/json")
-        ' Add API key to the request headers
-        request.AddHeader("Authorization", apiKey)
-        ' Add any parameters or request body as needed
-        ' Create a JObject to represent the JSON structure
-        Dim jsonObject As New JObject From {
-              {"event", "send_email_eor"},
-              {"subject", notificationSubject},
-              {"type", "webhook"},
-              {"data", New JObject From {
-                  {"appName", appName},
-                  {"oRno", eorNo},
-                  {"accontNo", accountNo},
-                  {"transactionRef", transactionRef},
-                  {"transactionType", transactionDesc},
-                  {"email", email},
-                  {"totalPaid", totalPaid},
-                  {"urlOrigin", urlOrigin}
-              }}
-          }
-        ' Convert JObject to a JSON string
-        Dim jsonPayload As String = jsonObject.ToString()
-        request.AddParameter("application/json", jsonPayload, ParameterType.RequestBody)
-        ' Execute the request
-        Dim response As IRestResponse = client.Execute(request)
-        Dim _jsonResponse As Object = New JavaScriptSerializer().Deserialize(Of Object)(response.Content)
+    'Public Shared Function _mWebhooks(appName As String, notificationSubject As String, eorNo As String, totalPaid As String, email As String, urlOrigin As String, transactionRef As String, transactionDesc As String, accountNo As String) As Boolean
+    '    'Get Web Config
+    '    Spidc_Web_API_Config.WebApiConfig()
+    '    ' Replace with your API endpoint WEB HOOK URL
+    '    Dim webhookURL As String = Spidc_Web_API_Config._mApiEndPointWebhooks
+    '    ' Replace "your-api-key" with your actual API key
+    '    Dim apiKey As String = Spidc_Web_API_Config._mApiKey
+    '    ' Create a RestClient
+    '    Dim client As New RestClient(webhookURL)
+    '    ' Create a request with the desired HTTP method (POST in this case)
+    '    Dim request As New RestRequest(Method.POST)
+    '    ' Set the request content type (application/json in this example)
+    '    request.AddHeader("Content-Type", "application/json")
+    '    ' Add API key to the request headers
+    '    request.AddHeader("Authorization", apiKey)
+    '    ' Add any parameters or request body as needed
+    '    ' Create a JObject to represent the JSON structure
+    '    Dim jsonObject As New JObject From {
+    '          {"event", "send_email_eor"},
+    '          {"subject", notificationSubject},
+    '          {"type", "webhook"},
+    '          {"data", New JObject From {
+    '              {"appName", appName},
+    '              {"oRno", eorNo},
+    '              {"accontNo", accountNo},
+    '              {"transactionRef", transactionRef},
+    '              {"transactionType", transactionDesc},
+    '              {"email", email},
+    '              {"totalPaid", totalPaid},
+    '              {"urlOrigin", urlOrigin}
+    '          }}
+    '      }
+    '    ' Convert JObject to a JSON string
+    '    Dim jsonPayload As String = jsonObject.ToString()
+    '    request.AddParameter("application/json", jsonPayload, ParameterType.RequestBody)
+    '    ' Execute the request
+    '    Dim response As IRestResponse = client.Execute(request)
+    '    Dim _jsonResponse As Object = New JavaScriptSerializer().Deserialize(Of Object)(response.Content)
 
-        'Check If Status is Success
-        If _jsonResponse("status") = "success" Then
-            Return True
-        Else
-            Return False
-        End If
+    '    'Check If Status is Success
+    '    If _jsonResponse("status") = "success" Then
+    '        Return True
+    '    Else
+    '        Return False
+    '    End If
 
-    End Function
+    'End Function
 
 
     Public Shared Function sendEOR(appName As String, notificationSubject As String, eorNo As String, totalPaid As String, email As String, urlOrigin As String, transactionRef As String, transactionDesc As String, accountNo As String) As Boolean
