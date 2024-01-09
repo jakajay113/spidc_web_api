@@ -425,7 +425,7 @@
         }
         function getUniversalCheckout(token, key) {
             $.ajax({
-                url: 'https://online.spidc.com.ph/spidc_web_api/api/v1/spidcproxy/universalcheckoutGetOAIMS/' + key + '',
+                url: 'https://online.caloocancity.gov.ph/spidc_web_api/api/v1/spidcproxy/universalcheckoutGetOAIMS/' + key + '',
                 type: 'GET',
                 data: '{}',
                 async: true,
@@ -505,7 +505,7 @@
         }
         function getUniversalCheckoutPaymentMethod(token, key, appName) {
             $.ajax({
-                url: 'https://online.spidc.com.ph/spidc_web_api/api/v1/spidcproxy/universalcheckoutGetPaymentMethodOAIMS',
+                url: 'https://online.caloocancity.gov.ph/spidc_web_api/api/v1/spidcproxy/universalcheckoutGetPaymentMethodOAIMS',
                 type: 'GET',
                 data: '{}',
                 async: true,
@@ -673,7 +673,7 @@
         }
         function deleteUniversalCheckout(token, key) {
             $.ajax({
-                url: 'https://online.spidc.com.ph/spidc_web_api/api/v1/spidcproxy/universalcheckoutDeleteOAIMS/' + key + '',
+                url: 'https://online.caloocancity.gov.ph/spidc_web_api/api/v1/spidcproxy/universalcheckoutDeleteOAIMS/' + key + '',
                 type: 'DELETE',
                 data: '{}',
                 async: true,
@@ -746,12 +746,13 @@
                     };
                     var finalPayload = { ...existingPayload, ...newObject };
                     var token = getParameterByName(window.location.href, "xyz");
+                    //console.log(JSON.stringify(finalPayload));
                     //setTimeout(function () {
                                 $.ajax({
                                     type: 'POST',
                                     async: true,
                                     cache: false,
-                                    url: 'https://online.spidc.com.ph/spidc_web_api/api/v1/spidcproxy/universalcheckoutProceedOAIMS',
+                                    url: 'https://online.caloocancity.gov.ph/spidc_web_api/api/v1/spidcproxy/universalcheckoutProceedOAIMS',
                                     data: JSON.stringify(finalPayload),
                                     contentType: 'application/json',
                                     beforeSend: function (xhr) {
@@ -761,7 +762,6 @@
                                     success: function (response) {
                                         loader.hide();
 
-                                       
                                         // Extract relevant information
                                         var dataInformation = response.data.payload.dataInformation;
                                         var dataCode = response.data.payload.dataCode;
@@ -799,7 +799,8 @@
                                         }else{
                                                 var proccessingUrl = part1 + '//'+ part3 + '/' + part4 + '/' + part5 + '/' + response.data.urlProcess;
                                                 localStorage.setItem('payloadToProcess', JSON.stringify(finalFilteredJson));
-                                                window.location.href = proccessingUrl; 
+                                                 window.location.href = proccessingUrl;
+                                                //console.log(finalFilteredJson);
                                         }
                                     },
                                     error: function (xhr, status, errorThrown) {
@@ -820,7 +821,7 @@
         document.getElementsByClassName("checkout-cancel")[0].addEventListener("click", function () {
             var token = getParameterByName(window.location.href, "xyz");
             var decodedPayload = decodeJwt(token);
-            var key = decodedPayload.accountNo;
+            var key = decodedPayload.assessmentNo;
             deleteUniversalCheckout(token, key);
         });
     </script>

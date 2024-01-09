@@ -289,7 +289,7 @@ Public Class paymentconfirmation
                 If sendEOR(api_AppName, "Electronic Official Receipt", EorPostingModel.eORno, api_Total, api_email, api_OriginLink, api_PaymentRef, api_TransDesc, api_accno) Then
                     '    'Check If System Is Not SPIDC  FOR SENDING NOTIFICATION OF PAYMENT
                     Select Case api_AppName
-                        Case Spidc_Web_API_Config._mAppLinkSystem2
+                        Case Spidc_Web_API_Config._mAppLinkSystem2 'PINNACLE
                             'Post Notification To Other App WebHook To Get Payment Status APP NAME / NOTIFICATION URL/ Gateway Payment Ref/PAYMENT REF / STATUS 1 FOR SUCCESS
                             _mWebhooksNotifications(api_AppName, api_SuccessLink, transactionid, api_PaymentRef, "1", EorPostingModel.eORno, _paymentGateway)
                         Case Else
@@ -593,7 +593,7 @@ Public Class paymentconfirmation
         Select Case appName
             Case Spidc_Web_API_Config._mAppLinkSystem2 'PINANCLE
                 apiHeader = "API_KEY"
-                apiKey = "Pinn@cleP@ss123"
+                apiKey = "BAPd0Yd3zZ8D3V4Y17+U1x9ogJUZ8C8HUu0JVEgRvPbc"
             Case Spidc_Web_API_Config._mAppLinkSystem3 'QPAX
                 apiHeader = ""
                 apiKey = ""

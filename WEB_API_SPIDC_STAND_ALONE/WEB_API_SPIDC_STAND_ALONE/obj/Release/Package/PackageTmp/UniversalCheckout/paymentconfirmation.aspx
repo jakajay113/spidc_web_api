@@ -553,7 +553,7 @@
         document.getElementsByClassName('wrapperAlertCross')[0].style.display = 'none'
         var url = window.location.href;
         //localStorage.getItem('payloadToProcess')
-        //var payload = '{"payload":{"dataInformation":[{"TransactionRef":"UCP2024010850032","TrefNo":"t1233454","AppName":"PINNACLE","Email":"mataverdekenneth@gmail.com","Fname":"Yest","MiddleName":"Hina","LastName":"Nagi","Suffix":null,"AccountNo":"2023012319-S","BillingAmount":"1.00","TotalAmount":"1.00","BiilingDate":"1900-01-01T00:00:00","OtherFee":"0.00","RawAmount":"1.00","SpidcFee":"0.00","Token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJtYXRhdmVyZGVrZW5uZXRoQGdtYWlsLmNvbSIsImFwcE5hbWUiOiJQSU5OQUNMRSIsImFzc2Vzc21lbnRObyI6IjIwMjMtMTItMTIxMjg5IiwiaWF0IjoiMS84LzIwMjQgMTozNzowOSBQTSIsIm5iZiI6MTcwNDcyMTAyOSwiZXhwIjoxNzA0NzIxNjI5LCJpc3MiOiJcIlNQSURDIFVOSVZFUlNBTCBDSEVDS09VVFwiIiwiYXVkIjoiaHR0cHM6Ly9nb29nbGUuY29tIn0.wH8yY-amEJJQ67IMwpcMGDviS6QvATl8gzNtgn5Q9Sc","CheckOutStatus":"Pending","UrlOrigin":"https://google.com","UrlSuccess":"https://google.com","CheckOutDate":"2024-01-08T21:37:09.69","Address":"Blk 8 Lotus St. Cainta Rizal","AssessmentNo":"2023-11-88888","transDesc":"Tuition Fee"}],"dataCode":[{"accountNo":"2023012319-S","SysTran_ProviderCode":"4-02-02-010-01","systrans_codeDesc":"Medical Fee","systems_codeAmt":"1.00","SysTran_MainCode":"4-02-02-010-01","SysTran_AncestorCode":"4-02-02-010-01","SysTran_SubAccCode":"4-02-02-010-01-001","assessmentNo":"2023-11-88888"}],"paymentGateway":"GCASH"},"urlProcess":"processing.aspx"}';
+        //var payload = '{"payload":{"dataInformation":[{"TransactionRef":"UCP2024010810332","TrefNo":"t12312356","AppName":"PINNACLE","Email":"mataverdekenneth@gmail.com","Fname":"Yest","MiddleName":"Hina","LastName":"Nagi","Suffix":null,"AccountNo":"2023012319-S","BillingAmount":"1.00","TotalAmount":"1.00","BiilingDate":"1900-01-01T00:00:00","OtherFee":"0.00","RawAmount":"1.00","SpidcFee":"0.00","Token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJodHRwOi8vc2NoZW1hcy54bWxzb2FwLm9yZy93cy8yMDA1LzA1L2lkZW50aXR5L2NsYWltcy9lbWFpbGFkZHJlc3MiOiJtYXRhdmVyZGVrZW5uZXRoQGdtYWlsLmNvbSIsImFwcE5hbWUiOiJQSU5OQUNMRSIsImFzc2Vzc21lbnRObyI6IjIwMjMtMTItMTIxMjg5IiwiaWF0IjoiMS84LzIwMjQgMTozNzowOSBQTSIsIm5iZiI6MTcwNDcyMTAyOSwiZXhwIjoxNzA0NzIxNjI5LCJpc3MiOiJcIlNQSURDIFVOSVZFUlNBTCBDSEVDS09VVFwiIiwiYXVkIjoiaHR0cHM6Ly9nb29nbGUuY29tIn0.wH8yY-amEJJQ67IMwpcMGDviS6QvATl8gzNtgn5Q9Sc","CheckOutStatus":"Pending","UrlOrigin":"https://google.com","UrlSuccess":"https://google.com","CheckOutDate":"2024-01-08T21:37:09.69","Address":"Blk 8 Lotus St. Cainta Rizal","AssessmentNo":"2023-12-121289","transDesc":"Tuition Fee"}],"dataCode":[{"accountNo":"2023012319-S","SysTran_ProviderCode":"4-02-02-010-01","systrans_codeDesc":"Medical Fee","systems_codeAmt":"1.00","SysTran_MainCode":"4-02-02-010-01","SysTran_AncestorCode":"4-02-02-010-01","SysTran_SubAccCode":"4-02-02-010-01-001","assessmentNo":"2023-12-121289"}],"paymentGateway":"GCASH"},"urlProcess":"processing.aspx"}';
         //console.log(payload);
         var payload = localStorage.getItem('payloadToProcess');
         $.ajax({
@@ -567,7 +567,7 @@
             },
             success: function (reponse) {
                 loader.hide();
-                //console.log(reponse.d);
+               //console.log(reponse.d);
                 if (reponse.d[0] == "success") {
                     document.getElementsByClassName('wrapperCheck')[0].style.display = 'block'
                     document.getElementById('notificationHeaderSuccess').textContent = "Payment successfuly"
@@ -580,7 +580,7 @@
                     document.getElementById('_btnSuccessBackToHome').addEventListener('click', function () {
                         window.location.href = reponse.d[7];
                     });
-                } else {
+                }else {
                     document.getElementsByClassName('wrapperAlertCross')[0].style.display = 'block'
                     document.getElementById('notificationHeaderFailed').textContent = "Payment Failed"
                     document.getElementById('_payment-failed-decription').textContent = "Something went wrong try again later!"
