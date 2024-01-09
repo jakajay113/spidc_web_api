@@ -1,0 +1,1 @@
+Go to Handler Mappings in your IIS Manager. Find ExtensionlessUrlHandler-Integrated-4.0, double click it. Click Request Restrictions... button and on Verbs tab, add both DELETE and PUT.

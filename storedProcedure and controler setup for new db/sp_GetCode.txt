@@ -1,0 +1,445 @@
+USE [SOS_TIMS_WEB]
+GO
+
+/****** Object:  StoredProcedure [dbo].[sp_getCode]    Script Date: 12/1/2023 11:32:18 AM ******/
+SET ANSI_NULLS ON
+GO
+
+SET QUOTED_IDENTIFIER ON
+GO
+
+Create procedure [dbo].[sp_getCode] 
+(
+	@moduleID nvarchar(50),
+	@Date nvarchar(50) = null,
+	@ReferenceCode nvarchar(50) = '',
+	@SelectCond nvarchar(1000) = '',
+	@output nvarchar(50) = null output
+)
+ 
+as
+begin
+/*
+	Author: Anabel Protacio
+	Date Created: September 26, 2018
+*/
+
+
+/*
+LEGEND:
+
+[_] - PREFIX OR FIX VALUE ex. [PR]
+Y	- YEAR				YYYY	- FOUR DIGIT YEAR		YY	- TWO DIGIT YEAR
+M	- MONTH				MMMM	- MONTH NAME			MMM	- MONTH NAME (1ST 3 LETTER)		MM	- TWO DIGIT MONTH
+D	- DAY				DDDD	- DAY NAME				DDD	- DAY NAME (1ST 3 LETTER)		DD - TWO DIGIT DAY
+*	- SERIES/SEQUENCE
+H	- HOUR				HH - TWO DIGIT HOUR
+N	- MINUTE			NN - TWO DIGIT MINUTE
+S	- SECOND			SS - TWO DIGIT SECOND
+W	- AM/PM
+
+
+(REF) - Reference Code
+
+COMBINATION OF THE FOLLOWING WILL BASED ON THE SETUP CODE OTHERWISE THE LENGTH TO USE IS STATED
+EX.   
+	DISTRICT NO./CODE   = 10
+	MASKING = T3-YYYY-***
+	OUTPUT	= 010-2018-001
+
+OFFICE/DEPARTMENT
+$	- CODE
+&	- ACRONYM
+!	- UACS
+
+STAFF/DIVISION
+^	- CODE
+>	- ACRONYM
+<	- UACS
+
+X	- SECTION CODE
+=	- UNIT CODE
+
+
+J	- SATTELITE
+C	- CITY/MUNICIPALITY CODE
+P	- PARCEL
+R	- REGION CODE
+B	- BARANGAY CODE
+T	- DISTRICT NO/CODE
+L	- LOCATION CODE
+?	- STREET CODE
+Q	- COMMERCIAL NAME
+~	- LAST NAME
+A	- ACCOUNT NUMBER
+K	- MARKET
+G	- STALL
+E	- TICKET
+F	- TYPE CODE
+V	- CATEGORY CODE
+U	- DOCUMENT CODE
+I	- IMPROVEMENT
++	- SPECIAL ACCOUNT CODE
+%	- CHART OF ACCOUNT			%	- MAIN (LEVEL 0)		%%	- SUB ACCOUNT (LEVEL 1)			%%%	- SUB ACCOUNT (LEVEL 2)
+@	- FUND CODE
+#	- EXPENSE TYPE
+
+
+*/
+
+	SET NOCOUNT ON;
+
+	declare @masking varchar(50)
+	declare @tablename varchar(50)
+	declare @columnname varchar(50)
+	declare @lastcode varchar(50)
+	declare @charCount integer
+	declare @cnt integer
+	declare @myChar nvarchar(1) = ''
+
+	declare @sql nvarchar(4000)
+
+	/*Reserved for Reference Code*/
+	declare @RefCodeStartPos  Integer = 0
+	declare @RefCodeLen  Integer = 0
+	declare @RefCode  nvarchar(50) = @ReferenceCode
+	declare @strRefCode nvarchar(250) = ''
+
+	--declare @RefCodeFStartPos  Integer = 0
+	--declare @RefCodeFLen  Integer = 0
+	--declare @RefCodeF  nvarchar(50) = @code
+	--declare @strRefCodeF nvarchar(250) = ''
+	--declare @strNumF nvarchar(5) = ''
+
+	/*Prefix*/
+	declare @PrefixStartPos  Integer = 0
+	declare @PrefixLen  Integer = 0
+	declare @Prefix  nvarchar(4) = ''
+	declare @strPrefix nvarchar(250) = ''
+	
+	/* if no value provided in @Date, the Current Date will be the default value*/
+	declare @myDate varchar(20) = case when @Date is null then convert(varchar(20),Getdate(),101) else @Date end;
+
+	/*Year*/
+	declare @YearStartPos  Integer = 0
+	declare @YearLen  Integer = 0
+	declare @Year  nvarchar(4) = ''
+	declare @strYear nvarchar(250) = ''
+
+	/*Month*/
+	declare @MonthStartPos  Integer = 0
+	declare @MonthLen  Integer = 0
+	declare @Month  nvarchar(2) = ''
+	declare @strMonth nvarchar(250) = ''
+
+	/*Day*/
+	declare @DayStartPos  Integer = 0
+	declare @DayLen  Integer = 0
+	declare @Day  nvarchar(2) = ''
+	declare @strDay nvarchar(250) = ''
+
+	/*Series*/
+	declare @SeriesStartPos  Integer = 0
+	declare @SeriesLen  Integer = 0
+	declare @Series  nvarchar(50) = ''
+	declare @strSeries nvarchar(250) = ''
+
+	/*
+		Get details in ControlSetup
+		Note: This method is only applicable if you are targetting 1 row/record in a table
+	*/
+	select
+		@masking = upper(masking), --masking
+		@tablename =upper(Tablename), --tablename
+		@columnname = upper(Columnname) --columnname
+	from ControlSetup
+	where moduleID = @moduleID
+
+	/*Getting Count and position in Masking*/
+		/*GetPrefix*/
+		if charindex('[',@masking,1) > 0 
+		begin
+			if charindex('[]',@masking,1) > 0 goto contHere
+			set @PrefixStartPos = charindex('[',@masking,1) 
+			set @cnt = @PrefixStartPos
+			set @charCount = 0
+			while @cnt <= len(substring(@masking,@PrefixStartPos,len(@masking))) + @cnt
+			begin
+				set @cnt = @cnt + 1
+				if substring(@masking,@cnt,1) = ']'
+				begin
+					set @PrefixLen = @charCount
+					break
+				end
+				else
+				begin
+					set @charCount = @charCount + 1
+				end
+			end
+			set @Prefix = substring(@masking,@PrefixStartPos + 1,@PrefixLen)
+			--set @strPrefix = ' and substring(' + @columnname + ',' + cast(@PrefixStartPos as nvarchar) + ',' + cast(@PrefixLen as nvarchar) + ') = ''' + @Prefix + ''' '
+
+			set @masking =  stuff(@masking,@PrefixStartPos + 1,@PrefixLen,Replicate('_',@PrefixLen))
+		end
+
+contHere:
+
+		--/*GetReferenceCode F*/
+		if charindex('(REF)',@masking,1) > 0 
+		begin
+			if charindex('()',@masking,1) > 0 goto contHere2
+			set @RefCodeStartPos = charindex('(',@masking,1) 
+			set @RefCodeLen = 3
+
+			set @masking =  stuff(@masking,@RefCodeStartPos + 1,@RefCodeLen,Replicate('_',@RefCodeLen))
+		end
+
+ContHere2:
+		--if charindex('F',@masking,1) > 0 
+		--begin
+		--	set @RefCodeFStartPos = charindex('F',@masking,1)
+		--	print @RefCodeFStartPos
+		
+		--	set @cnt = @RefCodeFStartPos - 1
+		--	set @charCount = 0
+		--	while @cnt <= len(substring(@masking,@RefCodeFStartPos,len(@masking))) + @cnt
+		--	begin
+		--		set @cnt = @cnt + 1
+		--		set @myChar = substring(@masking,@cnt,1)
+		--		if @myChar <> 'F' and (@myChar = '-' or isNumeric(@myChar) = 0) 
+		--		begin
+		--			set @RefCodeFLen = @charCount
+		--			break
+		--		end
+		--		else
+		--		begin
+		--			set @charCount = @charCount + 1
+		--			set @strNumF = @strNumF + @myChar
+		
+		--		end
+		--	end
+		--	if len(@strNumF) > 1 set @strNumF = substring(@strNumF,2,len(@strNumF)-1)
+		--	else set @strNumF = len(@RefCodeF)
+		--	--set @strRefCode = ' and substring(' + @columnname + ',' + cast(@RefCodeStartPos - case when @prefixLen > 0 and @RefCodeStartPos > 1 then 2 else 0 end  as nvarchar) + ',' + @strNum + ') = ''' + @RefCode + ''' '
+		--end
+		--if len(@strNumF) = 0 set @strnumF = '0'  
+
+
+		/*GetYear*/
+		if charindex('Y',@masking,1) > 0 
+		begin
+			set @YearStartPos = charindex('Y',@masking,1)
+			
+			set @cnt = @YearStartPos - 1
+			set @charCount = 0
+			while @cnt <= len(substring(@masking,@YearStartPos,len(@masking))) + @cnt
+			begin
+				set @cnt = @cnt + 1
+				if substring(@masking,@cnt,1) <> 'Y'
+				begin
+					set @YearLen = @charCount
+					break
+				end
+				else
+				begin
+					set @charCount = @charCount + 1
+				end
+			end
+			if @YearLen = 4 set @Year = datepart(yyyy,@myDate)
+			if @YearLen = 2 set @Year = right(datepart(yyyy,@myDate),2)
+
+			--set @strYear = ' and substring(' + @columnname + ',' + cast(@YearStartPos - case when @prefixLen > 0 and @YearStartPos > 1 then 2 else 0 end  as nvarchar) + ',' + cast(@YearLen as nvarchar) + ') = ''' + @Year + ''' '
+
+			
+		end
+		/*GetMonth*/
+		if charindex('M',@masking,1) > 0 
+		begin
+			set @MonthStartPos = charindex('M',@masking,1)
+
+			set @cnt = @MonthStartPos - 1
+			set @charCount = 0
+			while @cnt <= len(substring(@masking,@MonthStartPos,len(@masking))) + @cnt
+			begin
+				set @cnt = @cnt + 1
+				if substring(@masking,@cnt,1) <> 'M'
+				begin
+					set @MonthLen = @charCount
+					break
+				end
+				else
+				begin
+					set @charCount = @charCount + 1
+				end
+			end
+			if @MonthLen = 4 set @Month = datename(mm,@myDate) --whole month name
+			if @MonthLen = 3 set @Month = left(datename(mm,@myDate),3) --First 3 letter of month name
+			if @MonthLen <= 2 set @Month = dbo.fn_formatnumber(2,datepart(mm,@myDate)) --numeric value default
+
+			--set @strMonth = ' and substring(' + @columnname + ',' + cast(@MonthStartPos - case when @prefixLen > 0 and @MonthStartPos > 1 then 2 else 0 end as nvarchar) + ',' + cast(@MonthLen as nvarchar) + ') = ''' + @Month + ''' '
+			
+			
+		end
+		/*GetDay*/
+		if charindex('D',@masking,1) > 0 
+		begin
+			set @DayStartPos = charindex('D',@masking,1)
+
+			set @cnt = @DayStartPos - 1
+			set @charCount = 0
+			while @cnt <= len(substring(@masking,@DayStartPos,len(@masking))) + @cnt
+			begin
+				set @cnt = @cnt + 1
+				if substring(@masking,@cnt,1) <> 'D'
+				begin
+					set @DayLen = @charCount
+					break
+				end
+				else
+				begin
+					set @charCount = @charCount + 1
+				end
+			end
+			if @DayLen = 4 set @Day = datename(dd,@myDate) --whole day name
+			if @DayLen = 3 set @Day = left(datename(dd,@myDate),3) --First 3 letter of day name
+			if @DayLen <= 2 set @Day = dbo.fn_formatnumber(2,datepart(dd,@myDate)) --numeric value default
+
+			--set @strDay = ' and substring(' + @columnname + ',' + cast(@DayStartPos - case when @prefixLen > 0 and @DayStartPos > 1 then 2 else 0 end as nvarchar) + ',' + cast(@DayLen as nvarchar) + ') = ''' + @Day + ''' '
+			
+			
+		end
+
+		/*GetSeries*/
+		if charindex('*',@masking,1) > 0 
+		begin
+			set @SeriesStartPos = charindex('*',@masking,1)
+			print 'SeriesStartPos:' + cast(@SeriesStartPos as nvarchar)
+			set @cnt = @SeriesStartPos - 1
+			set @charCount = 0
+			while @cnt <= len(substring(@masking,@SeriesStartPos,len(@masking))) + @cnt
+			begin
+				set @cnt = @cnt + 1
+				--print @cnt
+				if substring(@masking,@cnt,1) <> '*'
+				begin
+					set @SeriesLen = @charCount
+					break
+				end
+				else
+				begin
+					set @charCount = @charCount + 1
+				end
+			end
+		end
+		print 'SeriesLen:' + cast(@SeriesLen as nvarchar)
+		
+		/*Position adjustment*/	
+
+		declare @strYearStartPos integer = @YearStartPos
+		declare @strMonthStartPos integer = @MonthStartPos
+		declare @strDayStartPos integer = @DayStartPos
+		declare @strPrefixStartPos integer = @PrefixStartPos
+		declare @strSeriesStartPos integer = @SeriesStartPos
+
+		if @RefCodeLen > 0 and @YearStartPos > @RefCodeStartPos set @strYearStartPos = @YearStartPos - @RefCodeLen - 2 + len(@RefCode)
+		if @RefCodeLen > 0 and @MonthStartPos > @RefCodeStartPos set @strMonthStartPos = @MonthStartPos - @RefCodeLen - 2 + len(@RefCode)
+		if @RefCodeLen > 0 and @DayStartPos > @RefCodeStartPos set @strDayStartPos = @DayStartPos - @RefCodeLen - 2 + len(@RefCode)
+		if @RefCodeLen > 0 and @PrefixStartPos > @RefCodeStartPos set @strPrefixStartPos = @PrefixStartPos - @RefCodeLen - 2 + len(@RefCode)
+		if @RefCodeLen > 0 and @SeriesStartPos > @RefCodeStartPos set @strSeriesStartPos = @SeriesStartPos - @RefCodeLen - 2 + len(@RefCode)
+		print 'strSeriesStartPos:' + cast(@strSeriesStartPos as nvarchar)
+		if @RefCode <> '' and @RefCodeLen > 0
+		begin
+			set @strRefCode = ' and substring(' + @columnname + ',' + cast(@RefCodeStartPos - case when @prefixLen > 0 and @RefCodeStartPos > 1 then 2 else 0 end  as nvarchar) + ',' + cast(len(@RefCode) as nvarchar) + ') = ''' + @RefCode + ''' '
+		end
+		if @Prefix <> ''
+		begin
+			set @strPrefix = ' and substring(' + @columnname + ',' + cast(@strPrefixStartPos as nvarchar) + ',' + cast(@PrefixLen as nvarchar) + ') = ''' + @Prefix + ''' '
+		end
+		if @Year <> ''
+		begin
+			set @strYear = ' and substring(' + @columnname + ',' + cast(@strYearStartPos - case when @prefixLen > 0 and @YearStartPos > 1 then 2 else 0 end  as nvarchar) + ',' + cast(@YearLen as nvarchar) + ') = ''' + @Year + ''' '
+		end
+		if @Month <> ''
+		begin
+			set @strMonth = ' and substring(' + @columnname + ',' + cast(@strMonthStartPos - case when @prefixLen > 0 and @MonthStartPos > 1 then 2 else 0 end as nvarchar) + ',' + cast(@MonthLen as nvarchar) + ') = ''' + @Month + ''' '
+		end
+		if @Day <> ''
+		begin	
+			set @strDay = ' and substring(' + @columnname + ',' + cast(@strDayStartPos - case when @prefixLen > 0 and @DayStartPos > 1 then 2 else 0 end as nvarchar) + ',' + cast(@DayLen as nvarchar) + ') = ''' + @Day + ''' '
+		end	
+
+
+	/*Get Last Code*/
+	declare @strMaskingLen integer = len(@masking) 
+	if @prefixLen > 0 
+	begin
+		set @strMaskinglen = @strMaskinglen - 2
+	end
+	if @RefCodeLen > 0
+	begin
+		set @strMaskinglen = @strMaskinglen - @RefCodeLen - 2 + len(@RefCode)
+	end
+
+
+	--set @sql = 'Select top 1 @lastcode = ' + @columnname + ' from ' + @tablename + 
+	--		' where len(' + @columnname + ') = ' + cast(len(@masking) - case when @prefixLen > 0 then 2 else 0 end as nvarchar)   + 
+	--			+ @strPrefix + @strYear + @strMonth + @strDay + @strRefCode +
+	--		' order by ' + @columnname + ' desc'
+
+	set @sql = 'Select top 1 @lastcode = ' + @columnname + ' from ' + @tablename + 
+			' where len(' + @columnname + ') = ' + cast(@strMaskinglen as nvarchar)   + 
+				+ @strPrefix + @strYear + @strMonth + @strDay + @strRefCode + @SelectCond +
+			' order by ' + @columnname + ' desc'
+
+	print @sql
+	exec sp_ExecuteSql @sql,N'@lastcode varchar(50) output ',@lastcode output
+
+	if isnull(@lastcode,'') = '' set @lastcode = 0
+	print 'strMaskinglen:' + cast(@strMaskinglen as nvarchar)
+	print 'lastcode:' + cast(@lastcode as nvarchar)
+	--set @Series = substring(@lastcode,@SeriesStartPos,@SeriesLen)
+	--set @Series = substring(@lastcode,@SeriesStartPos - case when @prefixLen > 0 and @SeriesStartPos > @PrefixStartPos then 2 else 0 end,@SeriesLen)
+	set @Series = substring(@lastcode,@strSeriesStartPos - case when @prefixLen > 0 and @strSeriesStartPos > @PrefixStartPos and @RefCodeLen = 0 then 2 else 0 end,@SeriesLen)
+	--print 'substring(''' + @lastcode + ''',' + cast(@strSeriesStartPos as nvarchar) + ' - case when ' + cast(@prefixLen as nvarchar) + ' >= 0 and ' + cast(@SeriesStartPos as nvarchar) + ' > ' + cast(@PrefixStartPos as nvarchar) + ' then 2 else 0 end,' + cast(@seriesLen as nvarchar) + ')'
+	print 'prefixLen:' + cast(@prefixLen as nvarchar)
+	print 'PrefixStartPos:' + cast(@PrefixStartPos as nvarchar)
+	print 'series:' + cast(@series as nvarchar)
+	set @Series = dbo.fn_formatnumber(@SeriesLen,cast(@Series as int) + 1) 
+	print @series
+
+		/*Setting the final output based on masking*/
+		set @output = @masking
+		
+		if @YearLen > 0 set @output = stuff(@output,@YearStartPos,@YearLen,@Year)
+		if @MonthLen > 0 set @output = stuff(@output,@MonthStartPos,@MonthLen,@Month)
+		if @DayLen > 0 set @output = stuff(@output,@DayStartPos,@DayLen,@Day)
+		
+		set @output = stuff(@output,@SeriesStartPos,@SeriesLen,@Series)
+		if @RefCodeLen > 0 set @output = stuff(@output,@RefCodeStartPos + 1,@RefCodeLen,@RefCode)
+
+		if @PrefixLen > 0 set @output = stuff(@output,@PrefixStartPos + 1,@PrefixLen,@Prefix)
+		if @PrefixLen > 0 
+		begin	
+			set @output = replace(@output,'[','')
+			set @output = replace(@output,']','')
+		end
+		
+		if @RefCodeLen > 0 
+		begin	
+			set @output = replace(@output,'(','')
+			set @output = replace(@output,')','')
+		end
+
+	SET NOCOUNT OFF;
+end
+/* --to get the result getcode
+declare @myCode varchar(50)
+Exec sp_getCode @moduleID = 'TStudent',@output = @myCode output
+select @myCode as Result
+*/
+GO
+
+ALTER AUTHORIZATION ON [dbo].[sp_getCode] TO  SCHEMA OWNER 
+GO
+
+

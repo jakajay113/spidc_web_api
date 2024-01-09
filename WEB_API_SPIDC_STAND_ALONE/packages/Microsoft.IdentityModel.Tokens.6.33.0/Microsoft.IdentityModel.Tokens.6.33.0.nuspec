@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.IdentityModel.Tokens</id>
+    <version>6.33.0</version>
+    <title>Microsoft.IdentityModel.Tokens</title>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <licenseUrl>https://www.nuget.org/packages/Microsoft.IdentityModel.Tokens/6.33.0/license</licenseUrl>
+    <projectUrl>https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Includes types that provide support for SecurityTokens, Cryptographic operations: Signing, Verifying Signatures, Encryption.</description>
+    <summary />
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>.NET Windows Authentication Identity SecurityTokens Cryptographic operations Signing Verifying Signatures Encryption</tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="Microsoft.IdentityModel.Logging" version="6.33.0" />
+      </group>
+      <group targetFramework=".NETFramework4.6.1">
+        <dependency id="Microsoft.IdentityModel.Logging" version="6.33.0" />
+        <dependency id="System.Text.Encoding" version="4.3.0" />
+        <dependency id="System.Text.Encodings.Web" version="4.7.2" />
+        <dependency id="System.Text.Json" version="4.7.2" />
+      </group>
+      <group targetFramework=".NETFramework4.6.2">
+        <dependency id="Microsoft.IdentityModel.Logging" version="6.33.0" />
+        <dependency id="System.Text.Encoding" version="4.3.0" />
+        <dependency id="System.Text.Encodings.Web" version="4.7.2" />
+        <dependency id="System.Text.Json" version="4.7.2" />
+      </group>
+      <group targetFramework=".NETFramework4.7.2">
+        <dependency id="Microsoft.IdentityModel.Logging" version="6.33.0" />
+        <dependency id="System.Text.Encoding" version="4.3.0" />
+        <dependency id="System.Text.Encodings.Web" version="4.7.2" />
+        <dependency id="System.Text.Json" version="4.7.2" />
+      </group>
+      <group targetFramework=".NETFramework6.0">
+        <dependency id="Microsoft.IdentityModel.Logging" version="6.33.0" />
+        <dependency id="Microsoft.CSharp" version="4.5.0" />
+        <dependency id="System.Security.Cryptography.Cng" version="4.5.0" />
+      </group>
+      <group targetFramework="Unsupported0.0">
+        <dependency id="Microsoft.IdentityModel.Logging" version="6.33.0" />
+        <dependency id="Microsoft.CSharp" version="4.5.0" />
+        <dependency id="System.Security.Cryptography.Cng" version="4.5.0" />
+        <dependency id="System.Text.Encoding" version="4.3.0" />
+        <dependency id="System.Text.Encodings.Web" version="4.7.2" />
+        <dependency id="System.Text.Json" version="4.7.2" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework=".NETFramework4.5, .NETFramework4.6.1, .NETFramework4.6.2, .NETFramework4.7.2" />
+      <frameworkAssembly assemblyName="System.Core" targetFramework=".NETFramework4.5, .NETFramework4.6.1, .NETFramework4.6.2, .NETFramework4.7.2" />
+      <frameworkAssembly assemblyName="System" targetFramework=".NETFramework4.5, .NETFramework4.6.1, .NETFramework4.6.2, .NETFramework4.7.2" />
+    </frameworkAssemblies>
+  </metadata>
+</package>

@@ -1,0 +1,828 @@
+﻿<html lang="en">
+<head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="icon" type="image/x-icon" href="https://cdn-icons-png.flaticon.com/512/726/726559.png">
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&amp;display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/css/splide.min.css" rel="stylesheet">
+    <title>Universal Checkout</title>
+    <style>
+        /*Font Style*/
+        body {
+            font-family: 'Lato', sans-serif;
+        }
+        /*Payment Method Radio*/
+        .paymenthod-method-radio:checked {
+            background-color: #212529 !important;
+            border-color: #212529 !important;
+        }
+
+        .payment-method, .payment-method-icon, .checkout-back {
+            cursor: pointer;
+        }
+
+
+        .outline-circle {
+            width: 50px; /* Adjust the width and height as needed */
+            height: 50px;
+            border-radius: 50%; /* Make it circular */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loader-container {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+
+        .loader {
+            width: 70px;
+            height: 70px;
+            position: relative;
+        }
+
+            .loader:before {
+                content: "";
+                width: 70px;
+                height: 70px;
+                border-radius: 50%;
+                border: 6px solid #212529;
+                position: absolute;
+                top: 0;
+                left: 0;
+                animation: pulse 1s ease-in-out infinite;
+            }
+
+            .loader:after {
+                content: "";
+                width: 70px;
+                height: 70px;
+                border-radius: 50%;
+                border: 6px solid transparent;
+                border-top-color: #212529;
+                position: absolute;
+                top: 0;
+                left: 0;
+                animation: spin 2s linear infinite;
+            }
+
+        .loader-text {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #212529;
+            font-family: Arial, sans-serif;
+            text-align: center;
+            text-transform: uppercase;
+        }
+
+        @keyframes pulse {
+            0% {
+                transform: scale(0.6);
+                opacity: 1;
+            }
+
+            50% {
+                transform: scale(1.2);
+                opacity: 0;
+            }
+
+            100% {
+                transform: scale(0.6);
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            0% {
+                transform: rotate(0deg);
+            }
+
+            100% {
+                transform: rotate(360deg);
+            }
+        }
+
+        .content {
+            display: none;
+        }
+
+        .loaded .loader-container {
+            display: none;
+        }
+
+        .loaded .content {
+            display: block;
+        }
+
+
+        /* Mobile Devices (Portrait Orientation) */
+        @media (max-width: 767px) and (min-width: 350px) {
+            /* Your CSS rules for mobile devices go here */
+            .text-success {
+                font-size: 11px;
+            }
+
+            .text-dark {
+                font-size: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body class="bg-light">
+
+
+    <div class="container-fluid  d-md-flex justify-content-md-center d-sm-flex justify-content-sm-center  col-md-5 col-sm-12">
+
+        <div class="p-2 shadow border rounded mt-2">
+            <div class="container mb-2">
+
+                <div class="row">
+                    <div class="col-md-12 mt-4">
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h4 class="mb-2 fw-bold text-dark">Checkout Payment</h4>
+                            </div>
+                            <div>
+                                <img src="https://cdn-icons-png.flaticon.com/512/1008/1008909.png" class="img-fluid payment-method-icon" alt="Payment Method 1" width="50" height="50">
+                                <small class="fw-bold text-success">SPIDC PAYMENT SECURED</small>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12">
+                        <h6 class="mb-1">Transaction Type: <small class="text-muted transaction-type">Transaction Type</small></h6>
+                    </div>
+
+                    <div class="col-md-12">
+
+                        <div class="d-flex justify-content-between">
+                            <div>
+                                <h6 class="mb-1">Account No: <small class="text-muted account-no">Account No</small></h6>
+                            </div>
+                            <div class="outline-circle border border-dark">
+                                <small class="fw-bold" id="timer">00:00</small>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+                    <div class="col-md-12 mt-2">
+                        <h6 class="mb-2">Payment Methods</h6>
+                        <div class="payment-method-container">
+                            <div class="row g-1 universalcheckout-paymentmethod">
+
+                                <div class="splide">
+
+                                    <div class="splide__track">
+                                        <ul class="splide__list universal-checkout-paymentmethod">
+
+                                            <!--<li class="splide__slide">
+                                                <div class="col-sm">
+                                                    <div class="payment-method p-3 border rounded bg-light">
+                                                        <div class="d-flex justify-content-between">
+                                                            <div class="payment-method-icon">
+                                                                <img src="https://img.icons8.com/?size=80&amp;id=HwDAbb5yi8HW&amp;format=png" class="img-fluid payment-method-icon" alt="Payment Method 1" width="50" height="50">
+                                                                <label class="form-check-label payment-method-icon fw-bold" for="_paymentMethod1">Gcash</label>
+                                                            </div>
+                                                            <div>
+                                                                <input class="form-check-input paymenthod-method-radio" type="radio" name="paymentMethod" value="paymentMethod1" id="_paymentMethod1">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </li>-->
+
+                                        </ul>
+                                    </div>
+
+                                </div>
+
+
+                                <!--<div class="col-sm">
+                                        <div class="payment-method p-3 border rounded bg-light">
+                                            <div class="d-flex justify-content-between">
+                                                <div class="payment-method-icon">
+                                                    <img src="https://img.icons8.com/?size=80&amp;id=HwDAbb5yi8HW&amp;format=png" class="img-fluid payment-method-icon" alt="Payment Method 1" width="50" height="50">
+                                                    <label class="form-check-label payment-method-icon fw-bold" for="_paymentMethod1">Gcash</label>
+                                                </div>
+                                                <div>
+                                                    <input class="form-check-input paymenthod-method-radio" type="radio" name="paymentMethod" value="paymentMethod1" id="_paymentMethod1">
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-sm">
+                                        <div class="payment-method p-3 border rounded bg-light">
+                                            <div class="d-flex justify-content-between">
+                                                <div class="payment-method-icon">
+                                                    <img src="https://img.icons8.com/?size=256&amp;id=8d7SL54liifr&amp;format=png" class="img-fluid payment-method-icon" alt="Payment Method 2" width="50" height="50">
+                                                    <label class="form-check-label payment-method-icon fw-bold" for="_paymentMethod1">Landbank</label>
+                                                </div>
+                                                <div>
+                                                    <input class="form-check-input paymenthod-method-radio" type="radio" name="paymentMethod" value="paymentMethod2" id="_paymentMethod2">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                    <div class="col-sm">
+                                        <div class="payment-method p-3 border rounded bg-light">
+                                            <div class="d-flex justify-content-between">
+                                                <div class="payment-method-icon">
+                                                    <img src="https://dl.memuplay.com/new_market/img/com.paymaya.icon.2023-10-04-21-55-55.png" class="img-fluid payment-method-icon" alt="Payment Method 3" width="50" height="50">
+                                                    <label class="form-check-label payment-method-icon fw-bold" for="_paymentMethod1">Maya</label>
+                                                </div>
+                                                <div>
+                                                    <input class="form-check-input paymenthod-method-radio" type="radio" name="paymentMethod" value="paymentMethod3" id="_paymentMethod3">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>-->
+
+
+
+                            </div>
+                        </div>
+                    </div>
+
+
+                    <div class="col-md-12 mt-5">
+                        <div class="row g-1">
+
+                            <div class="col-md-12 mt-4">
+                                <div class="row">
+                                    <div class="col-6  text-muted">
+                                        Convience Fee
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="text-muted">₱</span> <span class="text-muted fees-amount">0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt-2">
+                                <div class="row">
+                                    <div class="col-6 text-muted">
+                                        Gateway Fee
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="text-muted">₱</span> <span class="text-muted gate-way-fees">0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt-2">
+                                <div class="row">
+                                    <div class="col-6 text-muted">
+                                        Billing Amount
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="text-muted">₱</span> <span class="text-muted billing-amount">0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-7 mt-0">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="text-dark">
+                                            <hr>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt-0">
+                                <div class="row">
+                                    <div class="col-6 fw-bold">
+                                        Total
+                                    </div>
+                                    <div class="col-6">
+                                        <span class="fw-bold">₱</span> <span class="fw-bold total-amount">0.00</span>
+                                    </div>
+                                </div>
+                            </div>
+
+
+                            <div class="col-md-12 mt-2">
+                                <div class="row">
+                                    <div class="col-12">
+                                        <div class="alert alert-secondary" role="alert">
+                                            PLease be advised that some Payment Methods may require additional fees upon payment.
+                                            Gateway Fees are not collected by the LGU. For this reason, Gateway Fees will not show up in your Official Receipt.
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-12 mt-2">
+                                <div class="row">
+                                    <div class="d-flex justify-content-between">
+
+                                        <div class="mb-2 fw-bold fs-5 checkout-back">
+                                            <button type="button" class="btn btn-dark checkout-cancel" name="univeral-checkout-canel" id="univeral-checkout-cancel">Cancel</button>
+                                        </div>
+
+                                        <div class="mb-2 fw-bold fs-5">
+                                            <button type="button" class="btn btn-dark checkout-process" name="univeral-checkout-process" id="univeral-checkout-process">Proceed</button>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+
+
+                        </div>
+
+                    </div>
+
+
+
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+
+
+    <!--Loader-->
+    <div class="modal bg-light" id="apploader" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="staticBackdropLabel" style="display: none;" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-body">
+                <div class="container row d-flex justify-content-center align-items-center">
+                    <!-- <span class="loader text-dark fs-2"></span> -->
+                    <div class="loader-container">
+                        <div class="loader"></div>
+                        <div class="loader-text">Loading...</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!--End Loader-->
+
+
+
+
+
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js" integrity="sha256-/JqT3SQfawRcv/BIHPThkBvs0OEvtFFmqPF/lYI/Cxo=" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@splidejs/splide@4.1.4/dist/js/splide.min.js"></script>
+    <script>
+
+
+        function preventBack() {
+            window.history.forward();
+        }
+        setTimeout("preventBack()", 0);
+        window.onunload = function () {
+            null;
+        };
+        var loader = new bootstrap.Modal(document.getElementById('apploader'));
+        document.onreadystatechange = function () {
+            if (document.readyState !== "complete") {
+                loader.show();
+            } else {
+                var token = getParameterByName(window.location.href, "xyz");
+                var decodedPayload = decodeJwt(token);
+                var key = decodedPayload.assessmentNo;
+                getUniversalCheckout(token, key);
+            }
+        };
+        function getParameterByName(url, name) {
+            name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
+            var regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
+            var results = regex.exec(url);
+            return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
+        }
+        function decodeJwt(jwtToken) {
+            if (jwtToken){
+                var base64Url = jwtToken.split('.')[1]; 
+                var base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/'); 
+                var jsonPayload = decodeURIComponent(atob(base64)); 
+                return JSON.parse(jsonPayload);
+            }else{
+                window.location.href= '404.html'
+            }
+        }
+        function getUniversalCheckout(token, key) {
+            $.ajax({
+                url: 'https://online.spidc.com.ph/spidc_web_api/api/v1/spidcproxy/universalcheckoutGetOAIMS/' + key + '',
+                type: 'GET',
+                data: '{}',
+                async: true,
+                cache: false,
+                dataType: 'json',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+                    loader.show();
+                },
+                success: function (response) {
+                    if (response.data === null) {
+                        loader.show();
+                    } else {
+                        loader.hide();
+                        const jsonData = JSON.parse(JSON.stringify(response))
+                        const SysTranDesc = jsonData.data.dataInformation[0].transDesc;
+                        const email = jsonData.data.dataInformation[0].Email;
+                        const accountNo = jsonData.data.dataInformation[0].AccountNo;
+                        const firstName = jsonData.data.dataInformation[0].Fname;
+                        const middleName = jsonData.data.dataInformation[0].MiddleName;
+                        const lastName = jsonData.data.dataInformation[0].LastName;
+                        const suffix = jsonData.data.dataInformation[0].Suffix;
+                        const billingAmount = jsonData.data.dataInformation[0].BillingAmount;
+                        const totalAmount = jsonData.data.dataInformation[0].TotalAmount;
+                        const biilingDate = jsonData.data.dataInformation[0].BiilingDate;
+                        const otherFee = jsonData.data.dataInformation[0].OtherFee;
+                        const rawAmount = jsonData.data.dataInformation[0].RawAmount;
+                        const spidcFee = jsonData.data.dataInformation[0].SpidcFee;
+                        var ucpPayload = {};
+                        switch (jsonData.data.dataInformation[0].AppName) {
+                            case "CEDULAAPP":
+                                const cedulaJson = JSON.parse(JSON.stringify(response))
+                                var propertiesToRemove = ["JAOCode","ViolationCode","ViolationDesc","ViolationAmount","Violation_TotalAmount","Apprehension_Location"];
+                                jsonData.data.dataCode = cedulaJson.data.dataCode.map(function(obj) {
+                                    propertiesToRemove.forEach(function(prop) {
+                                        delete obj[prop];
+                                    });
+                                    return obj;
+                                });
+                                localStorage.setItem('checkoutPayload', JSON.stringify(jsonData.data, null, 2));
+                                break;
+                            case "LCR":
+                                //console.log("LCR");
+                                break;
+                            case "PINNACLE":
+                                const pinnacleJson = JSON.parse(JSON.stringify(response))
+                                var propertiesToRemove = ["JAOCode","ViolationCode","ViolationDesc","ViolationAmount","Violation_TotalAmount","Apprehension_Location"];
+                                jsonData.data.dataCode = pinnacleJson.data.dataCode.map(function(obj) {
+                                    propertiesToRemove.forEach(function(prop) {
+                                        delete obj[prop];
+                                    });
+                                    return obj;
+                                });
+                                localStorage.setItem('checkoutPayload', JSON.stringify(jsonData.data, null, 2));
+                                break;
+
+                            case "QPAX":
+                                //console.log("LCR");
+                                break;
+                        }
+                        document.getElementsByClassName("transaction-type")[0].textContent = SysTranDesc;
+                        document.getElementsByClassName("account-no")[0].textContent = accountNo;
+                        document.getElementsByClassName("fees-amount")[0].textContent = spidcFee;
+                        document.getElementsByClassName("gate-way-fees")[0].textContent = spidcFee;
+                        document.getElementsByClassName("billing-amount")[0].textContent = billingAmount;
+                        document.getElementsByClassName("total-amount")[0].textContent = totalAmount;
+                        getUniversalCheckoutPaymentMethod(token, key, jsonData.data.dataInformation[0].AppName);
+                        checkoutTimer(token, key);
+                    }
+
+                },
+                error: function (xhr, status, errorThrown) {
+                    console.log(xhr.responseText);
+                    window.location.href= '404.html'
+                }
+            });
+        }
+        function getUniversalCheckoutPaymentMethod(token, key, appName) {
+            $.ajax({
+                url: 'https://online.spidc.com.ph/spidc_web_api/api/v1/spidcproxy/universalcheckoutGetPaymentMethodOAIMS',
+                type: 'GET',
+                data: '{}',
+                async: true,
+                cache: false,
+                dataType: 'json',
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+                    loader.show();
+                },
+                success: function (response) {
+                    if(appName =="CEDULAAPP"){
+                        const jsonData = JSON.parse(JSON.stringify(response));
+                        const filteredData = jsonData.data.filter(item => item.Code !== "LBP1" && item.Code !== "LBP2");
+                        for (let i = 0; i < filteredData.length; i++) {
+                            var paymentgatewaylogo = filteredData[i].GatewayLogo || '';
+                            $(".universal-checkout-paymentmethod").append('<li class="splide__slide">\n'
+                                + '<div class="col-sm mb-1">\n'
+                                + '<div class="payment-method p-3 border rounded bg-light">\n'
+                                + '<div class="d-flex justify-content-between">\n'
+                                + '<div class="payment-method-icon">\n'
+                                + '<img src="' + paymentgatewaylogo + '" class="img-fluid payment-method-icon" alt="Payment Method 1" width="50" height="50">\n'
+                                + '<span class="form-check-label payment-method-icon fw-bold" for="' + filteredData[i].Code + '">' + filteredData[i].GatewayName + '</span>\n'
+                                + '</div>\n'
+                                + '<div>\n'
+                                + '<input class="form-check-input paymenthod-method-radio" type="radio" name="paymentMethod" value="' + filteredData[i].Code + '">\n'
+                                + '</div>\n'
+                                + '</div>\n'
+                                + '</div>\n'
+                                + '</div>\n'
+                                + '</li>');
+                        }
+                        //console.log(appName);
+                        //for (let i = 0; i < response.data.length; i++) {
+                        //    var paymentgatewaylogo = response.data[i].GatewayLogo || '';
+                        //    $(".universal-checkout-paymentmethod").append('<li class="splide__slide">\n'
+                        //         + '<div class="col-sm mb-1">\n'
+                        //         + '<div class="payment-method p-3 border rounded bg-light">\n'
+                        //         + '<div class="d-flex justify-content-between">\n'
+                        //         + '<div class="payment-method-icon">\n'
+                        //         + '<img src="' + paymentgatewaylogo + '" class="img-fluid payment-method-icon" alt="Payment Method 1" width="50" height="50">\n'
+                        //         + '<span class="form-check-label payment-method-icon fw-bold" for="' + response.data[i].Code + '">' + response.data[i].GatewayName + '</span>\n'
+                        //         + '</div>\n'
+                        //         + '<div>\n'
+                        //         + '<input class="form-check-input paymenthod-method-radio" type="radio" name="paymentMethod" value="' + response.data[i].Code + '">\n'
+                        //         + '</div>\n'
+                        //         + '</div>\n'
+                        //         + '</div>\n'
+                        //         + '</div>\n'
+                        //         + '</li>');
+                        //}
+                        //console.log(appName);
+                    }else{
+                        const jsonData = JSON.parse(JSON.stringify(response));
+                        const filteredData = jsonData.data.filter(item => item.Code !== "OTC" && item.Code !== "LBP1" && item.Code !== "LBP2" && item.Code !== "SPIDCPAY");
+                        for (let i = 0; i < filteredData.length; i++) {
+                            var paymentgatewaylogo = filteredData[i].GatewayLogo || '';
+                            $(".universal-checkout-paymentmethod").append('<li class="splide__slide">\n'
+                                + '<div class="col-sm mb-1">\n'
+                                + '<div class="payment-method p-3 border rounded bg-light">\n'
+                                + '<div class="d-flex justify-content-between">\n'
+                                + '<div class="payment-method-icon">\n'
+                                + '<img src="' + paymentgatewaylogo + '" class="img-fluid payment-method-icon" alt="Payment Method 1" width="50" height="50">\n'
+                                + '<span class="form-check-label payment-method-icon fw-bold" for="' + filteredData[i].Code + '">' + filteredData[i].GatewayName + '</span>\n'
+                                + '</div>\n'
+                                + '<div>\n'
+                                + '<input class="form-check-input paymenthod-method-radio" type="radio" name="paymentMethod" value="' + filteredData[i].Code + '">\n'
+                                + '</div>\n'
+                                + '</div>\n'
+                                + '</div>\n'
+                                + '</div>\n'
+                                + '</li>');
+                        }
+                    } 
+                    initializeSplide();
+                    hideSplideArrows();
+                    addClickEventToPaymentMethods();
+                    loader.hide();
+                },
+                error: function (xhr, status, errorThrown) {
+                    console.log(xhr.responseText);
+                    window.location.href= '404.html'
+                }
+            });
+        }
+        var gateway;
+        function addClickEventToPaymentMethods() {
+            var paymentMethodElements = document.querySelectorAll('.payment-method');
+            paymentMethodElements.forEach(function (element) {
+                element.addEventListener('click', function () {
+                    paymentMethodElements.forEach(function (el) {
+                        el.classList.remove('border-dark');
+                    });
+                    this.classList.add('border-dark');
+                    var radio = this.querySelector('input[type="radio"]');
+                    if (radio) {
+                        gateway = radio.value
+                        radio.checked = true;
+
+                        var gtotal =  document.getElementsByClassName("billing-amount")[0].textContent;
+                        if(gateway =="GCASH"){
+                            //document.getElementsByClassName("gate-way-fees")[0].textContent = "15.00";
+                            //document.getElementsByClassName("total-amount")[0].textContent = gtotal;
+
+                            //var gatewayFees = parseFloat(document.getElementsByClassName("gate-way-fees")[0].textContent);
+                            //var totalAmount = parseFloat(document.getElementsByClassName("billing-amount")[0].textContent);
+
+                            //if (!isNaN(gatewayFees) && !isNaN(totalAmount)) {
+                            //    document.getElementsByClassName("total-amount")[0].textContent = (gatewayFees + totalAmount).toFixed(2);
+                            //} else {
+                            //    alert("Error: Unable to convert text content to numbers.");
+                            //}
+
+                            // Get the text content of the "gate-way-fees" element and set it to "15.00"
+                            var gatewayFeesText = document.getElementsByClassName("gate-way-fees")[0].textContent = "15.00";
+
+                            // Get the text content of the "total-amount" element and set it to "1,000.00"
+                            var totalAmountText = document.getElementsByClassName("billing-amount")[0].textContent = gtotal;
+
+                            // Convert the text content to numbers
+                            var gatewayFees = parseFloat(gatewayFeesText);
+                            var totalbilling = parseFloat(totalAmountText.replace(",", "")); // Remove commas before conversion
+
+                            // Check if the conversion is successful (not NaN)
+                            if (!isNaN(gatewayFees) && !isNaN(totalbilling)) {
+                                // Calculate the sum
+                                var sum = gatewayFees + totalbilling;
+
+                                // Update the text content of one of the elements with the result formatted as "1,015.00"
+                                document.getElementsByClassName("total-amount")[0].textContent = sum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            } else {
+                                console.error("Error: Unable to convert text content to numbers.");
+                            }
+
+
+
+                        }else{
+                           
+                            document.getElementsByClassName("gate-way-fees")[0].textContent = "0.00";
+                            document.getElementsByClassName("total-amount")[0].textContent = gtotal;
+                        }
+
+
+                    }
+                });
+            });
+        }
+        function initializeSplide() {
+            var splide = new Splide('.splide', {
+                type: 'slide',
+                padding: {
+                    left: '1rem',
+                    right: '1rem',
+                },
+                perPage: 3,
+                arrow: false,
+                pagination: false,
+                gap: 1
+            });
+
+            splide.mount();
+        }
+        function hideSplideArrows() {
+            document.getElementsByClassName('splide__arrow splide__arrow--prev')[0].style.display = "none";
+            document.getElementsByClassName('splide__arrow splide__arrow--next')[0].style.display = "none";
+        }
+        function deleteUniversalCheckout(token, key) {
+            $.ajax({
+                url: 'https://online.spidc.com.ph/spidc_web_api/api/v1/spidcproxy/universalcheckoutDeleteOAIMS/' + key + '',
+                type: 'DELETE',
+                data: '{}',
+                async: true,
+                cache: false,
+                beforeSend: function (xhr) {
+                    xhr.setRequestHeader('Authorization', 'Bearer' + token);
+                    loader.show();
+                },
+                success: function (response) {
+                    window.location.href= '404.html'
+                },
+                error: function (xhr, status, errorThrown) {
+                    console.log(xhr.responseText);
+                    window.location.href= '404.html'
+                }
+            });
+        }
+        function checkoutTimer(token, key) {
+            var timerElement = document.getElementById('timer');
+            var remainingTime = localStorage.getItem('remainingTime');
+
+            if (remainingTime === null) {
+                // Timer is not running; start a new timer
+                var timeLimitInMinutes = 10;
+                var timeLimitInSeconds = timeLimitInMinutes * 60;
+            } else {
+                // Timer is already running; continue from where it left off
+                var timeLimitInSeconds = parseInt(remainingTime);
+            }
+            function startTimer() {
+                timeLimitInSeconds--;
+                var minutes = Math.floor(timeLimitInSeconds / 60);
+                var seconds = timeLimitInSeconds % 60;
+
+                if (timeLimitInSeconds < 0) {
+                    timerElement.textContent = '00:00';
+                    clearInterval(timerInterval);
+                    //alert("Redirect");
+                    deleteUniversalCheckout(token, key);
+                    //Clear the stored time
+                    localStorage.removeItem('remainingTime');
+                    return;
+                }
+
+                if (minutes < 10) {
+                    minutes = '0' + minutes;
+                }
+                if (seconds < 10) {
+                    seconds = '0' + seconds;
+                }
+
+                timerElement.textContent = minutes + ':' + seconds;
+
+                // Store the remaining time in localStorage
+                localStorage.setItem('remainingTime', timeLimitInSeconds.toString());
+            }
+            var timerInterval = setInterval(startTimer, 1000);
+        }
+        //Checkout Proceed
+        document.getElementsByClassName("checkout-process")[0].addEventListener("click", function () {
+            if (typeof gateway === "undefined") {
+                alert("Please select payment method!");
+            } else {
+
+                var payload = localStorage.getItem('checkoutPayload');
+                try {
+                    var existingPayload = JSON.parse(payload);
+                    var newObject = {
+                        "paymentGateway": gateway,
+                    };
+                    var finalPayload = { ...existingPayload, ...newObject };
+                    var token = getParameterByName(window.location.href, "xyz");
+                    //setTimeout(function () {
+                                $.ajax({
+                                    type: 'POST',
+                                    async: true,
+                                    cache: false,
+                                    url: 'https://online.spidc.com.ph/spidc_web_api/api/v1/spidcproxy/universalcheckoutProceedOAIMS',
+                                    data: JSON.stringify(finalPayload),
+                                    contentType: 'application/json',
+                                    beforeSend: function (xhr) {
+                                        xhr.setRequestHeader('Authorization', 'Bearer ' + token);
+                                        loader.show();
+                                    },
+                                    success: function (response) {
+                                        loader.hide();
+
+                                       
+                                        // Extract relevant information
+                                        var dataInformation = response.data.payload.dataInformation;
+                                        var dataCode = response.data.payload.dataCode;
+
+                                        // Get the AssessmentNo values from dataInformation
+                                        var assessmentNoToMatch = dataInformation.map(item => item.AssessmentNo);
+
+                                        // Remove items from dataCode where accountNo does not match any in dataInformation
+                                        var filteredDataCode = dataCode.filter(item => assessmentNoToMatch.includes(item.assessmentNo));
+
+                                        // Update the dataCode array in jsonData
+                                        var finalFilteredJson = response.data;
+                                        finalFilteredJson.payload.dataCode = filteredDataCode;
+
+                                        // Use the updated jsonData here or call another function
+                                        //console.log(finalFilteredJson);
+
+                                     
+                                        var currentUrl = window.location.href;
+                                        var urlParts = currentUrl.split("/");
+
+                                        if (urlParts.length >= 6) {
+                                            var part1 = urlParts[0];
+                                            var part2 = urlParts[1];
+                                            var part3 = urlParts[2];
+                                            var part4 = urlParts[3];
+                                            var part5 = urlParts[4];
+                                        } else {
+                                            console.log('URL does not have enough parts.');
+                                        }
+                                        if(response.data.transactionType == "OTC"){
+                                            var proccessingUrl = part1 + '//'+ part3 + '/' + part4 + '/' + part5 + '/' + response.data.successURL;
+                                            localStorage.setItem('payloadToProcess', JSON.stringify(finalFilteredJson));
+                                            window.location.href = proccessingUrl; 
+                                        }else{
+                                                var proccessingUrl = part1 + '//'+ part3 + '/' + part4 + '/' + part5 + '/' + response.data.urlProcess;
+                                                localStorage.setItem('payloadToProcess', JSON.stringify(finalFilteredJson));
+                                                window.location.href = proccessingUrl; 
+                                        }
+                                    },
+                                    error: function (xhr, status, errorThrown) {
+                                        console.log(xhr.responseText);
+                                        window.location.href= '404.html'
+                                    }
+                               });      
+                 //}, 1000);
+
+   
+                } catch (error) {
+                    console.error('Error processing JSON:', error);
+                } 
+            }
+
+        });
+        //Checkout Cancel
+        document.getElementsByClassName("checkout-cancel")[0].addEventListener("click", function () {
+            var token = getParameterByName(window.location.href, "xyz");
+            var decodedPayload = decodeJwt(token);
+            var key = decodedPayload.accountNo;
+            deleteUniversalCheckout(token, key);
+        });
+    </script>
+</body>
+</html>

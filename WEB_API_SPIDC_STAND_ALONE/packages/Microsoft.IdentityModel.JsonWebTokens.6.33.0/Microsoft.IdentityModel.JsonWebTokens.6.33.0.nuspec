@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Microsoft.IdentityModel.JsonWebTokens</id>
+    <version>6.33.0</version>
+    <title>Microsoft.IdentityModel.JsonWebTokens</title>
+    <authors>Microsoft</authors>
+    <owners>Microsoft</owners>
+    <licenseUrl>https://www.nuget.org/packages/Microsoft.IdentityModel.JsonWebTokens/6.33.0/license</licenseUrl>
+    <projectUrl>https://github.com/AzureAD/azure-activedirectory-identitymodel-extensions-for-dotnet</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Includes types that provide support for creating, serializing and validating JSON Web Tokens.</description>
+    <summary />
+    <copyright>© Microsoft Corporation. All rights reserved.</copyright>
+    <tags>.NET Windows Authentication Identity Json Web Token</tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.5">
+        <dependency id="Microsoft.IdentityModel.Tokens" version="6.33.0" />
+      </group>
+      <group targetFramework=".NETFramework4.6.1">
+        <dependency id="Microsoft.IdentityModel.Tokens" version="6.33.0" />
+        <dependency id="System.Text.Encoding" version="4.3.0" />
+        <dependency id="System.Text.Encodings.Web" version="4.7.2" />
+        <dependency id="System.Text.Json" version="4.7.2" />
+      </group>
+      <group targetFramework=".NETFramework4.6.2">
+        <dependency id="Microsoft.IdentityModel.Tokens" version="6.33.0" />
+        <dependency id="System.Text.Encoding" version="4.3.0" />
+        <dependency id="System.Text.Encodings.Web" version="4.7.2" />
+        <dependency id="System.Text.Json" version="4.7.2" />
+      </group>
+      <group targetFramework=".NETFramework4.7.2">
+        <dependency id="Microsoft.IdentityModel.Tokens" version="6.33.0" />
+        <dependency id="System.Text.Encoding" version="4.3.0" />
+        <dependency id="System.Text.Encodings.Web" version="4.7.2" />
+        <dependency id="System.Text.Json" version="4.7.2" />
+      </group>
+      <group targetFramework=".NETFramework6.0">
+        <dependency id="Microsoft.IdentityModel.Tokens" version="6.33.0" />
+        <dependency id="System.Text.Encoding" version="4.3.0" />
+        <dependency id="System.Text.Encodings.Web" version="4.7.2" />
+        <dependency id="System.Text.Json" version="4.7.2" />
+      </group>
+      <group targetFramework="Unsupported0.0">
+        <dependency id="Microsoft.IdentityModel.Tokens" version="6.33.0" />
+        <dependency id="System.Text.Encoding" version="4.3.0" />
+        <dependency id="System.Text.Encodings.Web" version="4.7.2" />
+        <dependency id="System.Text.Json" version="4.7.2" />
+      </group>
+    </dependencies>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="Microsoft.CSharp" targetFramework=".NETFramework4.5, .NETFramework4.6.1, .NETFramework4.6.2, .NETFramework4.7.2" />
+    </frameworkAssemblies>
+  </metadata>
+</package>

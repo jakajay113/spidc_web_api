@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>IronXL.Excel</id>
+    <version>2019.5.2</version>
+    <title>IronXL - The C# Excel SpreadSheet Library.</title>
+    <authors>https://ironsoftware.com/csharp/excel/</authors>
+    <owners>https://ironsoftware.com/csharp/excel/</owners>
+    <licenseUrl>https://ironsoftware.com/csharp/excel/</licenseUrl>
+    <projectUrl>https://ironsoftware.com/csharp/excel/</projectUrl>
+    <iconUrl>https://api.nuget.org/v3-flatcontainer/ironxl.excel/2019.5.2/icon</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>IronXL allows developers to Read, Generate and Edit Excel (and other Spreadsheet files) in .Net Applications &amp; websites.
+
+A fast and natural approach to work with Excel and Other Spreadsheet files in C#.
+
+No utilization of Office Excel Interop. Works well with .NET Framework, .NET Core and Azure. All without extra dependancies or the need to install MS Office.
+
+Key library features include:
+* Import Data from XLS/XLSX/CSV/TSV.
+* Export Work Sheets to XLS/XLSX/CSV/TSV/JSON.
+* Work with Spreadsheets as System.Data.DataSet and System.Data.DataTable objects.
+* Excel Formulas recalculated every time a sheet it edited.
+* Intuitive Ranges setting with a WorkSheet[“A1:B10”] syntax.
+* Sort Ranges, Columns and Rows.
+* Style Cells - Font, Size, Background pattern, Border, Alignment and Number formats.
+
+IronXL works well in C#, VB.NET, MVC, ASP.NET projects for Websites, Console &amp; Desktop APPs.
+
+Requires .Net Core 2.x or Framework 4.x.   Works with Xamarin, SharePoint, Mono and Cloud hosting services such as Microsoft Azure.
+
+Licensing &amp; Support available for commercial deployments.
+
+For code samples, docs &amp; more visit https://ironsoftware.com/csharp/excel/
+
+For support please contact us: developers@ironsoftware.com</description>
+    <summary>The intuitive Excel library for C# and .Net projects.  Create, Open, Read and Export XLS and XLS files in C# /.NET Project without using Office.Interop.
+
+Supports: XLS/XLSX/CSV/TSV/JSON and XML</summary>
+    <releaseNotes>- Fixes cell value retrieval for numbers and strings</releaseNotes>
+    <copyright>(C) 2019-Present IronSoftware.com</copyright>
+    <language>en-US</language>
+    <tags>Excel XLS XLSX CSV XML JSON Microsoft.Office.Interop.Excel IRON IRON EXCEL</tags>
+    <frameworkAssemblies>
+      <frameworkAssembly assemblyName="System.Drawing" targetFramework=".NETFramework4.5" />
+      <frameworkAssembly assemblyName="System.Configuration" targetFramework=".NETFramework4.5" />
+      <frameworkAssembly assemblyName="System.Data" targetFramework=".NETFramework4.5" />
+      <frameworkAssembly assemblyName="System.IO.Compression.FileSystem" targetFramework=".NETFramework4.5" />
+      <frameworkAssembly assemblyName="System.Numerics" targetFramework=".NETFramework4.5" />
+      <frameworkAssembly assemblyName="System.Runtime.Serialization" targetFramework=".NETFramework4.5" />
+      <frameworkAssembly assemblyName="System.Xml" targetFramework=".NETFramework4.5" />
+      <frameworkAssembly assemblyName="System.Xml.Linq" targetFramework=".NETFramework4.5" />
+    </frameworkAssemblies>
+  </metadata>
+</package>

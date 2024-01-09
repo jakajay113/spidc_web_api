@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2012/06/nuspec.xsd">
+  <metadata>
+    <id>Z.ExtensionMethods</id>
+    <version>2.1.1</version>
+    <title>Z.ExtensionMethods</title>
+    <authors>ZZZ Projects Inc.</authors>
+    <owners>ZZZ Projects Inc.</owners>
+    <licenseUrl>https://github.com/zzzprojects/Z.ExtensionMethods/blob/master/LICENSE.md</licenseUrl>
+    <projectUrl>https://github.com/zzzprojects/Z.ExtensionMethods</projectUrl>
+    <iconUrl>https://api.nuget.org/v3-flatcontainer/z.extensionmethods/2.1.1/icon</iconUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>C# and VB.NET Extension Methods | Over 1000 methods available.</description>
+    <summary>C# and VB.NET Extension Methods | Over 1000 methods available.</summary>
+    <copyright>Copyright © ZZZ Projects Inc. 2014 - 2017</copyright>
+    <tags>ExtensionMethod ExtensionMethods HelperMethods C# .NET VB.NET Extension Extensions Method Methods</tags>
+    <dependencies>
+      <group targetFramework=".NETFramework4.0" />
+      <group targetFramework=".NETFramework4.5" />
+      <group targetFramework="Unsupported0.0">
+        <dependency id="System.Data.SqlClient" version="4.5.1" />
+        <dependency id="Microsoft.CSharp" version="4.5.0" />
+      </group>
+    </dependencies>
+  </metadata>
+</package>

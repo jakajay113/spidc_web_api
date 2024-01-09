@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+  <metadata>
+    <id>DotEnv</id>
+    <version>0.0.1.1</version>
+    <title>DotEnv</title>
+    <authors>Chandu</authors>
+    <owners>Chandu</owners>
+    <projectUrl>https://github.com/Chandu/DotEnv</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Description</description>
+    <summary>A small library to load Envrionment from .env file for .Net</summary>
+    <copyright>Copyright ©  2014</copyright>
+    <tags>dotenv</tags>
+    <dependencies>
+      <dependency id="SimpleJson" version="0.38.0" />
+      <dependency id="System.IO.Abstractions" version="1.4.0.86" />
+    </dependencies>
+  </metadata>
+</package>
