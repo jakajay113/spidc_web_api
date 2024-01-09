@@ -236,23 +236,23 @@
       <DependentUpon>Settings.settings</DependentUpon>
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
-    <Compile Include="Other Services\cBllAutoIDNo.vb" />
-    <Compile Include="Other Services\cBllChronicleError.vb" />
-    <Compile Include="Other Services\cBllRegistered.vb" />
-    <Compile Include="Other Services\cDalAutoGenID.vb" />
-    <Compile Include="Other Services\cDalChronicleError.vb" />
-    <Compile Include="Other Services\cDalPayment.vb" />
-    <Compile Include="Other Services\cDalRegistered.vb" />
-    <Compile Include="Other Services\cDalTransactionHistory.vb" />
-    <Compile Include="Other Services\cEncryption.vb" />
-    <Compile Include="Other Services\cExecuteSQL.vb" />
-    <Compile Include="Other Services\cReturnDataType.vb" />
+    <Compile Include="Report\Other Services\cBllAutoIDNo.vb" />
+    <Compile Include="Report\Other Services\cBllChronicleError.vb" />
+    <Compile Include="Report\Other Services\cBllRegistered.vb" />
+    <Compile Include="Report\Other Services\cDalAutoGenID.vb" />
+    <Compile Include="Report\Other Services\cDalChronicleError.vb" />
+    <Compile Include="Report\Other Services\cDalPayment.vb" />
+    <Compile Include="Report\Other Services\cDalRegistered.vb" />
+    <Compile Include="Report\Other Services\cDalTransactionHistory.vb" />
+    <Compile Include="Report\Other Services\cEncryption.vb" />
+    <Compile Include="Report\Other Services\cExecuteSQL.vb" />
+    <Compile Include="Report\Other Services\cReturnDataType.vb" />
     <Compile Include="UniversalCheckout\paymentconfirmation.aspx.designer.vb">
       <DependentUpon>paymentconfirmation.aspx</DependentUpon>
     </Compile>
     <Compile Include="UniversalCheckout\paymentconfirmation.aspx.vb">
       <DependentUpon>paymentconfirmation.aspx</DependentUpon>
-      <SubType>ASPXCodebehind</SubType>
+      <SubType>ASPXCodeBehind</SubType>
     </Compile>
     <Compile Include="UniversalCheckout\processing.aspx.designer.vb">
       <DependentUpon>processing.aspx</DependentUpon>

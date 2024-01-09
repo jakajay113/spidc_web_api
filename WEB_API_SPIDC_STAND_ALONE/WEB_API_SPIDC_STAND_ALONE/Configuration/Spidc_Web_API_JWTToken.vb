@@ -8,7 +8,7 @@ Public Class Spidc_Web_API_JWTToken
     Private Shared Spidc_Web_API_Config As New Spidc_Web_API_Config
 
     'Genrate JWT TOKEN
-    Public Shared Function GenerateJwtToken(username As String, appName As String, accountNo As String, urlOrigin As String) As String
+    Public Shared Function GenerateJwtToken(username As String, appName As String, assessmentNo As String, urlOrigin As String) As String
         ' Call THE SPIDC WEB API CONFIG
         Spidc_Web_API_Config.WebApiConfig()
 
@@ -28,7 +28,7 @@ Public Class Spidc_Web_API_JWTToken
         Dim claims As New List(Of Claim)()
         claims.Add(New Claim(ClaimTypes.Email, username))
         claims.Add(New Claim("appName", appName))
-        claims.Add(New Claim("accountNo", accountNo))
+        claims.Add(New Claim("assessmentNo", assessmentNo))
         claims.Add(New Claim("iat", issuedAt))
 
         ' Create a token with the claims, signing credentials, and the specified expiration time

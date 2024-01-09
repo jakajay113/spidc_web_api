@@ -403,7 +403,7 @@
             } else {
                 var token = getParameterByName(window.location.href, "xyz");
                 var decodedPayload = decodeJwt(token);
-                var key = decodedPayload.accountNo;
+                var key = decodedPayload.assessmentNo;
                 getUniversalCheckout(token, key);
             }
         };
@@ -559,7 +559,7 @@
                         //console.log(appName);
                     }else{
                         const jsonData = JSON.parse(JSON.stringify(response));
-                        const filteredData = jsonData.data.filter(item => item.Code !== "OTC" && item.Code !== "LBP1" && item.Code !== "LBP1");
+                        const filteredData = jsonData.data.filter(item => item.Code !== "OTC" && item.Code !== "LBP1" && item.Code !== "LBP2" && item.Code !== "SPIDCPAY");
                         for (let i = 0; i < filteredData.length; i++) {
                             var paymentgatewaylogo = filteredData[i].GatewayLogo || '';
                             $(".universal-checkout-paymentmethod").append('<li class="splide__slide">\n'
@@ -603,6 +603,51 @@
                     if (radio) {
                         gateway = radio.value
                         radio.checked = true;
+
+                        var gtotal =  document.getElementsByClassName("billing-amount")[0].textContent;
+                        if(gateway =="GCASH"){
+                            //document.getElementsByClassName("gate-way-fees")[0].textContent = "15.00";
+                            //document.getElementsByClassName("total-amount")[0].textContent = gtotal;
+
+                            //var gatewayFees = parseFloat(document.getElementsByClassName("gate-way-fees")[0].textContent);
+                            //var totalAmount = parseFloat(document.getElementsByClassName("billing-amount")[0].textContent);
+
+                            //if (!isNaN(gatewayFees) && !isNaN(totalAmount)) {
+                            //    document.getElementsByClassName("total-amount")[0].textContent = (gatewayFees + totalAmount).toFixed(2);
+                            //} else {
+                            //    alert("Error: Unable to convert text content to numbers.");
+                            //}
+
+                            // Get the text content of the "gate-way-fees" element and set it to "15.00"
+                            var gatewayFeesText = document.getElementsByClassName("gate-way-fees")[0].textContent = "15.00";
+
+                            // Get the text content of the "total-amount" element and set it to "1,000.00"
+                            var totalAmountText = document.getElementsByClassName("billing-amount")[0].textContent = gtotal;
+
+                            // Convert the text content to numbers
+                            var gatewayFees = parseFloat(gatewayFeesText);
+                            var totalbilling = parseFloat(totalAmountText.replace(",", "")); // Remove commas before conversion
+
+                            // Check if the conversion is successful (not NaN)
+                            if (!isNaN(gatewayFees) && !isNaN(totalbilling)) {
+                                // Calculate the sum
+                                var sum = gatewayFees + totalbilling;
+
+                                // Update the text content of one of the elements with the result formatted as "1,015.00"
+                                document.getElementsByClassName("total-amount")[0].textContent = sum.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+                            } else {
+                                console.error("Error: Unable to convert text content to numbers.");
+                            }
+
+
+
+                        }else{
+                           
+                            document.getElementsByClassName("gate-way-fees")[0].textContent = "0.00";
+                            document.getElementsByClassName("total-amount")[0].textContent = gtotal;
+                        }
+
+
                     }
                 });
             });
@@ -692,6 +737,7 @@
             if (typeof gateway === "undefined") {
                 alert("Please select payment method!");
             } else {
+
                 var payload = localStorage.getItem('checkoutPayload');
                 try {
                     var existingPayload = JSON.parse(payload);
@@ -720,11 +766,11 @@
                                         var dataInformation = response.data.payload.dataInformation;
                                         var dataCode = response.data.payload.dataCode;
 
-                                        // Get the accountNo values from dataInformation
-                                        var accountNosToMatch = dataInformation.map(item => item.AccountNo);
+                                        // Get the AssessmentNo values from dataInformation
+                                        var assessmentNoToMatch = dataInformation.map(item => item.AssessmentNo);
 
                                         // Remove items from dataCode where accountNo does not match any in dataInformation
-                                        var filteredDataCode = dataCode.filter(item => accountNosToMatch.includes(item.accountNo));
+                                        var filteredDataCode = dataCode.filter(item => assessmentNoToMatch.includes(item.assessmentNo));
 
                                         // Update the dataCode array in jsonData
                                         var finalFilteredJson = response.data;

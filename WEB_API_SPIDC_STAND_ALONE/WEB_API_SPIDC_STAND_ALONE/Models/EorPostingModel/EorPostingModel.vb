@@ -384,7 +384,7 @@ Public Class EorPostingModel
 
             _QSelect_EOR = " Select (Concat('" & Lname & "',',','" & Fname & "',' ', '" & Mname & "' ))PayorName, " &
                         " ('" & BrgyDesc & "')Barangay, " &
-                        " (null)TaxType, " &
+                        " ('" & Description & "' + ' Payment')TaxType, " &
                         " ('" & [AccNo] & "')TDNBIN, " &
                         " (null)PIN, " &
                         " (null)PeriodCovered, " &
@@ -394,7 +394,7 @@ Public Class EorPostingModel
                         " ('" & transactionId & "')OnlineID, " &
                         " ('" & Gateway & "')Gateway_Selected, " &
                         " ('" & GatewayRef & "')Gateway_RefNo, " &
-                        " ('" & Gateway_conf & "')Gateway_ConfDate, " &
+                        " (FORMAT(GETDATE(), 'MM/d/yyyy h:mm:ss tt'))Gateway_ConfDate, " &
                         " ('" & Total & "')Bill_Amount, " &
                         " ('" & [OtherFee] & "')Gateway_Fee, " &
                         " ('" & [SPIDC_Fee] & "')SPIDC_Fee, " &
@@ -406,17 +406,19 @@ Public Class EorPostingModel
                         " ('1')[Sent], " &
                         " (GETDATE())Sent_Date "
 
+
             ' Process dataCode from API FOR EOR_EXTN
             For Each dataCode As JObject In dataCodeArray
                 Dim AcctNo As String = dataCode("SysTran_SubAccCode").ToString()
                 Dim System_Amount As String = dataCode("systems_codeAmt").ToString()
+                Dim System_Desc As String = dataCode("systrans_codeDesc").ToString()
 
                 _QSelect_EOR2 += " Select ('" & eORno & "')eORNO, " &
                                 " ('" & or_no & "')ORno, " &
                                 " (null)TDNBIN, " &
                                 " ('" & AcctNo & "')AccountCode, " &
                                 " ('" & AssessmentNo & "')AssessmentNo, " &
-                                " ('SPIDC API Payment')NatureOfCollection, " &
+                                " ('" & System_Desc & "')NatureOfCollection, " &
                                 " ('" & System_Amount & "')Amount "
 
                 If dataCode IsNot dataCodeArray.Last Then
@@ -457,7 +459,7 @@ Public Class EorPostingModel
             End If
 
             'Insert in Online Payment Refference
-            Dim OnlPaymentRefQry As String = "INSERT INTO OnlinePaymentRefno(TXNREFNO, EMAILADDR, PAYMENTCHANNEL, ACCTNO, strDATE, StatusID, Status, GateWayRefNo, Security, Type, TransDate, TRXDATE, rawAmount, totAmount, feeAmount, DateVerified, VerifiedBy, Verifying, Via, PostStatus, PostedDate, FeeAmountSPIDC, minORNO, maxORNO) VALUES ('" & transactionId & "', '" & Email & "','" & Gateway & "','" & AccNo & "',FORMAT(GETDATE(), 'yyMMdd'),'SUCCESS','Successful','" & GatewayRef & "', '" & Security & "', '" & DFrom & "','" & Gateway_conf & "', '" & Gateway_conf & "','" & Total & "', '" & TotalAmt_Paid & "', '" & SPIDC_Fee & "', null , null, null, '" & Gateway & "', '1', FORMAT(GETDATE(), 'yyyy-M-dd'), '" & SPIDC_Fee & "', '" & eORno & "', '" & eORno & "')"
+            Dim OnlPaymentRefQry As String = "INSERT INTO OnlinePaymentRefno(TXNREFNO, EMAILADDR, PAYMENTCHANNEL, ACCTNO, strDATE, StatusID, Status, GateWayRefNo, Security, Type, TransDate, TRXDATE, rawAmount, totAmount, feeAmount, DateVerified, VerifiedBy, Verifying, Via, PostStatus, PostedDate, FeeAmountSPIDC, minORNO, maxORNO) VALUES ('" & transactionId & "', '" & Email & "','" & Gateway & "','" & AccNo & "',FORMAT(GETDATE(), 'yyMMdd'),'SUCCESS','Successful','" & GatewayRef & "', '" & Security & "', '" & DFrom & "',FORMAT(GETDATE(), 'MM/d/yyyy h:mm:ss tt'), FORMAT(GETDATE(), 'MMM dd yyyy  h:mmtt'),'" & Total & "', '" & TotalAmt_Paid & "', '" & SPIDC_Fee & "', null , null, null, '" & Gateway & "', '1', FORMAT(GETDATE(), 'yyyy-M-dd'), '" & OtherFee & "', '" & eORno & "', '" & eORno & "')"
             EorPostingDataAccessLayer._mStrSql = OnlPaymentRefQry
             EorPostingDataAccessLayer._mSqlCon = Spidc_Web_API_Global_Connection._pSqlCxn_OAIMS
 

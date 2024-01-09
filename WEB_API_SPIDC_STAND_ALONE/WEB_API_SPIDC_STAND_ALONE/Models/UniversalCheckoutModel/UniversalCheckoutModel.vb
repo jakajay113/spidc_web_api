@@ -171,7 +171,7 @@ Public Class UniversalCheckoutModel
                     UniversalCheckoutDataAccessLayer._pSqlCon = Spidc_Web_API_Global_Connection._pSqlCxn_OAIMS
             End Select
             'Query Build
-            UniversalCheckoutDataAccessLayer._mStrSql = "SELECT * FROM UniversalCheckout WHERE AccountNo='" & id & "'"
+            UniversalCheckoutDataAccessLayer._mStrSql = "SELECT * FROM UniversalCheckout WHERE AssessmentNo='" & id & "'"
             'Call The Data Access Layer 
             If UniversalCheckoutDataAccessLayer._mGetUniversalCheckout() Then
                 _mStatus = UniversalCheckoutDataAccessLayer._mStatus
@@ -250,7 +250,7 @@ Public Class UniversalCheckoutModel
                     'Default Checkout Status
                     _mUniversalCheckoutStatus = "Pending"
                     'Generate JWT TOKEN with para username or email and app name
-                    _mJWTTOKEN = Spidc_Web_API_JWTToken.GenerateJwtToken(_mEmail, _mAppName, _mAccountNo, _mUrlOrigin)
+                    _mJWTTOKEN = Spidc_Web_API_JWTToken.GenerateJwtToken(_mEmail, _mAppName, _massessmentNo, _mUrlOrigin)
 
                     'Generate ControlNo Or TransactionNO
                     '_mUCPTransacionNo = _FnAutoGenID("UCP_TransactionNo", "UCP")
@@ -288,10 +288,10 @@ Public Class UniversalCheckoutModel
                     hash2 = ComputeSubstringHash(_hash2String, startIndex, length)
                     hash3 = ComputeSubstringHash(_hash3String, startIndex, length)
 
-                    ''Check iF AccountNo Already Exist
-                    If UniversalCheckoutDataAccessLayer._mCheckAccountNoAlreadyExist(_mAccountNo) Then
+                    ''Check iF AssessmentNo Already Exist
+                    If UniversalCheckoutDataAccessLayer._mCheckAssessmentNoAlreadyExist(_massessmentNo) Then
                         'Check if exist delete the existing
-                        If UniversalCheckoutDataAccessLayer._mCheckAccountNoAlreadyExistAndDelete(_mAccountNo) Then
+                        If UniversalCheckoutDataAccessLayer._mCheckAssessmentNoAlreadyExistAndDelete(_massessmentNo) Then
                             'Call The Data Access Layer And Insert Again
                             If UniversalCheckoutDataAccessLayer._mPostUniversalCheckout(_mAppName, value, _mJWTTOKEN, hash1, hash2, hash3, _mUCPTransacionNo) Then
                                 _mStatus = UniversalCheckoutDataAccessLayer._mStatus
@@ -396,7 +396,7 @@ Public Class UniversalCheckoutModel
             End Select
             'Query Build But The Query for delete universal checkout is in data access layer 
             'Call The Data Access Layer 
-            If UniversalCheckoutDataAccessLayer._mCheckAccountNoAlreadyExistAndDelete(id) Then
+            If UniversalCheckoutDataAccessLayer._mCheckAssessmentNoAlreadyExistAndDelete(id) Then
                 _mStatus = UniversalCheckoutDataAccessLayer._mStatus
                 _mData = UniversalCheckoutDataAccessLayer._mData
                 _mMessage = UniversalCheckoutDataAccessLayer._mMessage

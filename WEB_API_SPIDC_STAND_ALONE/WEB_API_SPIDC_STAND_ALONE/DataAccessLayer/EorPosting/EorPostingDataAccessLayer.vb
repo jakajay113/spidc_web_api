@@ -8,10 +8,14 @@ Imports RestSharp
 Imports System.Web.Script.Serialization
 Imports System.Net
 
+Imports System.Web.Services
+Imports System.Web.HttpContext
+
+
 Public Class EorPostingDataAccessLayer
 
 
-    Dim EorPostingModel As New EorPostingModel
+
 
 
 #Region "Variable Data Access Layer Universal Checkout Web API"
@@ -22,7 +26,7 @@ Public Class EorPostingDataAccessLayer
     Public Shared _mDataAdapter1 As New SqlDataAdapter
     Public Shared _mDataset As New DataSet
     Public Shared _mDataset1 As New DataSet
-    Public Shared _mStrSql As String
+
     Public Shared _mStrSql1 As String
     Public Shared _mStrSql2 As String
     Public Shared _mStrSql3 As String
@@ -83,6 +87,29 @@ Public Class EorPostingDataAccessLayer
     Private Shared _mSuccessPaymentConfirmationURL As String
 
 
+
+    '--------------------------------------
+
+
+    Private Const _sscPrefix As String = "EorPostingDataAccessLayer."
+    Private Const __mStrSql As String = _sscPrefix & "__mStrSql"
+
+    Shared Property _mStrSql() As String
+        Get
+            Return Current.Session(__mStrSql)
+        End Get
+        Set(ByVal value As String)
+            Current.Session(__mStrSql) = value
+        End Set
+    End Property
+
+
+
+
+
+
+
+
 #End Region
 #Region "Property Data Access Layer Universal Checkout Web  Web API"
     Public Shared ReadOnly Property _pDataAdapter() As SqlDataAdapter
@@ -112,7 +139,7 @@ Public Class EorPostingDataAccessLayer
             End Try
         End Get
     End Property
-    Public Property _pSqlCon() As SqlConnection
+    Public Shared Property _pSqlCon() As SqlConnection
         Get
             Try
                 Return _mSqlCon

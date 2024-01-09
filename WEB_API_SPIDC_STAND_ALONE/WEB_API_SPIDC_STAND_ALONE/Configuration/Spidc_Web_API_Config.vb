@@ -19,6 +19,9 @@ Public Class Spidc_Web_API_Config
     Public Shared Property _mAppLinkSystem2 As String
     Public Shared Property _mAppLinkSystem3 As String
     Public Shared Property _mAppLinkSystem4 As String
+    Public Shared Property _mAppLinkSystem5 As String
+    Public Shared Property _mAppLinkSystem6 As String
+    Public Shared Property _mAppLinkSystem7 As String
 
     Public Shared Property _mMainServerName As String
     Public Shared Property _mMainDBID As String
@@ -234,6 +237,8 @@ Public Class Spidc_Web_API_Config
     Public Shared Property _mAppGCASH_PRODUCT_CODE As String
     Public Shared Property _mAppGCASH_PUBLIC_KEY As String
 
+    Public Shared Property _mAppGCASH_GATEWAY_FEE As String
+
 
     Public Shared Property _mAppPAYMAYA_DOMAIN As String
     Public Shared Property _mAppPAYMAYA_CHECKOUT As String
@@ -292,6 +297,9 @@ Public Class Spidc_Web_API_Config
             _mAppLinkSystem2 = Environment.GetEnvironmentVariable("APP_LINK_SYSTEM2")
             _mAppLinkSystem3 = Environment.GetEnvironmentVariable("APP_LINK_SYSTEM3")
             _mAppLinkSystem4 = Environment.GetEnvironmentVariable("APP_LINK_SYSTEM4")
+            _mAppLinkSystem5 = Environment.GetEnvironmentVariable("APP_LINK_SYSTEM5")
+            _mAppLinkSystem6 = Environment.GetEnvironmentVariable("APP_LINK_SYSTEM6")
+            _mAppLinkSystem7 = Environment.GetEnvironmentVariable("APP_LINK_SYSTEM7")
 
             'APP MAIN SERVER
             _mMainServerName = Environment.GetEnvironmentVariable("APP_MAIN_SERVER")
@@ -397,6 +405,7 @@ Public Class Spidc_Web_API_Config
             _mAppGCASH_MERCHANT_ID = Environment.GetEnvironmentVariable("APP_GCASH_MERCHANT_ID")
             _mAppGCASH_PRODUCT_CODE = Environment.GetEnvironmentVariable("APP_GCASH_PRODUCT_CODE")
             _mAppGCASH_PUBLIC_KEY = Environment.GetEnvironmentVariable("APP_GCASH_PUBLIC_KEY")
+            _mAppGCASH_GATEWAY_FEE = Environment.GetEnvironmentVariable("APP_GCASH_GATEWAY_FEE")
 
             'PAYMENT GATEWAY PAYMAYA CONFIG
             _mAppPAYMAYA_DOMAIN = Environment.GetEnvironmentVariable("APP_PAYMAYA_DOMAIN")

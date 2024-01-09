@@ -667,7 +667,7 @@
                         <Paragraph>
                           <TextRuns>
                             <TextRun>
-                              <Value>BIN</Value>
+                              <Value>BIN/Student ID</Value>
                               <Style>
                                 <FontSize>8pt</FontSize>
                               </Style>

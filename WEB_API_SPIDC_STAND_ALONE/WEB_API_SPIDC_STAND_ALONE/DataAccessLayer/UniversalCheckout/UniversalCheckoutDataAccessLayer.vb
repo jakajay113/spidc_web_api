@@ -244,8 +244,8 @@ Public Class UniversalCheckoutDataAccessLayer
             'Account Codes Data
             _maccountCodeDataArray = _mJsonObject("universalCheckout")("accountCodeData")
             For Each item As JObject In _maccountCodeDataArray
-                _mStrSql = "INSERT INTO UniversalCheckout_Extn (accountNo, SysTran_ProviderCode, systrans_codeDesc, systems_codeAmt, SysTran_MainCode, SysTran_AncestorCode, SysTran_SubAccCode)" & _
-                           "VALUES('" & _mAccountNo & "','" & item("systran_providerCode").ToString() & "' ,'" & item("systrans_codedesc").ToString() & "', '" & item("systems_codeamt").ToString() & "', '" & item("systran_MainCode").ToString() & "','" & item("systran_AncestorCode").ToString() & "','" & item("sysTran_SubAccCode").ToString() & "')"
+                _mStrSql = "INSERT INTO UniversalCheckout_Extn (accountNo, SysTran_ProviderCode, systrans_codeDesc, systems_codeAmt, SysTran_MainCode, SysTran_AncestorCode, SysTran_SubAccCode,assessmentNo)" & _
+                           "VALUES('" & _mAccountNo & "','" & item("systran_providerCode").ToString() & "' ,'" & item("systrans_codedesc").ToString() & "', '" & item("systems_codeamt").ToString() & "', '" & item("systran_MainCode").ToString() & "','" & item("systran_AncestorCode").ToString() & "','" & item("sysTran_SubAccCode").ToString() & "','" & _massessmentNo & "')"
                 _mSqlCmd = New SqlCommand(_mStrSql, _mSqlCon)
                 _mSqlCmd.ExecuteNonQuery()
             Next
@@ -319,7 +319,7 @@ Public Class UniversalCheckoutDataAccessLayer
                     End Select
 
                 Case Else
-                   
+
                     ' Create a new JObject to include the data property
                     Dim jsonData As New JObject()
                     jsonData.Add("payload", _mJsonObject)
@@ -348,9 +348,9 @@ Public Class UniversalCheckoutDataAccessLayer
 
 
     '-----------------------------------------------------------------------------------GET CHECK with Parameters Data Access Layer-----------------------------------------------------------------------------------------------------
-    Public Shared Function _mCheckAccountNoAlreadyExist(ByVal key As String) As Boolean
+    Public Shared Function _mCheckAssessmentNoAlreadyExist(ByVal key As String) As Boolean
         Try
-            _mStrSql1 = "SELECT * FROM UniversalCheckout WHERE AccountNo ='" & key & "'"
+            _mStrSql1 = "SELECT * FROM UniversalCheckout WHERE AssessmentNo ='" & key & "'"
             _mDataset = New DataSet
             _mSqlCmd = New SqlCommand(_mStrSql1, _mSqlCon)
             _mDataAdapter = New SqlDataAdapter(_mSqlCmd)
@@ -367,9 +367,9 @@ Public Class UniversalCheckoutDataAccessLayer
         _mSqlCon.Close()
     End Function
     '-----------------------------------------------------------------------------------DELETE  with Parameters Data Access Layer-----------------------------------------------------------------------------------------------------
-    Public Shared Function _mCheckAccountNoAlreadyExistAndDelete(ByVal key As String) As Boolean
+    Public Shared Function _mCheckAssessmentNoAlreadyExistAndDelete(ByVal key As String) As Boolean
         Try
-            _mStrSql1 = "DELETE  FROM UniversalCheckout WHERE AccountNo='" & key & "'"
+            _mStrSql1 = "DELETE  FROM UniversalCheckout WHERE AssessmentNo='" & key & "'"
             _mSqlCmd = New SqlCommand(_mStrSql1, _mSqlCon)
             _mSqlCmd.ExecuteNonQuery()
             _mStatus = "success"

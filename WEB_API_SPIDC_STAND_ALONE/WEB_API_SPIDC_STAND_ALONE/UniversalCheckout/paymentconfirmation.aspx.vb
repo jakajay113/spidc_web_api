@@ -22,13 +22,13 @@ Public Class paymentconfirmation
     Private Shared _sqlDateNow10 As DateTime
     Private Shared _msecqLabel As String
     Private Shared _ucpseqrandom As New Random()
-    Private Shared _msgID As Integer = _ucpseqrandom.Next(10000, 100000)
+    Private Shared _msgID As Integer
 
     Private Shared _mJson As String
 
     Protected Sub Page_Load(ByVal sender As Object, ByVal e As System.EventArgs) Handles Me.Load
 
-
+        _msgID = _ucpseqrandom.Next(10000, 100000)
     End Sub
 
 
@@ -221,9 +221,9 @@ Public Class paymentconfirmation
             Dim api_AppName = _payloadJson("payload")("dataInformation")(0)("AppName")
             Dim api_TransDesc = _payloadJson("payload")("dataInformation")(0)("transDesc")
             Dim api_Total = _payloadJson("payload")("dataInformation")(0)("RawAmount")
-            Dim api_otherFee = _payloadJson("payload")("dataInformation")(0)("OtherFee")
+
             Dim api_SPIDCFee = _payloadJson("payload")("dataInformation")(0)("SpidcFee")
-            Dim api_TotalAmt_Paid = _payloadJson("payload")("dataInformation")(0)("TotalAmount")
+            'Dim api_TotalAmt_Paid = _payloadJson("payload")("dataInformation")(0)("TotalAmount")
             Dim api_BillingDate = _payloadJson("payload")("dataInformation")(0)("BiilingDate")
             'for online payment reference
             Dim api_email As String = _payloadJson("payload")("dataInformation")(0)("Email")
@@ -235,6 +235,10 @@ Public Class paymentconfirmation
             Dim api_SuccessLink = _payloadJson("payload")("dataInformation")(0)("UrlSuccess")
             'Get Web Config
             Spidc_Web_API_Config.WebApiConfig()
+
+            Dim api_otherFee = Spidc_Web_API_Config._mAppGCASH_GATEWAY_FEE '_payloadJson("payload")("dataInformation")(0)("OtherFee")
+            Dim api_TotalAmt_Paid As Integer = CInt(Double.Parse(api_Total) + Integer.Parse(api_otherFee))
+
 
             'check and create dfrom base on APPNAME
             Dim DFrom As String = Nothing
@@ -258,6 +262,9 @@ Public Class paymentconfirmation
             End If
 
 
+
+
+
             Dim interest As String = Nothing
             'check if cedulaApp has interest and get the 2nd data in array as interest
             If api_AppName = Spidc_Web_API_Config._mAppLinkSystem1 Then
@@ -270,6 +277,8 @@ Public Class paymentconfirmation
                 interest = "0.00"
             End If
 
+
+
             'CALL POST OF GEN OR AND EOR
             Dim _cPaymentPosting As New EorPostingModel
             _cPaymentPosting._pSqlConnection = Spidc_Web_API_Global_Connection._pSqlCxn_TOIMS
@@ -277,17 +286,17 @@ Public Class paymentconfirmation
             'Check If POSTING IS SUCCESS
             If _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, transactionid, api_email, api_checkoutstatus, _security, payload) Then
                 'Call Webhook To Send EOR Email
-                If sendEOR(api_AppName, "Notification Test", EorPostingModel.eORno, api_TotalAmt_Paid, api_email, api_OriginLink, api_PaymentRef, api_TransDesc, api_accno) Then
+                If sendEOR(api_AppName, "Electronic Official Receipt", EorPostingModel.eORno, api_Total, api_email, api_OriginLink, api_PaymentRef, api_TransDesc, api_accno) Then
                     '    'Check If System Is Not SPIDC  FOR SENDING NOTIFICATION OF PAYMENT
                     Select Case api_AppName
                         Case Spidc_Web_API_Config._mAppLinkSystem2
-                            'Post Notification To Other App WebHook To Get Payment Status APP NAME / NOTIFICATION URL/ PAYMENT REF / STATUS 1 FOR SUCCESS
-                            _mWebhooksNotifications(api_AppName, api_SuccessLink, api_PaymentRef, "1")
+                            'Post Notification To Other App WebHook To Get Payment Status APP NAME / NOTIFICATION URL/ Gateway Payment Ref/PAYMENT REF / STATUS 1 FOR SUCCESS
+                            _mWebhooksNotifications(api_AppName, api_SuccessLink, transactionid, api_PaymentRef, "1", EorPostingModel.eORno, _paymentGateway)
                         Case Else
 
                     End Select
 
-                    _mGCASHPaymentInquiry = {"success", api_TransDesc, api_accno, api_email, api_TotalAmt_Paid, api_TotalAmt_Paid, api_BillingDate, api_OriginLink}
+                    _mGCASHPaymentInquiry = {"success", api_TransDesc, api_accno, api_email, api_TotalAmt_Paid, api_TotalAmt_Paid, _sqlDateNow.ToString("yyyy-MM-dd'T'HH:mm:ssK"), api_OriginLink}
                 Else
                     _mGCASHPaymentInquiry = {"error", api_TransDesc, api_accno, api_email, api_TotalAmt_Paid, api_TotalAmt_Paid, api_BillingDate, api_OriginLink}
                 End If
@@ -376,11 +385,22 @@ Public Class paymentconfirmation
             'check and create dfrom base on APPNAME
             Dim DFrom As String = Nothing
             If api_AppName = Spidc_Web_API_Config._mAppLinkSystem1 Then
+
                 If api_TransDesc = "Individual Cedula" Then
+
                     DFrom = "CCIWEB"
+
                 ElseIf api_TransDesc = "Corporation Cedula" Then
+
                     DFrom = "CCCWEB"
+
                 End If
+
+
+            Else
+
+                DFrom = api_AppName
+
             End If
 
 
@@ -405,26 +425,26 @@ Public Class paymentconfirmation
             If _cPaymentPosting._Insert_GenOR_Posting(api_accno, api_lname, api_fname, api_mname, api_address, api_PaymentRef, api_AssessmentNo, api_AppName, api_TransDesc, api_Total, api_otherFee, api_SPIDCFee, interest, api_TotalAmt_Paid, _paymentGateway, _paymentGatewayRefNo, api_BillingDate, DFrom, transactionid, api_email, api_checkoutstatus, _security, payload) Then
                 'Call Webhook To Send EOR Email
                 'Call Webhook To Send EOR Email
-                If sendEOR(api_AppName, "Notification Test", EorPostingModel.eORno, api_TotalAmt_Paid, api_email, api_OriginLink, api_PaymentRef, api_TransDesc, api_accno) Then
+                If sendEOR(api_AppName, "Electronic Official Receipt", EorPostingModel.eORno, api_Total, api_email, api_OriginLink, api_PaymentRef, api_TransDesc, api_accno) Then
                     '    'Check If System Is Not SPIDC  FOR SENDING NOTIFICATION OF PAYMENT
                     Select Case api_AppName
                         Case Spidc_Web_API_Config._mAppLinkSystem2
-                            'Post Notification To Other App WebHook To Get Payment Status APP NAME / NOTIFICATION URL/ PAYMENT REF / STATUS 1 FOR SUCCESS
-                            _mWebhooksNotifications(api_AppName, api_SuccessLink, api_PaymentRef, "1")
+                            'Post Notification To Other App WebHook To Get Payment Status APP NAME / NOTIFICATION URL/ Gateway Payment Ref/PAYMENT REF / STATUS 1 FOR SUCCESS
+                            _mWebhooksNotifications(api_AppName, api_SuccessLink, transactionid, api_PaymentRef, "1", EorPostingModel.eORno, _paymentGateway)
                         Case Else
 
                     End Select
 
-                    _mPayMayaPaymentInquiry = {"success", api_TransDesc, api_accno, api_email, api_TotalAmt_Paid, api_TotalAmt_Paid, api_BillingDate, api_OriginLink}
+                    _mPayMayaPaymentInquiry = {"success", api_TransDesc, api_accno, api_email, api_TotalAmt_Paid, api_TotalAmt_Paid, _sqlDateNow.ToString("yyyy-MM-dd'T'HH:mm:ssK"), api_OriginLink}
                 Else
-                    _mPayMayaPaymentInquiry = {"error", api_TransDesc, api_accno, api_email, api_TotalAmt_Paid, api_TotalAmt_Paid, api_BillingDate, api_OriginLink}
+                    _mPayMayaPaymentInquiry = {"error", api_TransDesc, api_accno, api_email, api_TotalAmt_Paid, api_TotalAmt_Paid, _sqlDateNow.ToString("yyyy-MM-dd'T'HH:mm:ssK"), api_OriginLink}
                 End If
             Else
                 _mPayMayaPaymentInquiry = {"error", api_OriginLink}
             End If
         End If
 
-       
+
 
 
         Return _mPayMayaPaymentInquiry
@@ -562,7 +582,7 @@ Public Class paymentconfirmation
 
 
     'WEBHOOK NOTIFICATIONS
-    Public Shared Sub _mWebhooksNotifications(appName As String, notificationURL As String, transactionRef As String, status As String)
+    Public Shared Sub _mWebhooksNotifications(appName As String, notificationURL As String, gatewayTrasactionRef As String, transactionRef As String, status As String, orno As String, paymentType As String)
         'Get Web Config
         Spidc_Web_API_Config.WebApiConfig()
         ' Replace with your API endpoint WEB HOOK URL
@@ -571,13 +591,19 @@ Public Class paymentconfirmation
         Dim apiHeader As String = Nothing
         Dim apiKey As String = Nothing
         Select Case appName
-            Case Spidc_Web_API_Config._mAppLinkSystem2
+            Case Spidc_Web_API_Config._mAppLinkSystem2 'PINANCLE
                 apiHeader = "API_KEY"
                 apiKey = "Pinn@cleP@ss123"
-            Case Spidc_Web_API_Config._mAppLinkSystem3
+            Case Spidc_Web_API_Config._mAppLinkSystem3 'QPAX
                 apiHeader = ""
                 apiKey = ""
-            Case Spidc_Web_API_Config._mAppLinkSystem4
+            Case Spidc_Web_API_Config._mAppLinkSystem4 'LCR
+                apiHeader = ""
+                apiKey = ""
+            Case Spidc_Web_API_Config._mAppLinkSystem5 'DOHS
+                apiHeader = ""
+                apiKey = ""
+            Case Spidc_Web_API_Config._mAppLinkSystem6 'EOBO
                 apiHeader = ""
                 apiKey = ""
         End Select
@@ -591,7 +617,7 @@ Public Class paymentconfirmation
         request.AddHeader(apiHeader, apiKey)
         ' Add any parameters or request body as needed
         ' Create a JObject to represent the JSON structure
-        _mJson = "{""transactionReferenceNo"": """ & transactionRef & """,""status"": """ & status & """}"
+        _mJson = "{""transactionReferenceNo"": """ & transactionRef & """,""transactionNo"": """ & gatewayTrasactionRef & """,""status"": """ & status & """,""orno"": """ & orno & """,""paymentType"": """ & paymentType & """}"
         request.AddParameter("application/json", _mJson, ParameterType.RequestBody)
         ' Execute the request
         Dim response As IRestResponse = client.Execute(request)

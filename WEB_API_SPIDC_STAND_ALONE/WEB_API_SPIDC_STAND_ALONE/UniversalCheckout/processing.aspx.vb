@@ -29,7 +29,7 @@ Public Class processing
     Private Shared _mreturnUrl As String
     Private Shared _msecqLabel As String
     Private Shared _ucpseqrandom As New Random()
-    Private Shared _msgID As Integer = _ucpseqrandom.Next(10000, 100000)
+    Private Shared _msgID As Integer
 
     Private Shared url As Uri
     Private Shared scheme As String
@@ -60,6 +60,8 @@ Public Class processing
             If action = "Processing" Then
                 'Payload
                 _mPayload = _payloadToProcess.Value
+                'Generate request Tramsaction ID for paymentgateway
+                _msgID = _ucpseqrandom.Next(10000, 100000)
                 'Processing 
                 _mProcessingToPaymentGateway(val, _mPayload)
             Else
@@ -97,7 +99,13 @@ Public Class processing
         Dim _merchantTransId As String
         Dim _acquirementStatus As String
         Dim _signature As String
-        Dim Amount As Double = _mJsonObject.SelectToken("payload.dataInformation[0].BillingAmount").ToString()
+        'Dim Amount As String = _mJsonObject.SelectToken("payload.dataInformation[0].BillingAmount").ToString()
+
+        Dim BillingAmount As String = _mJsonObject.SelectToken("payload.dataInformation[0].BillingAmount").ToString()
+        Dim GcashFee = Spidc_Web_API_Config._mAppGCASH_GATEWAY_FEE
+        Dim Amount As Integer = CInt(Double.Parse(BillingAmount) + Integer.Parse(GcashFee))
+        'Dim Amount As String = TotalWithFee
+
         Dim ACCTNO As String = _mJsonObject.SelectToken("payload.dataInformation[0].AccountNo").ToString()
         Dim PaymentDesc As String = _mJsonObject.SelectToken("payload.dataInformation[0].transDesc").ToString() & " " & "Payment"
         Dim _nClass As New cDalPayment
